@@ -1,0 +1,95 @@
+renderTarget:
+  culling: true
+  depthTest: true
+  debugLogging: true
+
+window:
+  library: sdl
+  config:
+    title: YamlConfig Example
+    type: window
+    width: 800
+    height: 800
+
+shader:
+  type: phong
+  vertexShader: ../Core/Shader/PhongShader/phong.vert
+  fragmentShader: ../Core/Shader/PhongShader/phong.frag
+
+root:
+  type: Scene.ParentBaseNode
+  children:
+    cameraControl:
+      type: UI.Control.WASDControl
+      config:
+        keyboardSensitivity: 1
+        mouseSensitivity: 0.5
+      transformation:
+        - translation: [0, 0, 5]
+      children:
+        camera:
+          type: Node.Camera
+          config:
+            initialFront: [0, 0, -1]
+            initialUp: [0, 1, 0]
+            perspective:
+              fovy: 90
+              aspect: 1
+              near: 0.1
+              far: 100
+    sunLight:
+      type: Node.LightNode.DirectionalLightNode
+      config:
+        directionalLight:
+          ambient: [0.32, 0.32, 0.32]
+          diffuse: [0.8, 0.8, 0.8]
+          specular: [0.8, 0.8, 0.8]
+        initialDirection: [-1, -1, -1]
+    modelRotor:
+      type: SceneGraph.Rotor
+      config:
+        speed: 1
+      children:
+        suzanne:
+          type: Node.ModelNode
+          config:
+            file: Models/suzanne.bin
+    lightRotor:
+      type: SceneGraph.Rotor
+      config:
+        speed: -1
+      children:
+        lightBlue1:
+          type: Node.LightNode.PointLightNode
+          config:
+            pointLight: &bluePointLightConfig
+              ambient: [0, 0, 0.2]
+              diffuse: [0, 0, 1]
+              specular: [0, 0, 1]
+              linear: 0.027
+              quadratic: 0.0028
+          transformation:
+            - translation: [0, 0, 30]
+        lightBlue2:
+          type: Node.LightNode.PointLightNode
+          config:
+            pointLight: *bluePointLightConfig
+          transformation:
+            - translation: [0, 0, -30]
+        lightRed1:
+          type: Node.LightNode.PointLightNode
+          config:
+            pointLight: &redPointLightConfig
+              ambient: [0.2, 0, 0]
+              diffuse: [1, 0, 0]
+              specular: [2, 0, 0]
+              linear: 0.027
+              quadratic: 0.0028
+          transformation:
+            - translation: [30, 0, 0]
+        lightRed2:
+          type: Node.LightNode.PointLightNode
+          config:
+            pointLight: *redPointLightConfig
+          transformation:
+            - translation: [-30, 0, 0]

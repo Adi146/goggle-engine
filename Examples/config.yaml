@@ -30,13 +30,15 @@ root:
         camera:
           type: Node.Camera
           config:
-            initialFront: [0, 0, -1]
-            initialUp: [0, 1, 0]
             perspective:
               fovy: 90
               aspect: 1
               near: 0.1
               far: 100
+          transformation:
+            - rotation:
+                angle: 180
+                axis: [0, 1, 0]
     sunLight:
       type: Node.LightNode.DirectionalLightNode
       config:

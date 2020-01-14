@@ -22,7 +22,7 @@ type RotationConfig struct {
 }
 
 func (matrixConfig *RotationConfig) Decode() *Matrix.Matrix4x4 {
-	return Matrix.Rotate(matrixConfig.Angle, matrixConfig.Vector)
+	return Matrix.Rotate(Angle.Radians(matrixConfig.Angle), matrixConfig.Vector)
 }
 
 type ScaleConfig float32

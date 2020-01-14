@@ -39,17 +39,24 @@ func (node *CameraNode) Init() error {
 		}
 	}
 
+	if node.InitialUp == nil {
+		node.InitialUp = &Vector.Vector3{0, 1, 0}
+	}
+
+	if node.InitialFront == nil {
+		node.InitialFront = &Vector.Vector3{0, 0, 1}
+	}
+
 	return nil
 }
 
 func (node *CameraNode) Tick(timeDelta float32) {
 	node.Camera.Position = node.GetGlobalPosition()
 
-	globalTransformation := node.GetGlobalTransformation()
-	globalTransformation[0][3], globalTransformation[1][3], globalTransformation[2][3] = 0, 0, 0
+	invTransGlobalTransformation := node.GetGlobalTransformation().Inverse().Transpose()
 
-	node.Camera.Front = globalTransformation.MulVector(node.InitialFront).Normalize()
-	node.Camera.Up = globalTransformation.MulVector(node.InitialUp).Normalize()
+	node.Camera.Front = invTransGlobalTransformation.MulVector(node.InitialFront).Normalize()
+	node.Camera.Up = invTransGlobalTransformation.MulVector(node.InitialUp).Normalize()
 
 	node.Camera.Tick(timeDelta)
 }

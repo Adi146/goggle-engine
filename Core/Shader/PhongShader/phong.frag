@@ -1,5 +1,6 @@
 #version 410 core
 #define MAX_POINT_LIGHTS 128
+#define MAX_SPOT_LIGHTS 128
 
 in vec3 v_position;
 in vec3 v_normal;
@@ -30,13 +31,30 @@ struct PointLight{
     float quadratic;
 };
 
+struct SpotLight{
+    vec3 position;
+    vec3 direction;
+
+    float innerCone;
+    float outerCone;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float linear;
+    float quadratic;
+};
+
 uniform mat4 u_viewMatrix;
 
 uniform Material u_material;
 
 uniform DirectionalLight u_directionalLight;
 uniform PointLight u_pointLights[MAX_POINT_LIGHTS];
+uniform SpotLight u_spotLights[MAX_SPOT_LIGHTS];
 uniform int u_numPointLights;
+uniform int u_numSpotLights;
 
 layout(location = 0) out vec4 f_color;
 
@@ -67,6 +85,31 @@ void calculatePointLight(in vec3 viewVector, in vec3 normalVector, inout vec3 am
     }
 }
 
+void calculateSpotLight(in vec3 viewVector, in vec3 normalVector, inout vec3 ambientColor, inout vec3 diffuseColor, inout vec3 specularColor) {
+    for (int i = 0; i < u_numSpotLights; i++){
+        vec3 lightPosition = vec3(vec4(u_spotLights[i].position, 1.0) * u_viewMatrix);
+        vec3 lightDirection = vec3(vec4(u_spotLights[i].direction, 1.0f) * transpose(inverse(u_viewMatrix)));
+
+        vec3 lightVector = normalize(lightPosition - v_position);
+        vec3 reflectionVector = reflect(-lightVector, normalVector);
+
+        float distance = length(lightPosition - v_position);
+        float attenuation = 1.0 / ((1.0) + (u_spotLights[i].linear * distance) + (u_spotLights[i].quadratic * pow(distance, 2)));
+
+        float theta = dot(lightVector, normalize(lightDirection));
+        if (theta > u_spotLights[i].outerCone) {
+            float epsilon = u_spotLights[i].outerCone - u_spotLights[i].innerCone;
+            float intensity = clamp((theta - u_spotLights[i].outerCone) / epsilon, 0.0f, 1.0f);
+
+            ambientColor += attenuation * u_spotLights[i].ambient * u_material.diffuse;
+            diffuseColor += attenuation * intensity * u_spotLights[i].diffuse * max(dot(normalVector, lightVector), 0.0f) * u_material.diffuse;
+            specularColor += attenuation * intensity * u_spotLights[i].specular * pow(max(dot(reflectionVector, viewVector), 0.00001f), u_material.shininess) * u_material.specular;
+        } else {
+            ambientColor += attenuation * u_spotLights[i].ambient * u_material.diffuse;
+        }
+    }
+}
+
 void main() {
     vec3 view = normalize(-v_position);
     vec3 normal = normalize(v_normal);
@@ -77,6 +120,7 @@ void main() {
 
     calculateDirectionalLight(view, normal, ambientColor, diffuseColor, specularColor);
     calculatePointLight(view, normal, ambientColor, diffuseColor, specularColor);
+    calculateSpotLight(view, normal, ambientColor, diffuseColor, specularColor);
 
     f_color = vec4(ambientColor + diffuseColor + specularColor + u_material.emissive, 1.0f);
 }

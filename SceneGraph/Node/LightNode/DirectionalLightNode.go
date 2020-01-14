@@ -24,6 +24,10 @@ func (node *DirectionalLightNode) Init() error {
 		node.IChildNode = Scene.NewChildNodeBase()
 	}
 
+	if node.InitialDirection == nil {
+		node.InitialDirection = &Vector.Vector3{0, 0, 1}
+	}
+
 	return nil
 }
 

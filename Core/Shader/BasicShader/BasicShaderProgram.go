@@ -65,3 +65,7 @@ func (program *BasicShaderProgram) BindDirectionalLight(light *Light.Directional
 func (program *BasicShaderProgram) BindPointLight(light *Light.PointLight) error {
 	return nil
 }
+
+func (program *BasicShaderProgram) BindSpotLight(light *Light.SpotLight) error {
+	return nil
+}

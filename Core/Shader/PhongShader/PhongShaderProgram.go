@@ -28,6 +28,17 @@ const (
 	pointLight_quadratic_uniformAddress = "u_pointLights[%d].quadratic"
 	numPointLights_uniformAddress       = "u_numPointLights"
 
+	spotLight_position_uniformAddress  = "u_spotLights[%d].position"
+	spotLight_direction_uniformAddress = "u_spotLights[%d].direction"
+	spotLight_innerCone_uniformAddress = "u_spotLights[%d].innerCone"
+	spotLight_outerCone_uniformAddress = "u_spotLights[%d].outerCone"
+	spotLight_ambient_uniformAddress   = "u_spotLights[%d].ambient"
+	spotLight_diffuse_uniformAddress   = "u_spotLights[%d].diffuse"
+	spotLight_specular_uniformAddress  = "u_spotLights[%d].specular"
+	spotLight_linear_uniformAddress    = "u_spotLights[%d].linear"
+	spotLight_quadratic_uniformAddress = "u_spotLights[%d].quadratic"
+	numSpotLights_uniformAddress       = "u_numSpotLights"
+
 	modelMatrix_uniformAddress = "u_modelMatrix"
 
 	viewMatrix_uniformAddress       = "u_viewMatrix"
@@ -38,6 +49,7 @@ type PhongShaderProgram struct {
 	*Shader.ShaderProgramCore
 
 	pointLightIndex int32
+	spotLightIndex  int32
 }
 
 func NewPhongShaderProgram(vertexShaderFile string, fragmentShaderFile string) (*PhongShaderProgram, error) {
@@ -58,6 +70,7 @@ func NewPhongIShaderProgram(vertexShaderFile string, fragmentShaderFile string) 
 
 func (program *PhongShaderProgram) ResetIndexCounter() {
 	program.pointLightIndex = 0
+	program.spotLightIndex = 0
 }
 
 func (program *PhongShaderProgram) BindMaterial(material *Model.Material) error {
@@ -131,6 +144,41 @@ func (program *PhongShaderProgram) BindPointLight(light *Light.PointLight) error
 
 	program.pointLightIndex++
 	program.BindInt(program.pointLightIndex, numPointLights_uniformAddress)
+
+	return nil
+}
+
+func (program *PhongShaderProgram) BindSpotLight(light *Light.SpotLight) error {
+	if err := program.BindVector3(&light.Position, fmt.Sprintf(spotLight_position_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+	if err := program.BindVector3(&light.Direction, fmt.Sprintf(spotLight_direction_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+	if err := program.BindFloat(light.InnerCone, fmt.Sprintf(spotLight_innerCone_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+	if err := program.BindFloat(light.OuterCone, fmt.Sprintf(spotLight_outerCone_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+	if err := program.BindVector3(&light.Ambient, fmt.Sprintf(spotLight_ambient_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+	if err := program.BindVector3(&light.Diffuse, fmt.Sprintf(spotLight_diffuse_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+	if err := program.BindVector3(&light.Specular, fmt.Sprintf(spotLight_specular_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+	if err := program.BindFloat(light.Linear, fmt.Sprintf(spotLight_linear_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+	if err := program.BindFloat(light.Quadratic, fmt.Sprintf(spotLight_quadratic_uniformAddress, program.spotLightIndex)); err != nil {
+		return err
+	}
+
+	program.spotLightIndex++
+	program.BindInt(program.spotLightIndex, numSpotLights_uniformAddress)
 
 	return nil
 }

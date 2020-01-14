@@ -24,6 +24,7 @@ type IShaderProgram interface {
 
 	BindDirectionalLight(light *Light.DirectionalLight) error
 	BindPointLight(light *Light.PointLight) error
+	BindSpotLight(light *Light.SpotLight) error
 
 	BindTexture(textureSlot uint32, texture *Texture.Texture) error
 	BindMatrix(modelMatrix *Matrix.Matrix4x4, uniformAddress string) error

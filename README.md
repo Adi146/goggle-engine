@@ -5,6 +5,16 @@ It can be used to create cross-platform GO applications which features interacti
 
 Note: This is still in development. There might be bigger changes for the APIs!
 
+# Compile on Windows:
+1. Install mingw-w64
+2. Download [SDL2](https://www.libsdl.org/download-2.0.php) development libraries for MinGW
+3. For the modelconverter, you need to install following dependencies:
+    * [assimp](https://packages.msys2.org/package/mingw-w64-x86_64-assimp)
+    * [minizip](https://packages.msys2.org/package/mingw-w64-x86_64-minizip)
+    * [zlib](https://packages.msys2.org/package/mingw-w64-x86_64-zlib)
+4. Create a folder called "x86_64-w64-mingw32" in the mingw directory and copy the content of the archives in it.
+5. Place the dlls in your execution path
+
 ## Packages
 GogGLE consists of multiple Packages
 ### Core

@@ -42,9 +42,9 @@ func (node *ModelNode) Draw() {
 	scene := node.GetScene()
 	if scene != nil && scene.GetActiveShaderProgram() != nil {
 		scene.GetActiveShaderProgram().BindObject(node.Model)
-		for _, geometry := range node.Geometries {
-			scene.GetActiveShaderProgram().BindObject(geometry.Material)
-			geometry.Draw()
+		for _, mesh := range node.Meshes {
+			scene.GetActiveShaderProgram().BindObject(mesh.Material)
+			mesh.Draw()
 		}
 	}
 }

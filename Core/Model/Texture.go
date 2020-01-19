@@ -1,4 +1,4 @@
-package Texture
+package Model
 
 import (
 	"fmt"

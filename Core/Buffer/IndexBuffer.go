@@ -1,4 +1,4 @@
-package Geometry
+package Buffer
 
 import (
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -7,12 +7,12 @@ import (
 
 type IndexBuffer struct {
 	bufferId uint32
-	length   int32
+	Length   int32
 }
 
 func NewIndexBuffer(indices []uint32) *IndexBuffer {
 	buff := IndexBuffer{
-		length: int32(len(indices)),
+		Length: int32(len(indices)),
 	}
 
 	gl.GenBuffers(1, &buff.bufferId)

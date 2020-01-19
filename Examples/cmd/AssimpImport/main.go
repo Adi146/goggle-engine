@@ -93,11 +93,11 @@ func main() {
 		panic(err)
 	}
 
-	geometryNode := &Node.ModelNode{
+	modelNode := &Node.ModelNode{
 		IChildNode: Scene.NewChildNodeBase(),
 		Model:      model,
 	}
-	geometryNode.SetLocalTransformation(Matrix.Scale(0.1))
+	modelNode.SetLocalTransformation(Matrix.Scale(0.1))
 
 	scene := Scene.NewScene(openGLRenderTarget)
 	scene.SetRoot(Scene.NewParentNodeBase())
@@ -106,7 +106,7 @@ func main() {
 	controlNode.AddChild(cameraNode)
 	scene.Root.AddChild(sunLightNode)
 	scene.Root.AddChild(modelRotorNode)
-	modelRotorNode.AddChild(geometryNode)
+	modelRotorNode.AddChild(modelNode)
 
 	RenderTarget.RunRenderLoop(scene)
 }

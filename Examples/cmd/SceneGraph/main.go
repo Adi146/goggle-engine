@@ -122,7 +122,7 @@ func main() {
 		panic(err)
 	}
 
-	geometryNode := &Node.ModelNode{
+	modelNode := &Node.ModelNode{
 		IChildNode: Scene.NewChildNodeBase(),
 		Model:      model,
 	}
@@ -137,7 +137,7 @@ func main() {
 	pointLightRotor.AddChild(pointLightNode1)
 	pointLightRotor.AddChild(pointLightNode2)
 	scene.Root.AddChild(modelRotorNode)
-	modelRotorNode.AddChild(geometryNode)
+	modelRotorNode.AddChild(modelNode)
 
 	RenderTarget.RunRenderLoop(scene)
 }

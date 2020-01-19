@@ -2,7 +2,6 @@ package Model
 
 import (
 	"github.com/Adi146/assimp"
-	"github.com/Adi146/goggle-engine/Core/Geometry"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"path"
 )
@@ -12,13 +11,13 @@ var textureTypes = [...]assimp.TextureMapping{
 	assimp.TextureMapping_Normals,
 }
 
-type GeometryWithMaterial struct {
-	*Geometry.Geometry
+type MeshesWithMaterial struct {
+	*Mesh
 	*Material
 }
 
 type Model struct {
-	Geometries  []GeometryWithMaterial
+	Meshes      []MeshesWithMaterial
 	ModelMatrix *Matrix.Matrix4x4
 }
 
@@ -35,7 +34,7 @@ func ImportModel(filename string) (*Model, error) {
 	)
 
 	materials := make([]*Material, assimpScene.NumMaterials())
-	geometries := make([]GeometryWithMaterial, assimpScene.NumMeshes())
+	meshes := make([]MeshesWithMaterial, assimpScene.NumMeshes())
 
 	for i, assimpMaterial := range assimpScene.Materials() {
 		material, err := ImportMaterial(assimpMaterial, path.Dir(filename))
@@ -46,16 +45,16 @@ func ImportModel(filename string) (*Model, error) {
 	}
 
 	for i, assimpMesh := range assimpScene.Meshes() {
-		geometry, err := Geometry.ImportGeometry(assimpMesh)
+		mesh, err := ImportMesh(assimpMesh)
 		if err != nil {
 			return nil, err
 		}
-		geometries[i].Geometry = geometry
-		geometries[i].Material = materials[assimpMesh.MaterialIndex()]
+		meshes[i].Mesh = mesh
+		meshes[i].Material = materials[assimpMesh.MaterialIndex()]
 	}
 
 	return &Model{
-		Geometries:  geometries,
+		Meshes:      meshes,
 		ModelMatrix: Matrix.Identity(),
 	}, nil
 }

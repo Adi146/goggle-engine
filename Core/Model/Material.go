@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Adi146/assimp"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-	"github.com/Adi146/goggle-engine/Core/Texture"
 	"path"
 	"strings"
 )
@@ -16,8 +15,8 @@ type Material struct {
 
 	Shininess float32
 
-	DiffuseTextures []*Texture.Texture
-	NormalTextures  []*Texture.Texture
+	DiffuseTextures []*Texture
+	NormalTextures  []*Texture
 }
 
 func ImportMaterial(assimpMaterial *assimp.Material, modelDir string) (*Material, error) {
@@ -58,8 +57,8 @@ func ImportMaterial(assimpMaterial *assimp.Material, modelDir string) (*Material
 	}, nil
 }
 
-func ImportTexturesOfMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]*Texture.Texture, error) {
-	var textures []*Texture.Texture
+func ImportTexturesOfMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]*Texture, error) {
+	var textures []*Texture
 	var textureFiles []string
 
 	numTextures := assimpMaterial.GetMaterialTextureCount(assimp.TextureType(textureType))
@@ -78,7 +77,7 @@ func ImportTexturesOfMaterial(assimpMaterial *assimp.Material, textureType assim
 	}
 
 	for _, textureFile := range textureFiles {
-		texture, err := Texture.NewTextureFromFile(textureFile)
+		texture, err := NewTextureFromFile(textureFile)
 		if err != nil {
 			return nil, err
 		}

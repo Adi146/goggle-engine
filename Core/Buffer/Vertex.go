@@ -1,4 +1,4 @@
-package Geometry
+package Buffer
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"

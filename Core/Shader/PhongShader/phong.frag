@@ -7,6 +7,8 @@
 in vec3 v_position;
 in vec3 v_normal;
 in vec2 v_uv;
+in vec3 v_tangent;
+in vec3 v_biTangent;
 
 struct MaterialColor {
     vec3 diffuse;
@@ -139,13 +141,7 @@ vec3 calculateSpotLight(in vec3 viewVector, in vec3 normalVector, in MaterialCol
 }
 
 void main() {
-    vec3 view = normalize(-v_position);
-    vec3 normal = normalize(v_normal);
-
-    vec3 ambientColor = vec3(0.0, 0.0, 0.0);
-    vec3 diffuseColor = vec3(0.0, 0.0, 0.0);
-    vec3 specularColor = vec3(0.0, 0.0, 0.0);
-
+    // check if material is transparent
     MaterialColor color = u_material.baseColor;
     if (u_material.numTextureDiffuse > 0) {
         vec4 diffuse = vec4(0.0, 0.0, 0.0, 0.0);
@@ -158,6 +154,20 @@ void main() {
         color.diffuse = vec3(diffuse);
     }
 
+    //transpose is equal to inverse in this case
+    mat3 tbn = transpose(mat3(v_tangent, v_normal, v_biTangent));
+    vec3 normal = v_normal;
+    if (u_material.numTextureNormals > 0) {
+        normal = vec3(0.0, 0.0, 0.0);
+        for (int i = 0; i < u_material.numTextureNormals; i++){
+            normal += texture(u_material.texturesNormals[i], v_uv).rgb;
+            normal = normalize(normal * 2.0 - 1.0f);
+        }
+        normal = normalize(tbn * normal);
+    }
+
+    // calculate lights
+    vec3 view = normalize(-v_position);
     vec3 fragmentColor = vec3(0.0, 0.0, 0.0);
     fragmentColor += calculateDirectionalLight(view, normal, color);
     fragmentColor += calculatePointLight(view, normal, color);

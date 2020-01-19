@@ -10,7 +10,8 @@ type Vertex struct {
 	Position Vector.Vector3
 	Normal   Vector.Vector3
 
-	UV Vector.Vector2
+	UV      Vector.Vector2
+	Tangent Vector.Vector3
 }
 
 func RegisterVertexBufferAttributes() {
@@ -25,4 +26,7 @@ func RegisterVertexBufferAttributes() {
 	// Texture coordinates
 	gl.EnableVertexAttribArray(2)
 	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.UV)))
+	// tangent
+	gl.EnableVertexAttribArray(3)
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.Tangent)))
 }

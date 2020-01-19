@@ -30,7 +30,8 @@ func ImportModel(filename string) (*Model, error) {
 			assimp.Process_OptimizeMeshes |
 			assimp.Process_OptimizeGraph |
 			assimp.Process_JoinIdenticalVertices |
-			assimp.Process_ImproveCacheLocality,
+			assimp.Process_ImproveCacheLocality |
+			assimp.Process_CalcTangentSpace,
 	)
 
 	materials := make([]*Material, assimpScene.NumMaterials())

@@ -121,18 +121,26 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) []erro
 	if err := program.BindUniform(material.Shininess, material_shineness_uniformAddress); err != nil {
 		errors = append(errors, err)
 	}
+
+	textureIndex := 0
 	for i, texture := range material.DiffuseTextures {
-		if err := program.BindTexture(uint32(i), texture, fmt.Sprintf(texture_diffuse_unifromAddress, i)); err != nil {
+		if err := program.BindTexture(uint32(textureIndex), texture, fmt.Sprintf(texture_diffuse_unifromAddress, i)); err != nil {
 			errors = append(errors, err)
 		}
+		textureIndex++
 	}
 	if err := program.BindUniform(int32(len(material.DiffuseTextures)), texture_numDiffuse_uniformAddress); err != nil {
 		errors = append(errors, err)
 	}
-
-	/*if err := program.BindTexture(0, material.NormalTextures[0], texture_normals_unifromAddress); err != nil{
-		return err
-	}*/
+	for i, texture := range material.NormalTextures {
+		if err := program.BindTexture(uint32(textureIndex), texture, fmt.Sprintf(texture_normals_unifromAddress, i)); err != nil {
+			errors = append(errors, err)
+		}
+		textureIndex++
+	}
+	if err := program.BindUniform(int32(len(material.NormalTextures)), texture_numNormals_uniformAddress); err != nil {
+		errors = append(errors, err)
+	}
 	return errors
 }
 

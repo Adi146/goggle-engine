@@ -17,12 +17,14 @@ func ImportMesh(assimpMesh *assimp.Mesh) (*Mesh, error) {
 	assimpNormals := assimpMesh.Normals()
 	assimpUVs := assimpMesh.TextureCoords(0)
 	assimpFaces := assimpMesh.Faces()
+	assimpTangents := assimpMesh.Tangents()
 
 	vertices := make([]Buffer.Vertex, assimpMesh.NumVertices())
 	for i := 0; i < assimpMesh.NumVertices(); i++ {
 		vertices[i].Position = Vector.Vector3{assimpVertices[i].X(), assimpVertices[i].Y(), assimpVertices[i].Z()}
 		vertices[i].Normal = Vector.Vector3{assimpNormals[i].X(), assimpNormals[i].Y(), assimpNormals[i].Z()}
 		vertices[i].UV = Vector.Vector2{assimpUVs[i].X(), assimpUVs[i].Y()}
+		vertices[i].Tangent = Vector.Vector3{assimpTangents[i].X(), assimpTangents[i].Y(), assimpTangents[i].Z()}
 	}
 
 	var indices []uint32

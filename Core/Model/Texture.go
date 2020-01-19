@@ -58,7 +58,7 @@ func DecodeImage(imgfile string) (*image.RGBA, error) {
 
 	bounds := img.Bounds()
 	rgba := image.NewRGBA(bounds)
-	for y := 0; y <  bounds.Dy(); y++ {
+	for y := 0; y < bounds.Dy(); y++ {
 		for x := 0; x < bounds.Dx(); x++ {
 			rgba.Set(x, bounds.Dy()-y, img.At(x, y))
 		}

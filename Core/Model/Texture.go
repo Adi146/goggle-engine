@@ -1,10 +1,8 @@
 package Model
 
 import (
-	"fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"image"
-	"image/draw"
 	_ "image/png"
 	"os"
 )
@@ -58,10 +56,13 @@ func DecodeImage(imgfile string) (*image.RGBA, error) {
 		return nil, err
 	}
 
-	rgba := image.NewRGBA(img.Bounds())
-	if rgba.Stride != rgba.Rect.Size().X*4 {
-		return nil, fmt.Errorf("stride not supported")
+	bounds := img.Bounds()
+	rgba := image.NewRGBA(bounds)
+	for y := 0; y <  bounds.Dy(); y++ {
+		for x := 0; x < bounds.Dx(); x++ {
+			rgba.Set(x, bounds.Dy()-y, img.At(x, y))
+		}
 	}
-	draw.Draw(rgba, rgba.Bounds(), img, image.Point{0, 0}, draw.Src)
+
 	return rgba, nil
 }

@@ -15,7 +15,6 @@ import (
 	"github.com/Adi146/goggle-engine/SceneGraph/Node/LightNode"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"github.com/Adi146/goggle-engine/UI/Control"
-	"os"
 	"runtime"
 )
 
@@ -23,7 +22,7 @@ const (
 	width  = 500
 	height = 500
 
-	modelFile      = "Models/suzanne.bin"
+	modelFile      = "Models/suzanne.obj"
 	vertexShader   = "../Core/Shader/PhongShader/phong.vert"
 	fragmentShader = "../Core/Shader/PhongShader/phong.frag"
 )
@@ -118,13 +117,7 @@ func main() {
 		Speed:             1,
 	}
 
-	file, err := os.Open(modelFile)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	model, err := Model.NewModelFromFile(file)
+	model, err := Model.ImportModel(modelFile)
 	if err != nil {
 		panic(err)
 	}

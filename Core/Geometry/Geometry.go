@@ -1,48 +1,14 @@
 package Geometry
 
 import (
-	"encoding/binary"
 	"github.com/Adi146/assimp"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"os"
 )
 
 type Geometry struct {
 	vertexBuffer *VertexBuffer
 	indexBuffer  *IndexBuffer
-}
-
-func NewGeometryFromFile(file *os.File) (*Geometry, error) {
-	var numVertices uint64
-	if err := binary.Read(file, binary.LittleEndian, &numVertices); err != nil {
-		return nil, err
-	}
-
-	var numIndices uint64
-	if err := binary.Read(file, binary.LittleEndian, &numIndices); err != nil {
-		return nil, err
-	}
-
-	vertices := make([]Vertex, numVertices)
-	for i := uint64(0); i < numVertices; i++ {
-		if err := binary.Read(file, binary.LittleEndian, &vertices[i].Position); err != nil {
-			return nil, err
-		}
-
-		if err := binary.Read(file, binary.LittleEndian, &vertices[i].Normal); err != nil {
-			return nil, err
-		}
-	}
-
-	indices := make([]uint32, numIndices)
-	for i := uint64(0); i < numIndices; i++ {
-		if err := binary.Read(file, binary.LittleEndian, &indices[i]); err != nil {
-			return nil, err
-		}
-	}
-
-	return NewGeometry(vertices, RegisterVertexBufferAttributes, indices)
 }
 
 func ImportGeometry(assimpMesh *assimp.Mesh) (*Geometry, error) {

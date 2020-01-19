@@ -55,7 +55,7 @@ root:
         suzanne:
           type: Node.ModelNode
           config:
-            file: Models/suzanne.bin
+            file: Models/suzanne.obj
     lightRotor:
       type: SceneGraph.Rotor
       config:

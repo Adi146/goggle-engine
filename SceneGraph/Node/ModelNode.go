@@ -4,7 +4,6 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
-	"os"
 	"reflect"
 )
 
@@ -25,15 +24,11 @@ func (node *ModelNode) Init() error {
 	}
 
 	if node.Model == nil {
-		file, err := os.Open(node.File)
+		model, err := Model.ImportModel(node.File)
 		if err != nil {
 			return err
 		}
-		defer file.Close()
-
-		if node.Model, err = Model.NewModelFromFile(file); err != nil {
-			return err
-		}
+		node.Model = model
 	}
 
 	return nil

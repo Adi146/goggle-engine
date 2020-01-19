@@ -1,12 +1,10 @@
 package Model
 
 import (
-	"encoding/binary"
 	"fmt"
 	"github.com/Adi146/assimp"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"os"
 	"path"
 	"strings"
 )
@@ -20,25 +18,6 @@ type Material struct {
 
 	DiffuseTextures []*Texture.Texture
 	NormalTextures  []*Texture.Texture
-}
-
-func NewMaterialFromFile(file *os.File) (*Material, error) {
-	material := Material{}
-
-	if err := binary.Read(file, binary.LittleEndian, &material.DiffuseBaseColor); err != nil {
-		return nil, err
-	}
-	if err := binary.Read(file, binary.LittleEndian, &material.SpecularBaseColor); err != nil {
-		return nil, err
-	}
-	if err := binary.Read(file, binary.LittleEndian, &material.EmissiveBaseColor); err != nil {
-		return nil, err
-	}
-	if err := binary.Read(file, binary.LittleEndian, &material.Shininess); err != nil {
-		return nil, err
-	}
-
-	return &material, nil
 }
 
 func ImportMaterial(assimpMaterial *assimp.Material, modelDir string) (*Material, error) {

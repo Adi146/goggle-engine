@@ -16,13 +16,15 @@ import (
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"github.com/Adi146/goggle-engine/UI/Control"
 	"runtime"
+
+	_ "github.com/ftrvxmtrx/tga"
 )
 
 const (
 	width  = 500
 	height = 500
 
-	modelFile      = "Models/suzanne.obj"
+	modelFile      = "Models/fern.fbx"
 	vertexShader   = "../Core/Shader/PhongShader/phong.vert"
 	fragmentShader = "../Core/Shader/PhongShader/phong.frag"
 )
@@ -58,7 +60,7 @@ func main() {
 
 	controlNode := &Control.WASDControl{
 		IIntermediateNode:   Scene.NewIntermediateNodeBase(),
-		KeyboardSensitivity: 1,
+		KeyboardSensitivity: 10,
 		MouseSensitivity:    0.5,
 	}
 	controlNode.Translate(&Vector.Vector3{0, 0, 5})
@@ -81,40 +83,9 @@ func main() {
 		InitialDirection: &Vector.Vector3{-1.0, -1.0, -1.0},
 	}
 
-	pointLightRotor := &SceneGraph.Rotor{
-		IIntermediateNode: Scene.NewIntermediateNodeBase(),
-		Speed:             -1,
-	}
-
-	pointLightNode1 := &LightNode.PointLightNode{
-		IChildNode: Scene.NewChildNodeBase(),
-		PointLight: Light.PointLight{
-			Position:  Vector.Vector3{0.0, 0.0, 0.0},
-			Ambient:   Vector.Vector3{0.0, 0.0, 0.2},
-			Diffuse:   Vector.Vector3{0.0, 0.0, 1.0},
-			Specular:  Vector.Vector3{0.0, 0.0, 1.0},
-			Linear:    0.027,
-			Quadratic: 0.0028,
-		},
-	}
-	pointLightNode1.SetLocalTransformation(Matrix.Translate(&Vector.Vector3{0.0, 0.0, 30.0}))
-
-	pointLightNode2 := &LightNode.PointLightNode{
-		IChildNode: Scene.NewChildNodeBase(),
-		PointLight: Light.PointLight{
-			Position:  Vector.Vector3{0.0, 0.0, 0.0},
-			Ambient:   Vector.Vector3{0.2, 0.0, 0.0},
-			Diffuse:   Vector.Vector3{1.0, 0.0, 0.0},
-			Specular:  Vector.Vector3{1.0, 0.0, 0.0},
-			Linear:    0.027,
-			Quadratic: 0.0028,
-		},
-	}
-	pointLightNode2.SetLocalTransformation(Matrix.Translate(&Vector.Vector3{0.0, 0.0, -30.0}))
-
 	modelRotorNode := &SceneGraph.Rotor{
 		IIntermediateNode: Scene.NewIntermediateNodeBase(),
-		Speed:             1,
+		Speed:             0,
 	}
 
 	model, err := Model.ImportModel(modelFile)
@@ -126,6 +97,7 @@ func main() {
 		IChildNode: Scene.NewChildNodeBase(),
 		Model:      model,
 	}
+	geometryNode.SetLocalTransformation(Matrix.Scale(0.1))
 
 	scene := Scene.NewScene(openGLRenderTarget)
 	scene.SetRoot(Scene.NewParentNodeBase())
@@ -133,9 +105,6 @@ func main() {
 	scene.Root.AddChild(controlNode)
 	controlNode.AddChild(cameraNode)
 	scene.Root.AddChild(sunLightNode)
-	scene.Root.AddChild(pointLightRotor)
-	pointLightRotor.AddChild(pointLightNode1)
-	pointLightRotor.AddChild(pointLightNode2)
 	scene.Root.AddChild(modelRotorNode)
 	modelRotorNode.AddChild(geometryNode)
 

@@ -40,17 +40,15 @@ func (node *ModelNode) Init() error {
 }
 
 func (node *ModelNode) Tick(timeDelta float32) {
-	for _, geometry := range node.Geometries {
-		geometry.ModelMatrix = node.GetGlobalTransformation()
-	}
+	node.ModelMatrix = node.GetGlobalTransformation()
 }
 
 func (node *ModelNode) Draw() {
 	scene := node.GetScene()
 	if scene != nil && scene.GetActiveShaderProgram() != nil {
+		scene.GetActiveShaderProgram().BindModel(node.Model)
 		for _, geometry := range node.Geometries {
 			scene.GetActiveShaderProgram().BindMaterial(geometry.Material)
-			scene.GetActiveShaderProgram().BindGeometry(geometry.Geometry)
 			geometry.Draw()
 		}
 	}

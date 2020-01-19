@@ -9,17 +9,9 @@ import (
 	"os"
 )
 
-var (
-	default_texture = "texture_source/default.png"
-)
-
 type Texture struct {
 	Source    string
 	textureId uint32
-}
-
-func DefaultTexture() (*Texture, error) {
-	return NewTextureFromFile(default_texture)
 }
 
 func NewTextureFromFile(source string) (*Texture, error) {

@@ -10,10 +10,6 @@ import (
 	"strings"
 )
 
-const (
-	texture_uniformAddress = "u_texture"
-)
-
 type ShaderProgramCore struct {
 	programId      uint32
 	vertexShader   *Shader
@@ -84,8 +80,8 @@ func (program *ShaderProgramCore) Unbind() {
 	program.isBound = false
 }
 
-func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture *Texture.Texture) error {
-	location, err := program.getUniformLocation(texture_uniformAddress)
+func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture *Texture.Texture, uniformAddress string) error {
+	location, err := program.getUniformLocation(uniformAddress)
 	if err != nil {
 		return err
 	}

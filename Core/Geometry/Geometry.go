@@ -3,7 +3,6 @@ package Geometry
 import (
 	"encoding/binary"
 	"github.com/Adi146/assimp"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"os"
@@ -12,8 +11,6 @@ import (
 type Geometry struct {
 	vertexBuffer *VertexBuffer
 	indexBuffer  *IndexBuffer
-
-	ModelMatrix *Matrix.Matrix4x4
 }
 
 func NewGeometryFromFile(file *os.File) (*Geometry, error) {
@@ -51,12 +48,14 @@ func NewGeometryFromFile(file *os.File) (*Geometry, error) {
 func ImportGeometry(assimpMesh *assimp.Mesh) (*Geometry, error) {
 	assimpVertices := assimpMesh.Vertices()
 	assimpNormals := assimpMesh.Normals()
+	assimpUVs := assimpMesh.TextureCoords(0)
 	assimpFaces := assimpMesh.Faces()
 
 	vertices := make([]Vertex, assimpMesh.NumVertices())
 	for i := 0; i < assimpMesh.NumVertices(); i++ {
 		vertices[i].Position = Vector.Vector3{assimpVertices[i].X(), assimpVertices[i].Y(), assimpVertices[i].Z()}
 		vertices[i].Normal = Vector.Vector3{assimpNormals[i].X(), assimpNormals[i].Y(), assimpNormals[i].Z()}
+		vertices[i].UV = Vector.Vector2{assimpUVs[i].X(), assimpUVs[i].Y()}
 	}
 
 	var indices []uint32
@@ -73,14 +72,10 @@ func NewGeometry(vertices []Vertex, vertexBufferAttribFunc func(), indices []uin
 		return nil, err
 	}
 
-	geo := Geometry{
+	return &Geometry{
 		vertexBuffer: vertexBuffer,
 		indexBuffer:  NewIndexBuffer(indices),
-
-		ModelMatrix: Matrix.Identity(),
-	}
-
-	return &geo, nil
+	}, nil
 }
 
 func (geo *Geometry) Draw() {

@@ -3,17 +3,21 @@ package PhongShader
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
-	"github.com/Adi146/goggle-engine/Core/Geometry"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 )
 
 const (
-	material_diffuse_uniformAddress   = "u_material.diffuse"
-	material_specular_uniformAddress  = "u_material.specular"
-	material_emissive_uniformAddress  = "u_material.emissive"
-	material_shineness_uniformAddress = "u_material.shininess"
+	material_diffuseBase_uniformAddress  = "u_material.baseColor.diffuse"
+	material_specularBase_uniformAddress = "u_material.baseColor.specular"
+	material_emissiveBase_uniformAddress = "u_material.baseColor.emissive"
+	material_shineness_uniformAddress    = "u_material.shininess"
+
+	texture_diffuse_unifromAddress    = "u_material.texturesDiffuse[%d]"
+	texture_normals_unifromAddress    = "u_material.texturesNormals[%d]"
+	texture_numDiffuse_uniformAddress = "u_material.numTextureDiffuse"
+	texture_numNormals_uniformAddress = "u_material.numTextureNormals"
 
 	directionalLight_direction_uniformAddress = "u_directionalLight.direction"
 	directionalLight_ambient_uniformAddress   = "u_directionalLight.ambient"
@@ -74,18 +78,32 @@ func (program *PhongShaderProgram) ResetIndexCounter() {
 }
 
 func (program *PhongShaderProgram) BindMaterial(material *Model.Material) error {
-	if err := program.BindVector3(&material.Diffuse, material_diffuse_uniformAddress); err != nil {
+	if err := program.BindVector3(&material.DiffuseBaseColor, material_diffuseBase_uniformAddress); err != nil {
 		return err
 	}
-	if err := program.BindVector3(&material.Specular, material_specular_uniformAddress); err != nil {
+	if err := program.BindVector3(&material.SpecularBaseColor, material_specularBase_uniformAddress); err != nil {
 		return err
 	}
-	if err := program.BindVector3(&material.Emissive, material_emissive_uniformAddress); err != nil {
+	if err := program.BindVector3(&material.EmissiveBaseColor, material_emissiveBase_uniformAddress); err != nil {
 		return err
 	}
 	if err := program.BindFloat(material.Shininess, material_shineness_uniformAddress); err != nil {
 		return err
 	}
+
+	for i, texture := range material.DiffuseTextures {
+		if err := program.BindTexture(uint32(i), texture, fmt.Sprintf(texture_diffuse_unifromAddress, i)); err != nil {
+			return err
+		}
+	}
+
+	if err := program.BindInt(int32(len(material.DiffuseTextures)), texture_numDiffuse_uniformAddress); err != nil {
+		return err
+	}
+
+	/*if err := program.BindTexture(0, material.NormalTextures[0], texture_normals_unifromAddress); err != nil{
+		return err
+	}*/
 	return nil
 }
 
@@ -99,10 +117,11 @@ func (program *PhongShaderProgram) BindCamera(camera Camera.ICamera) error {
 	return nil
 }
 
-func (program *PhongShaderProgram) BindGeometry(geometry *Geometry.Geometry) error {
-	if err := program.BindMatrix(geometry.ModelMatrix, modelMatrix_uniformAddress); err != nil {
+func (program *PhongShaderProgram) BindModel(model *Model.Model) error {
+	if err := program.BindMatrix(model.ModelMatrix, modelMatrix_uniformAddress); err != nil {
 		return err
 	}
+
 	return nil
 }
 

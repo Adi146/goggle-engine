@@ -4,8 +4,15 @@ import (
 	"encoding/binary"
 	"github.com/Adi146/assimp"
 	"github.com/Adi146/goggle-engine/Core/Geometry"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"os"
+	"path"
 )
+
+var textureTypes = [...]assimp.TextureMapping{
+	assimp.TextureMapping_Diffuse,
+	assimp.TextureMapping_Normals,
+}
 
 type GeometryWithMaterial struct {
 	*Geometry.Geometry
@@ -13,7 +20,8 @@ type GeometryWithMaterial struct {
 }
 
 type Model struct {
-	Geometries []GeometryWithMaterial
+	Geometries  []GeometryWithMaterial
+	ModelMatrix *Matrix.Matrix4x4
 }
 
 func ImportModel(filename string) (*Model, error) {
@@ -32,7 +40,7 @@ func ImportModel(filename string) (*Model, error) {
 	geometries := make([]GeometryWithMaterial, assimpScene.NumMeshes())
 
 	for i, assimpMaterial := range assimpScene.Materials() {
-		material, err := ImportMaterial(assimpMaterial)
+		material, err := ImportMaterial(assimpMaterial, path.Dir(filename))
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +57,8 @@ func ImportModel(filename string) (*Model, error) {
 	}
 
 	return &Model{
-		Geometries: geometries,
+		Geometries:  geometries,
+		ModelMatrix: Matrix.Identity(),
 	}, nil
 }
 
@@ -79,6 +88,7 @@ func NewModelFromFile(file *os.File) (*Model, error) {
 	}
 
 	return &Model{
-		Geometries: geometriesWithMaterial,
+		Geometries:  geometriesWithMaterial,
+		ModelMatrix: Matrix.Identity(),
 	}, nil
 }

@@ -2,7 +2,6 @@ package BasicShader
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Camera"
-	"github.com/Adi146/goggle-engine/Core/Geometry"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -13,6 +12,8 @@ const (
 
 	viewMatrix_uniformAddress       = "u_viewMatrix"
 	projectionMatrix_uniformAddress = "u_projectionMatrix"
+
+	texture_diffuse_unifromAddress = "u_textureDiffuse"
 )
 
 type BasicShaderProgram struct {
@@ -51,8 +52,8 @@ func (program *BasicShaderProgram) BindCamera(camera Camera.ICamera) error {
 	return nil
 }
 
-func (program *BasicShaderProgram) BindGeometry(geometry *Geometry.Geometry) error {
-	if err := program.BindMatrix(geometry.ModelMatrix, modelMatrix_uniformAddress); err != nil {
+func (program *BasicShaderProgram) BindModel(model *Model.Model) error {
+	if err := program.BindMatrix(model.ModelMatrix, modelMatrix_uniformAddress); err != nil {
 		return err
 	}
 	return nil

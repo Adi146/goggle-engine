@@ -22,7 +22,9 @@ func (scene *Scene) Draw(timeDelta float32) {
 
 	if scene.Root != nil {
 		scene.Root.TickChildren(timeDelta)
+		scene.GetActiveShaderProgram().BeginDraw()
 		scene.Root.DrawChildren()
+		scene.GetActiveShaderProgram().EndDraw()
 	}
 }
 

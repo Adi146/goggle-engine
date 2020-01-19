@@ -80,6 +80,35 @@ func (program *ShaderProgramCore) Unbind() {
 	program.isBound = false
 }
 
+func (program *ShaderProgramCore) BeginDraw() []error {
+	return []error{}
+}
+
+func (program *ShaderProgramCore) EndDraw() {
+}
+
+func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress string) error {
+	location, err := program.getUniformLocation(uniformAddress)
+	if err != nil {
+		return err
+	}
+
+	switch v := i.(type) {
+	case *Matrix.Matrix4x4:
+		gl.UniformMatrix4fv(location, 1, false, &v[0][0])
+	case *Vector.Vector3:
+		gl.Uniform3fv(location, 1, &v[0])
+	case float32:
+		gl.Uniform1f(location, v)
+	case int32:
+		gl.Uniform1i(location, v)
+	default:
+		return fmt.Errorf("type %T not supported", v)
+	}
+
+	return nil
+}
+
 func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture *Texture.Texture, uniformAddress string) error {
 	location, err := program.getUniformLocation(uniformAddress)
 	if err != nil {
@@ -89,50 +118,6 @@ func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture *Textu
 	gl.Uniform1i(location, int32(textureSlot))
 	gl.ActiveTexture(gl.TEXTURE0 + textureSlot)
 	texture.Bind()
-
-	return nil
-}
-
-func (program *ShaderProgramCore) BindMatrix(matrix *Matrix.Matrix4x4, uniformAddress string) error {
-	location, err := program.getUniformLocation(uniformAddress)
-	if err != nil {
-		return err
-	}
-
-	gl.UniformMatrix4fv(location, 1, false, &matrix[0][0])
-
-	return nil
-}
-
-func (program *ShaderProgramCore) BindVector3(vector *Vector.Vector3, uniformAddress string) error {
-	location, err := program.getUniformLocation(uniformAddress)
-	if err != nil {
-		return err
-	}
-
-	gl.Uniform3fv(location, 1, &vector[0])
-
-	return nil
-}
-
-func (program *ShaderProgramCore) BindFloat(value float32, uniformAddress string) error {
-	location, err := program.getUniformLocation(uniformAddress)
-	if err != nil {
-		return err
-	}
-
-	gl.Uniform1f(location, value)
-
-	return nil
-}
-
-func (program *ShaderProgramCore) BindInt(value int32, uniformAddress string) error {
-	location, err := program.getUniformLocation(uniformAddress)
-	if err != nil {
-		return err
-	}
-
-	gl.Uniform1i(location, value)
 
 	return nil
 }

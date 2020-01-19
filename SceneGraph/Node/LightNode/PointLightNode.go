@@ -26,11 +26,9 @@ func (node *PointLightNode) Init() error {
 
 func (node *PointLightNode) Tick(timeDelta float32) {
 	node.PointLight.Position = *node.GetGlobalPosition()
-}
 
-func (node *PointLightNode) Draw() {
 	scene := node.GetScene()
 	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		scene.GetActiveShaderProgram().BindPointLight(&node.PointLight)
+		scene.GetActiveShaderProgram().BindObject(&node.PointLight)
 	}
 }

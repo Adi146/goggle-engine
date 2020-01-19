@@ -46,9 +46,9 @@ func (node *ModelNode) Tick(timeDelta float32) {
 func (node *ModelNode) Draw() {
 	scene := node.GetScene()
 	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		scene.GetActiveShaderProgram().BindModel(node.Model)
+		scene.GetActiveShaderProgram().BindObject(node.Model)
 		for _, geometry := range node.Geometries {
-			scene.GetActiveShaderProgram().BindMaterial(geometry.Material)
+			scene.GetActiveShaderProgram().BindObject(geometry.Material)
 			geometry.Draw()
 		}
 	}

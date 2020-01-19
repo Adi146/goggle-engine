@@ -48,8 +48,6 @@ func (renderTarget *OpenGLRenderTarget) GetWindow() Window.IWindow {
 func (renderTarget *OpenGLRenderTarget) Clear(color *Vector.Vector4) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.ClearColor(color[0], color[1], color[2], color[3])
-
-	renderTarget.GetActiveShaderProgram().ResetIndexCounter()
 }
 
 func (renderTarget *OpenGLRenderTarget) SetActiveShaderProgram(shaderProgram Shader.IShaderProgram) {

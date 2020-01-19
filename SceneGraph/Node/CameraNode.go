@@ -59,11 +59,9 @@ func (node *CameraNode) Tick(timeDelta float32) {
 	node.Camera.Up = invTransGlobalTransformation.MulVector(node.InitialUp).Normalize()
 
 	node.Camera.Tick(timeDelta)
-}
 
-func (node *CameraNode) Draw() {
 	scene := node.GetScene()
 	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		scene.GetActiveShaderProgram().BindCamera(node)
+		scene.GetActiveShaderProgram().BindObject(node)
 	}
 }

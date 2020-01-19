@@ -1,8 +1,8 @@
 package BasicShader
 
 import (
+	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
-	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 )
@@ -12,8 +12,6 @@ const (
 
 	viewMatrix_uniformAddress       = "u_viewMatrix"
 	projectionMatrix_uniformAddress = "u_projectionMatrix"
-
-	texture_diffuse_unifromAddress = "u_textureDiffuse"
 )
 
 type BasicShaderProgram struct {
@@ -35,38 +33,32 @@ func NewBasicIShaderProgram(vertexShaderFile string, fragmentShaderFile string) 
 	return NewBasicShaderProgram(vertexShaderFile, fragmentShaderFile)
 }
 
-func (program *BasicShaderProgram) ResetIndexCounter() {
-}
-
-func (program *BasicShaderProgram) BindMaterial(material *Model.Material) error {
-	return nil
-}
-
-func (program *BasicShaderProgram) BindCamera(camera Camera.ICamera) error {
-	if err := program.BindMatrix(camera.GetProjectionMatrix(), projectionMatrix_uniformAddress); err != nil {
-		return err
+func (program *BasicShaderProgram) BindObject(i interface{}) []error {
+	switch v := i.(type) {
+	case *Model.Model:
+		return program.bindModel(v)
+	case Camera.ICamera:
+		return program.bindCamera(v)
+	default:
+		return []error{fmt.Errorf("type %T not supported", v)}
 	}
-	if err := program.BindMatrix(camera.GetViewMatrix(), viewMatrix_uniformAddress); err != nil {
-		return err
+}
+
+func (program *BasicShaderProgram) bindCamera(camera Camera.ICamera) []error {
+	var errors []error
+	if err := program.BindUniform(camera.GetProjectionMatrix(), projectionMatrix_uniformAddress); err != nil {
+		errors = append(errors, err)
 	}
-	return nil
-}
-
-func (program *BasicShaderProgram) BindModel(model *Model.Model) error {
-	if err := program.BindMatrix(model.ModelMatrix, modelMatrix_uniformAddress); err != nil {
-		return err
+	if err := program.BindUniform(camera.GetViewMatrix(), viewMatrix_uniformAddress); err != nil {
+		errors = append(errors, err)
 	}
-	return nil
+	return errors
 }
 
-func (program *BasicShaderProgram) BindDirectionalLight(light *Light.DirectionalLight) error {
-	return nil
-}
-
-func (program *BasicShaderProgram) BindPointLight(light *Light.PointLight) error {
-	return nil
-}
-
-func (program *BasicShaderProgram) BindSpotLight(light *Light.SpotLight) error {
-	return nil
+func (program *BasicShaderProgram) bindModel(model *Model.Model) []error {
+	var errors []error
+	if err := program.BindUniform(model.ModelMatrix, modelMatrix_uniformAddress); err != nil {
+		errors = append(errors, err)
+	}
+	return errors
 }

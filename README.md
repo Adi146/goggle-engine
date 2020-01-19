@@ -41,4 +41,5 @@ Here you can find some examples.
 * [go-gl](https://github.com/go-gl/gl)
 * [sdl2](https://github.com/veandco/go-sdl2)
 * [go-yaml v3](https://github.com/go-yaml/yaml)
+* [assimp](https://github.com/Adi146/assimp)
 

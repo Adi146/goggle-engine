@@ -80,8 +80,8 @@ func (program *ShaderProgramCore) Unbind() {
 	program.isBound = false
 }
 
-func (program *ShaderProgramCore) BeginDraw() []error {
-	return []error{}
+func (program *ShaderProgramCore) BeginDraw() error {
+	return nil
 }
 
 func (program *ShaderProgramCore) EndDraw() {
@@ -129,7 +129,7 @@ func (program *ShaderProgramCore) getUniformLocation(uniformAddress string) (int
 
 	location := gl.GetUniformLocation(program.programId, gl.Str(uniformAddress+"\x00"))
 	if location == -1 {
-		return location, fmt.Errorf("uniform address not found")
+		return location, fmt.Errorf("uniform address %s not found", uniformAddress)
 	}
 
 	return location, nil

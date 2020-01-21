@@ -9,6 +9,8 @@ import (
 	"reflect"
 )
 
+const CameraNodeFactoryName = "Node.Camera"
+
 type CameraNode struct {
 	Scene.IChildNode
 	*Camera.Camera
@@ -21,7 +23,7 @@ type CameraNode struct {
 }
 
 func init() {
-	Factory.NodeFactory["Node.Camera"] = reflect.TypeOf((*CameraNode)(nil)).Elem()
+	Factory.NodeFactory[CameraNodeFactoryName] = reflect.TypeOf((*CameraNode)(nil)).Elem()
 }
 
 func (node *CameraNode) Init() error {
@@ -50,7 +52,7 @@ func (node *CameraNode) Init() error {
 	return nil
 }
 
-func (node *CameraNode) Tick(timeDelta float32) {
+func (node *CameraNode) Tick(timeDelta float32) error {
 	node.Camera.Position = node.GetGlobalPosition()
 
 	invTransGlobalTransformation := node.GetGlobalTransformation().Inverse().Transpose()
@@ -62,6 +64,8 @@ func (node *CameraNode) Tick(timeDelta float32) {
 
 	scene := node.GetScene()
 	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		scene.GetActiveShaderProgram().BindObject(node)
+		return scene.GetActiveShaderProgram().BindObject(node.Camera)
 	}
+
+	return nil
 }

@@ -24,8 +24,8 @@ func (node *Rotor) Init() error {
 	return nil
 }
 
-func (node *Rotor) Tick(timeDelta float32) {
+func (node *Rotor) Tick(timeDelta float32) error {
 	node.SetLocalTransformation(node.GetLocalTransformation().Mul(Matrix.RotateY(node.Speed * timeDelta)))
 
-	node.TickChildren(timeDelta)
+	return nil
 }

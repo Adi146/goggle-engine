@@ -59,8 +59,10 @@ func (node *ChildNodeBase) GetGlobalPosition() *Vector.Vector3 {
 	return node.GetGlobalTransformation().MulVector(&Vector.Vector3{0, 0, 0})
 }
 
-func (node *ChildNodeBase) Tick(timeDelta float32) {
+func (node *ChildNodeBase) Tick(timeDelta float32) error {
+	return nil
 }
 
-func (node *ChildNodeBase) Draw() {
+func (node *ChildNodeBase) Draw() error {
+	return nil
 }

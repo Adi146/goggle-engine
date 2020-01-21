@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-func ImportModel(filename string) (*Model.Model, *ImportResult) {
-	result := newImportResult()
+func ImportModel(filename string) (*Model.Model, ImportResult) {
+	var result ImportResult
 
 	assimpScene := assimp.ImportFile(filename, 0)
 	assimpScene.ApplyPostProcessing(
@@ -31,13 +31,15 @@ func ImportModel(filename string) (*Model.Model, *ImportResult) {
 
 	for i, assimpMaterial := range assimpScene.Materials() {
 		material, materialResult := importAssimpMaterial(assimpMaterial, path.Dir(filename))
-		result.addResult(materialResult)
+		result.Errors.Push(&materialResult.Errors)
+		result.Warnings.Push(&materialResult.Warnings)
 		materials[i] = material
 	}
 
 	for i, assimpMesh := range assimpScene.Meshes() {
 		mesh, meshResult := importAssimpMesh(assimpMesh)
-		result.addResult(meshResult)
+		result.Errors.Push(&meshResult.Errors)
+		result.Warnings.Push(&meshResult.Warnings)
 		if !result.Success() {
 			continue
 		}
@@ -51,30 +53,32 @@ func ImportModel(filename string) (*Model.Model, *ImportResult) {
 	}, result
 }
 
-func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Model.Material, *ImportResult) {
-	result := newImportResult()
+func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Model.Material, ImportResult) {
+	var result ImportResult
 
 	assimpDiffuse, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorDiffuse, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
-		result.addWarning(fmt.Errorf("could not load diffuse color"))
+		result.Warnings.Push(fmt.Errorf("could not load diffuse color"))
 	}
 	assimpSpecular, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorSpecular, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
-		result.addWarning(fmt.Errorf("could not load specular color"))
+		result.Warnings.Push(fmt.Errorf("could not load specular color"))
 	}
 	assimpEmissive, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorEmissive, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
-		result.addWarning(fmt.Errorf("could not load emissive color"))
+		result.Warnings.Push(fmt.Errorf("could not load emissive color"))
 	}
 	assimpShininess, returnCode := assimpMaterial.GetMaterialFloat(assimp.MatKey_Shininess, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
-		result.addWarning(fmt.Errorf("could not load shininess"))
+		result.Warnings.Push(fmt.Errorf("could not load shininess"))
 	}
 	diffuseTextures, diffuseResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Diffuse, modelDir)
-	result.addResult(diffuseResult)
+	result.Errors.Push(&diffuseResult.Errors)
+	result.Warnings.Push(&diffuseResult.Warnings)
 
 	normalsTexture, normalsResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Normals, modelDir)
-	result.addResult(normalsResult)
+	result.Errors.Push(&normalsResult.Errors)
+	result.Warnings.Push(&normalsResult.Warnings)
 
 	return &Model.Material{
 		DiffuseBaseColor:  Vector.Vector3{assimpDiffuse.R(), assimpDiffuse.G(), assimpDiffuse.B()},
@@ -88,25 +92,26 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Mo
 	}, result
 }
 
-func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]*Model.Texture, *ImportResult) {
-	result := newImportResult()
+func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]*Model.Texture, ImportResult) {
+	var result ImportResult
 	var textures []*Model.Texture
 
 	numTextures := assimpMaterial.GetMaterialTextureCount(assimp.TextureType(textureType))
 	for i := 0; i < numTextures; i++ {
 		textureFile, mapping, uvIndex, blend, op, mapmode, flags, returnCode := assimpMaterial.GetMaterialTexture(assimp.TextureType(textureType), i)
 		if returnCode != assimp.Return_Success {
-			result.addWarning(fmt.Errorf("could not get texture for material with index %d", i))
+			result.Warnings.Push(fmt.Errorf("could not get texture for material with index %d", i))
 			continue
 		}
 		fmt.Println(textureFile, mapping, uvIndex, blend, op, mapmode, flags)
 
 		if strings.HasSuffix("*/", textureFile) {
-			result.addWarning(fmt.Errorf("embedded textures are not supported yet"))
+			result.Warnings.Push(fmt.Errorf("embedded textures are not supported yet"))
 			continue
 		} else {
 			texture, textureResult := ImportTexture(path.Join(modelDir, textureFile))
-			result.addResultAsWarning(textureResult)
+			result.Warnings.Push(&textureResult.Warnings)
+			result.Warnings.Push(&textureResult.Errors)
 			if !textureResult.Success() {
 				continue
 			}
@@ -117,8 +122,8 @@ func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType
 	return textures, result
 }
 
-func importAssimpMesh(assimpMesh *assimp.Mesh) (*Model.Mesh, *ImportResult) {
-	result := newImportResult()
+func importAssimpMesh(assimpMesh *assimp.Mesh) (*Model.Mesh, ImportResult) {
+	var result ImportResult
 
 	assimpVertices := assimpMesh.Vertices()
 	assimpNormals := assimpMesh.Normals()
@@ -140,11 +145,7 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Model.Mesh, *ImportResult) {
 	}
 
 	mesh, err := Model.NewMesh(vertices, Buffer.RegisterVertexBufferAttributes, indices)
-	if err != nil {
-		result.addError(err)
-		return nil, result
-	}
+	result.Errors.Push(err)
 
-	result.NumImportedAssets = 1
 	return mesh, result
 }

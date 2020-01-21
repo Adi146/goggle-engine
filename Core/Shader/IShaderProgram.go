@@ -6,8 +6,8 @@ type IShaderProgram interface {
 
 	Destroy()
 
-	BeginDraw() []error
+	BeginDraw() error
 	EndDraw()
 
-	BindObject(i interface{}) []error
+	BindObject(i interface{}) error
 }

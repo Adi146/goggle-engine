@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/Adi146/goggle-engine/Core/AssetImporter"
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Angle"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Light"
-	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/RenderTarget"
 	"github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
 	"github.com/Adi146/goggle-engine/Core/Window"
@@ -117,8 +117,8 @@ func main() {
 		Speed:             1,
 	}
 
-	model, err := Model.ImportModel(modelFile)
-	if err != nil {
+	model, result := AssetImporter.ImportModel(modelFile)
+	if !result.Success() {
 		panic(err)
 	}
 

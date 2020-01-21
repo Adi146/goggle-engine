@@ -1,5 +1,7 @@
 package Scene
 
+import "github.com/Adi146/goggle-engine/Utils"
+
 type ParentNodeBase struct {
 	*NodeBase
 	children []IChildNode
@@ -37,20 +39,28 @@ func (node *ParentNodeBase) GetChildren() []IChildNode {
 	return node.children
 }
 
-func (node *ParentNodeBase) TickChildren(timeDelta float32) {
+func (node *ParentNodeBase) TickChildren(timeDelta float32) error {
+	var err Utils.ErrorCollection
+
 	for _, child := range node.GetChildren() {
-		child.Tick(timeDelta)
+		err.Push(child.Tick(timeDelta))
 		if childAsParent, isParent := child.(IParentNode); isParent {
-			childAsParent.TickChildren(timeDelta)
+			err.Push(childAsParent.TickChildren(timeDelta))
 		}
 	}
+
+	return err.Err()
 }
 
-func (node *ParentNodeBase) DrawChildren() {
+func (node *ParentNodeBase) DrawChildren() error {
+	var err Utils.ErrorCollection
+
 	for _, child := range node.GetChildren() {
-		child.Draw()
+		err.Push(child.Draw())
 		if childAsParent, isParent := child.(IParentNode); isParent {
-			childAsParent.DrawChildren()
+			err.Push(childAsParent.DrawChildren())
 		}
 	}
+
+	return err.Err()
 }

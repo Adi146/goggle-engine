@@ -6,6 +6,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Utils"
 )
 
 const (
@@ -72,15 +73,13 @@ func NewPhongIShaderProgram(vertexShaderFile string, fragmentShaderFile string) 
 	return NewPhongShaderProgram(vertexShaderFile, fragmentShaderFile)
 }
 
-func (program *PhongShaderProgram) BeginDraw() []error {
-	var errors []error
-	if err := program.BindUniform(program.pointLightIndex, numPointLights_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(program.spotLightIndex, numSpotLights_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	return errors
+func (program *PhongShaderProgram) BeginDraw() error {
+	var err Utils.ErrorCollection
+
+	err.Push(program.BindUniform(program.pointLightIndex, numPointLights_uniformAddress))
+	err.Push(program.BindUniform(program.spotLightIndex, numSpotLights_uniformAddress))
+
+	return err.Err()
 }
 
 func (program *PhongShaderProgram) EndDraw() {
@@ -88,7 +87,7 @@ func (program *PhongShaderProgram) EndDraw() {
 	program.spotLightIndex = 0
 }
 
-func (program *PhongShaderProgram) BindObject(i interface{}) []error {
+func (program *PhongShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *Model.Material:
 		return program.bindMaterial(v)
@@ -103,138 +102,84 @@ func (program *PhongShaderProgram) BindObject(i interface{}) []error {
 	case *Light.SpotLight:
 		return program.bindSpotLight(v)
 	default:
-		return []error{fmt.Errorf("type %T not supported", v)}
+		return fmt.Errorf("type %T not supported", v)
 	}
 }
 
-func (program *PhongShaderProgram) bindMaterial(material *Model.Material) []error {
-	var errors []error
-	if err := program.BindUniform(&material.DiffuseBaseColor, material_diffuseBase_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&material.SpecularBaseColor, material_specularBase_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&material.EmissiveBaseColor, material_emissiveBase_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(material.Shininess, material_shineness_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
+func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error {
+	var err Utils.ErrorCollection
+
+	err.Push(program.BindUniform(&material.DiffuseBaseColor, material_diffuseBase_uniformAddress))
+	err.Push(program.BindUniform(&material.SpecularBaseColor, material_specularBase_uniformAddress))
+	err.Push(program.BindUniform(&material.EmissiveBaseColor, material_emissiveBase_uniformAddress))
+	err.Push(program.BindUniform(material.Shininess, material_shineness_uniformAddress))
 
 	textureIndex := 0
 	for i, texture := range material.DiffuseTextures {
-		if err := program.BindTexture(uint32(textureIndex), texture, fmt.Sprintf(texture_diffuse_unifromAddress, i)); err != nil {
-			errors = append(errors, err)
-		}
+		err.Push(program.BindTexture(uint32(textureIndex), texture, fmt.Sprintf(texture_diffuse_unifromAddress, i)))
 		textureIndex++
 	}
-	if err := program.BindUniform(int32(len(material.DiffuseTextures)), texture_numDiffuse_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
+	err.Push(program.BindUniform(int32(len(material.DiffuseTextures)), texture_numDiffuse_uniformAddress))
 	for i, texture := range material.NormalTextures {
-		if err := program.BindTexture(uint32(textureIndex), texture, fmt.Sprintf(texture_normals_unifromAddress, i)); err != nil {
-			errors = append(errors, err)
-		}
+		err.Push(program.BindTexture(uint32(textureIndex), texture, fmt.Sprintf(texture_normals_unifromAddress, i)))
 		textureIndex++
 	}
-	if err := program.BindUniform(int32(len(material.NormalTextures)), texture_numNormals_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	return errors
+	err.Push(program.BindUniform(int32(len(material.NormalTextures)), texture_numNormals_uniformAddress))
+
+	return err.Err()
 }
 
-func (program *PhongShaderProgram) bindCamera(camera Camera.ICamera) []error {
-	var errors []error
-	if err := program.BindUniform(camera.GetProjectionMatrix(), projectionMatrix_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(camera.GetViewMatrix(), viewMatrix_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	return errors
+func (program *PhongShaderProgram) bindCamera(camera Camera.ICamera) error {
+	var err Utils.ErrorCollection
+
+	err.Push(program.BindUniform(camera.GetProjectionMatrix(), projectionMatrix_uniformAddress))
+	err.Push(program.BindUniform(camera.GetViewMatrix(), viewMatrix_uniformAddress))
+
+	return err.Err()
 }
 
-func (program *PhongShaderProgram) bindModel(model *Model.Model) []error {
-	var errors []error
-	if err := program.BindUniform(model.ModelMatrix, modelMatrix_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	return errors
+func (program *PhongShaderProgram) bindModel(model *Model.Model) error {
+	return program.BindUniform(model.ModelMatrix, modelMatrix_uniformAddress)
 }
 
-func (program *PhongShaderProgram) bindDirectionalLight(light *Light.DirectionalLight) []error {
-	var errors []error
-	if err := program.BindUniform(&light.Direction, directionalLight_direction_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Ambient, directionalLight_ambient_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Diffuse, directionalLight_diffuse_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Specular, directionalLight_specular_uniformAddress); err != nil {
-		errors = append(errors, err)
-	}
-	return errors
+func (program *PhongShaderProgram) bindDirectionalLight(light *Light.DirectionalLight) error {
+	var err Utils.ErrorCollection
+
+	err.Push(program.BindUniform(&light.Direction, directionalLight_direction_uniformAddress))
+	err.Push(program.BindUniform(&light.Ambient, directionalLight_ambient_uniformAddress))
+	err.Push(program.BindUniform(&light.Diffuse, directionalLight_diffuse_uniformAddress))
+	err.Push(program.BindUniform(&light.Specular, directionalLight_specular_uniformAddress))
+
+	return err.Err()
 }
 
-func (program *PhongShaderProgram) bindPointLight(light *Light.PointLight) []error {
-	var errors []error
-	if err := program.BindUniform(&light.Position, fmt.Sprintf(pointLight_position_uniformAddress, program.pointLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Ambient, fmt.Sprintf(pointLight_ambient_uniformAddress, program.pointLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Diffuse, fmt.Sprintf(pointLight_diffuse_uniformAddress, program.pointLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Specular, fmt.Sprintf(pointLight_specular_uniformAddress, program.pointLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(light.Linear, fmt.Sprintf(pointLight_linear_uniformAddress, program.pointLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(light.Quadratic, fmt.Sprintf(pointLight_quadratic_uniformAddress, program.pointLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
+func (program *PhongShaderProgram) bindPointLight(light *Light.PointLight) error {
+	var err Utils.ErrorCollection
+
+	err.Push(program.BindUniform(&light.Position, fmt.Sprintf(pointLight_position_uniformAddress, program.pointLightIndex)))
+	err.Push(program.BindUniform(&light.Ambient, fmt.Sprintf(pointLight_ambient_uniformAddress, program.pointLightIndex)))
+	err.Push(program.BindUniform(&light.Diffuse, fmt.Sprintf(pointLight_diffuse_uniformAddress, program.pointLightIndex)))
+	err.Push(program.BindUniform(&light.Specular, fmt.Sprintf(pointLight_specular_uniformAddress, program.pointLightIndex)))
+	err.Push(program.BindUniform(light.Linear, fmt.Sprintf(pointLight_linear_uniformAddress, program.pointLightIndex)))
+	err.Push(program.BindUniform(light.Quadratic, fmt.Sprintf(pointLight_quadratic_uniformAddress, program.pointLightIndex)))
 
 	program.pointLightIndex++
-	return errors
+	return err.Err()
 }
 
-func (program *PhongShaderProgram) bindSpotLight(light *Light.SpotLight) []error {
-	var errors []error
-	if err := program.BindUniform(&light.Position, fmt.Sprintf(spotLight_position_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Direction, fmt.Sprintf(spotLight_direction_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(light.InnerCone, fmt.Sprintf(spotLight_innerCone_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(light.OuterCone, fmt.Sprintf(spotLight_outerCone_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Ambient, fmt.Sprintf(spotLight_ambient_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Diffuse, fmt.Sprintf(spotLight_diffuse_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(&light.Specular, fmt.Sprintf(spotLight_specular_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(light.Linear, fmt.Sprintf(spotLight_linear_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
-	if err := program.BindUniform(light.Quadratic, fmt.Sprintf(spotLight_quadratic_uniformAddress, program.spotLightIndex)); err != nil {
-		errors = append(errors, err)
-	}
+func (program *PhongShaderProgram) bindSpotLight(light *Light.SpotLight) error {
+	var err Utils.ErrorCollection
+
+	err.Push(program.BindUniform(&light.Position, fmt.Sprintf(spotLight_position_uniformAddress, program.spotLightIndex)))
+	err.Push(program.BindUniform(&light.Direction, fmt.Sprintf(spotLight_direction_uniformAddress, program.spotLightIndex)))
+	err.Push(program.BindUniform(light.InnerCone, fmt.Sprintf(spotLight_innerCone_uniformAddress, program.spotLightIndex)))
+	err.Push(program.BindUniform(light.OuterCone, fmt.Sprintf(spotLight_outerCone_uniformAddress, program.spotLightIndex)))
+	err.Push(program.BindUniform(&light.Ambient, fmt.Sprintf(spotLight_ambient_uniformAddress, program.spotLightIndex)))
+	err.Push(program.BindUniform(&light.Diffuse, fmt.Sprintf(spotLight_diffuse_uniformAddress, program.spotLightIndex)))
+	err.Push(program.BindUniform(&light.Specular, fmt.Sprintf(spotLight_specular_uniformAddress, program.spotLightIndex)))
+	err.Push(program.BindUniform(light.Linear, fmt.Sprintf(spotLight_linear_uniformAddress, program.spotLightIndex)))
+	err.Push(program.BindUniform(light.Quadratic, fmt.Sprintf(spotLight_quadratic_uniformAddress, program.spotLightIndex)))
 
 	program.spotLightIndex++
-	return errors
+	return err.Err()
 }

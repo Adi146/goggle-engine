@@ -31,7 +31,7 @@ func (node *WASDControl) Init() error {
 	return nil
 }
 
-func (node *WASDControl) Tick(timeDelta float32) {
+func (node *WASDControl) Tick(timeDelta float32) error {
 	scene := node.GetScene()
 	if scene != nil {
 		xRel, yRel := scene.GetWindow().GetMouseInput().GetRelativeMovement()
@@ -54,7 +54,7 @@ func (node *WASDControl) Tick(timeDelta float32) {
 		}
 	}
 
-	node.TickChildren(timeDelta)
+	return nil
 }
 
 func (node *WASDControl) MoveForwards(amount float32) {

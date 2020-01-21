@@ -25,8 +25,8 @@ type IParentNode interface {
 	AddChild(child IChildNode)
 	GetChildren() []IChildNode
 
-	TickChildren(timeDelta float32)
-	DrawChildren()
+	TickChildren(timeDelta float32) error
+	DrawChildren() error
 }
 
 type IChildNode interface {
@@ -40,8 +40,8 @@ type IChildNode interface {
 	GetGlobalRotation() []Angle.EulerAngles
 	GetGlobalPosition() *Vector.Vector3
 
-	Tick(timeDelta float32)
-	Draw()
+	Tick(timeDelta float32) error
+	Draw() error
 }
 
 type IIntermediateNode interface {
@@ -50,8 +50,8 @@ type IIntermediateNode interface {
 	AddChild(child IChildNode)
 	GetChildren() []IChildNode
 
-	TickChildren(timeDelta float32)
-	DrawChildren()
+	TickChildren(timeDelta float32) error
+	DrawChildren() error
 
 	setParent(parent IParentNode)
 	GetParent() IParentNode
@@ -61,6 +61,6 @@ type IIntermediateNode interface {
 	GetGlobalRotation() []Angle.EulerAngles
 	GetGlobalPosition() *Vector.Vector3
 
-	Tick(timeDelta float32)
-	Draw()
+	Tick(timeDelta float32) error
+	Draw() error
 }

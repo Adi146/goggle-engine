@@ -7,19 +7,19 @@ import (
 	"os"
 )
 
-func ImportTexture(filename string) (*Model.Texture, *ImportResult) {
-	result := newImportResult()
+func ImportTexture(filename string) (*Model.Texture, ImportResult) {
+	var result ImportResult
 
 	file, err := os.Open(filename)
 	if err != nil {
-		result.addError(err)
+		result.Errors.Push(err)
 		return nil, result
 	}
 	defer file.Close()
 
 	img, _, err := image.Decode(file)
 	if err != nil {
-		result.addError(fmt.Errorf("%s: %s", filename, err.Error()))
+		result.Errors.Push(fmt.Errorf("%s: %s", filename, err.Error()))
 		return nil, result
 	}
 
@@ -32,11 +32,7 @@ func ImportTexture(filename string) (*Model.Texture, *ImportResult) {
 	}
 
 	texture, err := Model.NewTextureFromFile(rgba)
-	if err != nil {
-		result.addError(err)
-		return nil, result
-	}
+	result.Errors.Push(err)
 
-	result.NumImportedAssets = 1
 	return texture, result
 }

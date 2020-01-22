@@ -80,7 +80,7 @@ func ReadYamlConfig(file *os.File) (*Scene.Scene, error) {
 	}
 	config.RenderTargetConfig.SetActiveShaderProgram(shader)
 
-	root, err := config.RootConfig.Unmarshal()
+	root, err := config.RootConfig.Unmarshal("root")
 	if err != nil {
 		return nil, err
 	}

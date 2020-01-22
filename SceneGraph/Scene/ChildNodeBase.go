@@ -11,16 +11,15 @@ type ChildNodeBase struct {
 	parent IParentNode
 }
 
-func NewChildNodeBase() *ChildNodeBase {
-	return &ChildNodeBase{
-		NodeBase: NewNodeBase(),
-		parent:   nil,
-	}
-}
-
-func (node *ChildNodeBase) Init() error {
+func (node *ChildNodeBase) Init(nodeID string) error {
 	if node.NodeBase == nil {
-		node.NodeBase = NewNodeBase()
+		node.NodeBase = &NodeBase{
+			scene:          nil,
+			transformation: Matrix.Identity(),
+		}
+		if err := node.NodeBase.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	return nil

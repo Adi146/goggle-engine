@@ -1,22 +1,24 @@
 package Scene
 
-import "github.com/Adi146/goggle-engine/Utils"
+import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
+	"github.com/Adi146/goggle-engine/Utils"
+)
 
 type ParentNodeBase struct {
 	*NodeBase
 	children []IChildNode
 }
 
-func NewParentNodeBase() *ParentNodeBase {
-	return &ParentNodeBase{
-		NodeBase: NewNodeBase(),
-		children: []IChildNode{},
-	}
-}
-
-func (node *ParentNodeBase) Init() error {
+func (node *ParentNodeBase) Init(nodeID string) error {
 	if node.NodeBase == nil {
-		node.NodeBase = NewNodeBase()
+		node.NodeBase = &NodeBase{
+			scene:          nil,
+			transformation: Matrix.Identity(),
+		}
+		if err := node.NodeBase.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	return nil

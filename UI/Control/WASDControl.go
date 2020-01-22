@@ -23,9 +23,12 @@ func init() {
 	Factory.NodeFactory["UI.Control.WASDControl"] = reflect.TypeOf((*WASDControl)(nil)).Elem()
 }
 
-func (node *WASDControl) Init() error {
+func (node *WASDControl) Init(nodeID string) error {
 	if node.IIntermediateNode == nil {
-		node.IIntermediateNode = Scene.NewIntermediateNodeBase()
+		node.IIntermediateNode = &Scene.IntermediateNodeBase{}
+		if err := node.IIntermediateNode.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -61,26 +61,25 @@ func main() {
 	openGLRenderTarget.SetActiveShaderProgram(shaderProgram)
 
 	controlNode := &Control.WASDControl{
-		IIntermediateNode:   Scene.NewIntermediateNodeBase(),
 		KeyboardSensitivity: 10,
 		MouseSensitivity:    0.5,
 	}
+	controlNode.Init("controlNode")
 	controlNode.Translate(&Vector.Vector3{0, 0, 5})
 
 	cameraNode := &Node.CameraNode{
-		IChildNode:   Scene.NewChildNodeBase(),
 		Camera:       Camera.NewCameraPerspective(Angle.Radians(90), float32(width), float32(height)),
 		InitialFront: &Vector.Vector3{0, 0, -1},
 		InitialUp:    &Vector.Vector3{0, 1, 0},
 	}
+	cameraNode.Init("camera")
 
 	pointLightRotor := &SceneGraph.Rotor{
-		IIntermediateNode: Scene.NewIntermediateNodeBase(),
 		Speed:             -1,
 	}
+	pointLightRotor.Init("pointLightRotor")
 
 	pointLightNode1 := &LightNode.PointLightNode{
-		IChildNode: Scene.NewChildNodeBase(),
 		PointLight: Light.PointLight{
 			Position:  Vector.Vector3{0.0, 0.0, 0.0},
 			Ambient:   Vector.Vector3{0.32, 0.32, 0.32},
@@ -90,10 +89,10 @@ func main() {
 			Quadratic: 0.0028,
 		},
 	}
+	pointLightNode1.Init("pointLight1")
 	pointLightNode1.SetLocalTransformation(Matrix.Translate(&Vector.Vector3{0.0, 0.0, 30.0}))
 
 	modelNode := &Node.ModelNode{
-		IChildNode: Scene.NewChildNodeBase(),
 		File:       modelFile,
 		Textures: Node.TextureConfiguration{
 			Diffuse: []string{
@@ -104,13 +103,16 @@ func main() {
 			},
 		},
 	}
-	if err := modelNode.Init(); err != nil {
+	if err := modelNode.Init("modelNode"); err != nil {
 		panic(err)
 	}
 	modelNode.SetLocalTransformation(Matrix.Scale(0.1))
 
+	root := &Scene.ParentNodeBase{}
+	root.Init("root")
+
 	scene := Scene.NewScene(openGLRenderTarget)
-	scene.SetRoot(Scene.NewParentNodeBase())
+	scene.SetRoot(root)
 
 	scene.Root.AddChild(controlNode)
 	controlNode.AddChild(cameraNode)

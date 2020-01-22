@@ -19,9 +19,12 @@ func init() {
 	Factory.NodeFactory["Node.LightNode.DirectionalLightNode"] = reflect.TypeOf((*DirectionalLightNode)(nil)).Elem()
 }
 
-func (node *DirectionalLightNode) Init() error {
+func (node *DirectionalLightNode) Init(nodeID string) error {
 	if node.IChildNode == nil {
-		node.IChildNode = Scene.NewChildNodeBase()
+		node.IChildNode = &Scene.ChildNodeBase{}
+		if err := node.IChildNode.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	if node.InitialDirection == nil {

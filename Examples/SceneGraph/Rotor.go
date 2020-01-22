@@ -16,9 +16,12 @@ func init() {
 	Factory.NodeFactory["SceneGraph.Rotor"] = reflect.TypeOf((*Rotor)(nil)).Elem()
 }
 
-func (node *Rotor) Init() error {
+func (node *Rotor) Init(nodeID string) error {
 	if node.IIntermediateNode == nil {
-		node.IIntermediateNode = Scene.NewIntermediateNodeBase()
+		node.IIntermediateNode = &Scene.IntermediateNodeBase{}
+		if err := node.IIntermediateNode.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	return nil

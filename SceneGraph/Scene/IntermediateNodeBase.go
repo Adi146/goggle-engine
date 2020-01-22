@@ -12,30 +12,24 @@ type IntermediateNodeBase struct {
 	*NodeBase
 }
 
-func NewIntermediateNodeBase() *IntermediateNodeBase {
-	baseNode := NewNodeBase()
-
-	return &IntermediateNodeBase{
-		ChildNodeBase: ChildNodeBase{
-			NodeBase: baseNode,
-			parent:   nil,
-		},
-		ParentNodeBase: ParentNodeBase{
-			NodeBase: baseNode,
-			children: []IChildNode{},
-		},
-		NodeBase: baseNode,
-	}
-}
-
-func (node *IntermediateNodeBase) Init() error {
-
+func (node *IntermediateNodeBase) Init(nodeID string) error {
 	if node.NodeBase == nil {
-		baseNode := NewNodeBase()
+		node.NodeBase = &NodeBase{
+			scene:          nil,
+			transformation: Matrix.Identity(),
+		}
+		if err := node.NodeBase.Init(nodeID); err != nil {
+			return err
+		}
 
-		node.ChildNodeBase.NodeBase = baseNode
-		node.ParentNodeBase.NodeBase = baseNode
-		node.NodeBase = baseNode
+		node.ChildNodeBase.NodeBase = node.NodeBase
+		node.ParentNodeBase.NodeBase = node.NodeBase
+		if err := node.ChildNodeBase.Init(nodeID); err != nil {
+			return err
+		}
+		if err := node.ParentNodeBase.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -63,4 +57,8 @@ func (node *IntermediateNodeBase) GetLocalRotation() []Angle.EulerAngles {
 
 func (node *IntermediateNodeBase) GetLocalPosition() *Vector.Vector3 {
 	return node.NodeBase.GetLocalPosition()
+}
+
+func (node *IntermediateNodeBase) GetNodeID() string {
+	return node.NodeBase.GetNodeID()
 }

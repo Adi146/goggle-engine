@@ -14,7 +14,7 @@ type YamlNodeConfig struct {
 	Transformation []map[string]yaml.Node    `yaml:"transformation"`
 }
 
-func (nodeConfig *YamlNodeConfig) Unmarshal() (Scene.INode, error) {
+func (nodeConfig *YamlNodeConfig) Unmarshal(nodeID string) (Scene.INode, error) {
 	nodeType, ok := NodeFactory[nodeConfig.Type]
 	if !ok {
 		return nil, fmt.Errorf("node type %s is not in factory", nodeConfig.Type)
@@ -25,7 +25,7 @@ func (nodeConfig *YamlNodeConfig) Unmarshal() (Scene.INode, error) {
 		nodeConfig.Config.Decode(node)
 	}
 
-	if err := node.Init(); err != nil {
+	if err := node.Init(nodeID); err != nil {
 		return nil, err
 	}
 
@@ -42,8 +42,8 @@ func (nodeConfig *YamlNodeConfig) Unmarshal() (Scene.INode, error) {
 
 func (nodeConfig *YamlNodeConfig) UnmarshalChildren(node Scene.INode) error {
 	if nodeAsParent, isParent := node.(Scene.IParentNode); isParent {
-		for _, child := range nodeConfig.Children {
-			childNode, err := child.Unmarshal()
+		for childID, child := range nodeConfig.Children {
+			childNode, err := child.Unmarshal(childID)
 			if err != nil {
 				return err
 			}

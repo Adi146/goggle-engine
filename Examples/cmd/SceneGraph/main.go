@@ -57,21 +57,20 @@ func main() {
 	openGLRenderTarget.SetActiveShaderProgram(shaderProgram)
 
 	controlNode := &Control.WASDControl{
-		IIntermediateNode:   Scene.NewIntermediateNodeBase(),
 		KeyboardSensitivity: 1,
 		MouseSensitivity:    0.5,
 	}
+	controlNode.Init("CameraControl")
 	controlNode.Translate(&Vector.Vector3{0, 0, 5})
 
 	cameraNode := &Node.CameraNode{
-		IChildNode:   Scene.NewChildNodeBase(),
 		Camera:       Camera.NewCameraPerspective(Angle.Radians(90), float32(width), float32(height)),
 		InitialFront: &Vector.Vector3{0, 0, -1},
 		InitialUp:    &Vector.Vector3{0, 1, 0},
 	}
+	cameraNode.Init("Camera")
 
 	sunLightNode := &LightNode.DirectionalLightNode{
-		IChildNode: Scene.NewChildNodeBase(),
 		DirectionalLight: Light.DirectionalLight{
 			Direction: Vector.Vector3{0.0, 0.0, 0.0},
 			Ambient:   Vector.Vector3{0.32, 0.32, 0.32},
@@ -80,14 +79,14 @@ func main() {
 		},
 		InitialDirection: &Vector.Vector3{-1.0, -1.0, -1.0},
 	}
+	sunLightNode.Init("SunLight")
 
 	pointLightRotor := &SceneGraph.Rotor{
-		IIntermediateNode: Scene.NewIntermediateNodeBase(),
 		Speed:             -1,
 	}
+	pointLightRotor.Init("PointLightRotor")
 
 	pointLightNode1 := &LightNode.PointLightNode{
-		IChildNode: Scene.NewChildNodeBase(),
 		PointLight: Light.PointLight{
 			Position:  Vector.Vector3{0.0, 0.0, 0.0},
 			Ambient:   Vector.Vector3{0.0, 0.0, 0.2},
@@ -97,10 +96,10 @@ func main() {
 			Quadratic: 0.0028,
 		},
 	}
+	pointLightNode1.Init("PointLightBlue")
 	pointLightNode1.SetLocalTransformation(Matrix.Translate(&Vector.Vector3{0.0, 0.0, 30.0}))
 
 	pointLightNode2 := &LightNode.PointLightNode{
-		IChildNode: Scene.NewChildNodeBase(),
 		PointLight: Light.PointLight{
 			Position:  Vector.Vector3{0.0, 0.0, 0.0},
 			Ambient:   Vector.Vector3{0.2, 0.0, 0.0},
@@ -110,12 +109,13 @@ func main() {
 			Quadratic: 0.0028,
 		},
 	}
+	pointLightNode2.Init("PointLightRed")
 	pointLightNode2.SetLocalTransformation(Matrix.Translate(&Vector.Vector3{0.0, 0.0, -30.0}))
 
 	modelRotorNode := &SceneGraph.Rotor{
-		IIntermediateNode: Scene.NewIntermediateNodeBase(),
 		Speed:             1,
 	}
+	modelRotorNode.Init("ModelRotor")
 
 	model, result := AssetImporter.ImportModel(modelFile)
 	if !result.Success() {
@@ -123,12 +123,15 @@ func main() {
 	}
 
 	modelNode := &Node.ModelNode{
-		IChildNode: Scene.NewChildNodeBase(),
 		Model:      model,
 	}
+	modelNode.Init("Model")
+
+	rootNode := &Scene.ParentNodeBase{}
+	rootNode.Init("Root")
 
 	scene := Scene.NewScene(openGLRenderTarget)
-	scene.SetRoot(Scene.NewParentNodeBase())
+	scene.SetRoot(rootNode)
 
 	scene.Root.AddChild(controlNode)
 	controlNode.AddChild(cameraNode)

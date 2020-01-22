@@ -26,9 +26,12 @@ func init() {
 	Factory.NodeFactory[CameraNodeFactoryName] = reflect.TypeOf((*CameraNode)(nil)).Elem()
 }
 
-func (node *CameraNode) Init() error {
+func (node *CameraNode) Init(nodeID string) error {
 	if node.IChildNode == nil {
-		node.IChildNode = Scene.NewChildNodeBase()
+		node.IChildNode = &Scene.ChildNodeBase{}
+		if err := node.IChildNode.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	if node.Camera == nil {

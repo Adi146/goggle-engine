@@ -16,9 +16,12 @@ func init() {
 	Factory.NodeFactory["Node.LightNode.PointLightNode"] = reflect.TypeOf((*PointLightNode)(nil)).Elem()
 }
 
-func (node *PointLightNode) Init() error {
+func (node *PointLightNode) Init(nodeID string) error {
 	if node.IChildNode == nil {
-		node.IChildNode = Scene.NewChildNodeBase()
+		node.IChildNode = &Scene.ChildNodeBase{}
+		if err := node.IChildNode.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	return nil

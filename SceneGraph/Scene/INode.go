@@ -7,7 +7,7 @@ import (
 )
 
 type INode interface {
-	Init() error
+	Init(nodeID string) error
 
 	GetScene() *Scene
 	setScene(*Scene)
@@ -17,6 +17,8 @@ type INode interface {
 
 	GetLocalRotation() []Angle.EulerAngles
 	GetLocalPosition() *Vector.Vector3
+
+	GetNodeID() string
 }
 
 type IParentNode interface {

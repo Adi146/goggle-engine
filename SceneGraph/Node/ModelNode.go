@@ -26,11 +26,14 @@ func init() {
 	Factory.NodeFactory["Node.ModelNode"] = reflect.TypeOf((*ModelNode)(nil)).Elem()
 }
 
-func (node *ModelNode) Init() error {
+func (node *ModelNode) Init(nodeID string) error {
 	var err Utils.ErrorCollection
 
 	if node.IChildNode == nil {
-		node.IChildNode = Scene.NewChildNodeBase()
+		node.IChildNode = &Scene.ChildNodeBase{}
+		if err := node.IChildNode.Init(nodeID); err != nil {
+			return err
+		}
 	}
 
 	if node.Model == nil {

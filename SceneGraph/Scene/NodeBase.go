@@ -9,16 +9,11 @@ import (
 type NodeBase struct {
 	scene          *Scene
 	transformation *Matrix.Matrix4x4
+	nodeID         string
 }
 
-func NewNodeBase() *NodeBase {
-	return &NodeBase{
-		scene:          nil,
-		transformation: Matrix.Identity(),
-	}
-}
-
-func (node *NodeBase) Init() error {
+func (node *NodeBase) Init(nodeID string) error {
+	node.nodeID = nodeID
 	return nil
 }
 
@@ -44,4 +39,8 @@ func (node *NodeBase) GetLocalRotation() []Angle.EulerAngles {
 
 func (node *NodeBase) GetLocalPosition() *Vector.Vector3 {
 	return node.GetLocalTransformation().MulVector(&Vector.Vector3{0, 0, 0})
+}
+
+func (node *NodeBase) GetNodeID() string {
+	return node.nodeID
 }

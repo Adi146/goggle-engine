@@ -50,6 +50,17 @@ const (
 	projectionMatrix_uniformAddress = "u_projectionMatrix"
 )
 
+var (
+	textureUniformMap = map[Model.TextureType]string{
+		Model.DiffuseTexture: texture_diffuse_unifromAddress,
+		Model.NormalsTexture: texture_normals_unifromAddress,
+	}
+	numTextureUniformMap = map[Model.TextureType]string{
+		Model.DiffuseTexture: texture_numDiffuse_uniformAddress,
+		Model.NormalsTexture: texture_numNormals_uniformAddress,
+	}
+)
+
 type PhongShaderProgram struct {
 	*Shader.ShaderProgramCore
 
@@ -114,17 +125,15 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 	err.Push(program.BindUniform(&material.EmissiveBaseColor, material_emissiveBase_uniformAddress))
 	err.Push(program.BindUniform(material.Shininess, material_shineness_uniformAddress))
 
-	textureIndex := 0
-	for i, texture := range material.DiffuseTextures {
-		err.Push(program.BindTexture(uint32(textureIndex), texture, fmt.Sprintf(texture_diffuse_unifromAddress, i)))
-		textureIndex++
+	textureIndexMap := make(map[Model.TextureType]int)
+	for i, texture := range material.Textures {
+		err.Push(program.BindTexture(uint32(i), texture, fmt.Sprintf(textureUniformMap[texture.TextureType], textureIndexMap[texture.TextureType])))
+		textureIndexMap[texture.TextureType] += 1
 	}
-	err.Push(program.BindUniform(int32(len(material.DiffuseTextures)), texture_numDiffuse_uniformAddress))
-	for i, texture := range material.NormalTextures {
-		err.Push(program.BindTexture(uint32(textureIndex), texture, fmt.Sprintf(texture_normals_unifromAddress, i)))
-		textureIndex++
+	for textureType, numTextures := range textureIndexMap {
+		err.Push(program.BindUniform(int32(numTextures), numTextureUniformMap[textureType]))
+
 	}
-	err.Push(program.BindUniform(int32(len(material.NormalTextures)), texture_numNormals_uniformAddress))
 
 	return err.Err()
 }

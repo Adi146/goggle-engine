@@ -6,12 +6,22 @@ import (
 	_ "image/png"
 )
 
+type TextureType int
+
+const (
+	DiffuseTexture TextureType = iota
+	NormalsTexture
+)
+
 type Texture struct {
-	textureId uint32
+	textureId   uint32
+	TextureType TextureType
 }
 
-func NewTextureFromFile(img *image.RGBA) (*Texture, error) {
-	texture := Texture{}
+func NewTextureFromFile(img *image.RGBA, textureType TextureType) (*Texture, error) {
+	texture := Texture{
+		TextureType: textureType,
+	}
 
 	gl.GenTextures(1, &texture.textureId)
 	gl.BindTexture(gl.TEXTURE_2D, texture.textureId)

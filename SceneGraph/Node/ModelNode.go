@@ -41,18 +41,18 @@ func (node *ModelNode) Init(nodeID string) error {
 		err.Push(&result.Errors)
 		if result.Success() {
 			for _, diffuseTextureFile := range node.Textures.Diffuse {
-				texture, result := AssetImporter.ImportTexture(diffuseTextureFile)
+				texture, result := AssetImporter.ImportTexture(diffuseTextureFile, Model.DiffuseTexture)
 				err.Push(&result.Errors)
 				for _, mesh := range model.Meshes {
-					mesh.DiffuseTextures = append(mesh.DiffuseTextures, texture)
+					mesh.Textures = append(mesh.Textures, texture)
 				}
 			}
 
 			for _, normalsTextureFile := range node.Textures.Normals {
-				texture, result := AssetImporter.ImportTexture(normalsTextureFile)
+				texture, result := AssetImporter.ImportTexture(normalsTextureFile, Model.NormalsTexture)
 				err.Push(&result.Errors)
 				for _, mesh := range model.Meshes {
-					mesh.NormalTextures = append(mesh.NormalTextures, texture)
+					mesh.Textures = append(mesh.Textures, texture)
 				}
 			}
 

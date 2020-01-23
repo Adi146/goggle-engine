@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func ImportTexture(filename string) (*Model.Texture, ImportResult) {
+func ImportTexture(filename string, textureType Model.TextureType) (*Model.Texture, ImportResult) {
 	var result ImportResult
 
 	file, err := os.Open(filename)
@@ -31,7 +31,7 @@ func ImportTexture(filename string) (*Model.Texture, ImportResult) {
 		}
 	}
 
-	texture, err := Model.NewTextureFromFile(rgba)
+	texture, err := Model.NewTextureFromFile(rgba, textureType)
 	result.Errors.Push(err)
 
 	return texture, result

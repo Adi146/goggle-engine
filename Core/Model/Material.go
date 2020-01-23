@@ -11,6 +11,5 @@ type Material struct {
 
 	Shininess float32
 
-	DiffuseTextures []*Texture
-	NormalTextures  []*Texture
+	Textures []*Texture
 }

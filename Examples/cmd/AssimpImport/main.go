@@ -75,7 +75,7 @@ func main() {
 	cameraNode.Init("camera")
 
 	pointLightRotor := &SceneGraph.Rotor{
-		Speed:             -1,
+		Speed: -1,
 	}
 	pointLightRotor.Init("pointLightRotor")
 
@@ -93,7 +93,7 @@ func main() {
 	pointLightNode1.SetLocalTransformation(Matrix.Translate(&Vector.Vector3{0.0, 0.0, 30.0}))
 
 	modelNode := &Node.ModelNode{
-		File:       modelFile,
+		File: modelFile,
 		Textures: Node.TextureConfiguration{
 			Diffuse: []string{
 				diffuseFile,

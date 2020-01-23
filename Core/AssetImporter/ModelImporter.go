@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+var textureTypeMap = map[assimp.TextureMapping]Model.TextureType{
+	assimp.TextureMapping_Diffuse: Model.DiffuseTexture,
+	assimp.TextureMapping_Normals: Model.NormalsTexture,
+}
+
 func ImportModel(filename string) (*Model.Model, ImportResult) {
 	var result ImportResult
 
@@ -72,13 +77,15 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Mo
 	if returnCode != assimp.Return_Success {
 		result.Warnings.Push(fmt.Errorf("could not load shininess"))
 	}
-	diffuseTextures, diffuseResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Diffuse, modelDir)
-	result.Errors.Push(&diffuseResult.Errors)
-	result.Warnings.Push(&diffuseResult.Warnings)
 
-	normalsTexture, normalsResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Normals, modelDir)
-	result.Errors.Push(&normalsResult.Errors)
-	result.Warnings.Push(&normalsResult.Warnings)
+	var modelTextures []*Model.Texture
+	for textureType, _ := range textureTypeMap {
+		textures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, textureType, modelDir)
+		result.Errors.Push(&textureResult.Errors)
+		result.Warnings.Push(&textureResult.Warnings)
+
+		modelTextures = append(modelTextures, textures...)
+	}
 
 	return &Model.Material{
 		DiffuseBaseColor:  Vector.Vector3{assimpDiffuse.R(), assimpDiffuse.G(), assimpDiffuse.B()},
@@ -87,8 +94,7 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Mo
 
 		Shininess: assimpShininess,
 
-		DiffuseTextures: diffuseTextures,
-		NormalTextures:  normalsTexture,
+		Textures: modelTextures,
 	}, result
 }
 
@@ -109,7 +115,7 @@ func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType
 			result.Warnings.Push(fmt.Errorf("embedded textures are not supported yet"))
 			continue
 		} else {
-			texture, textureResult := ImportTexture(path.Join(modelDir, textureFile))
+			texture, textureResult := ImportTexture(path.Join(modelDir, textureFile), textureTypeMap[textureType])
 			result.Warnings.Push(&textureResult.Warnings)
 			result.Warnings.Push(&textureResult.Errors)
 			if !textureResult.Success() {

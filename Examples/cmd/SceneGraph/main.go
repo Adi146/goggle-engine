@@ -82,7 +82,7 @@ func main() {
 	sunLightNode.Init("SunLight")
 
 	pointLightRotor := &SceneGraph.Rotor{
-		Speed:             -1,
+		Speed: -1,
 	}
 	pointLightRotor.Init("PointLightRotor")
 
@@ -113,7 +113,7 @@ func main() {
 	pointLightNode2.SetLocalTransformation(Matrix.Translate(&Vector.Vector3{0.0, 0.0, -30.0}))
 
 	modelRotorNode := &SceneGraph.Rotor{
-		Speed:             1,
+		Speed: 1,
 	}
 	modelRotorNode.Init("ModelRotor")
 
@@ -123,7 +123,7 @@ func main() {
 	}
 
 	modelNode := &Node.ModelNode{
-		Model:      model,
+		Model: model,
 	}
 	modelNode.Init("Model")
 

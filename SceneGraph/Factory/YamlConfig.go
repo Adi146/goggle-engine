@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/RenderTarget"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/Shader/BasicShader"
 	"github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
@@ -32,8 +31,8 @@ var WindowFactory = map[string]reflect.Type{
 	"sdl": reflect.TypeOf((*Window.SDLWindow)(nil)).Elem(),
 }
 
-var ShaderFactory = map[string]func(string, string) (Shader.IShaderProgram, error){
-	"basic": BasicShader.NewBasicIShaderProgram,
+var ShaderFactory = map[string]func([]string, []string) (Shader.IShaderProgram, error){
+	//"basic": BasicShader.NewBasicIShaderProgram,
 	"phong": PhongShader.NewPhongIShaderProgram,
 }
 
@@ -45,9 +44,9 @@ type YamlConfig struct {
 	RenderTargetConfig *RenderTarget.OpenGLRenderTarget `yaml:"renderTarget"`
 	RootConfig         YamlNodeConfig                   `yaml:"root"`
 	ShaderConfig       struct {
-		Type           string `yaml:"type"`
-		VertexShader   string `yaml:"vertexShader"`
-		FragmentShader string `yaml:"fragmentShader"`
+		Type            string   `yaml:"type"`
+		VertexShaders   []string `yaml:"vertexShaders"`
+		FragmentShaders []string `yaml:"fragmentShaders"`
 	} `yaml:"shader"`
 
 	RootNode Scene.IParentNode
@@ -120,5 +119,5 @@ func (config *YamlConfig) UnmarshalShader() (Shader.IShaderProgram, error) {
 		return nil, fmt.Errorf("shader type %s is not in factory", config.ShaderConfig.Type)
 	}
 
-	return shaderConstructor(config.ShaderConfig.VertexShader, config.ShaderConfig.FragmentShader)
+	return shaderConstructor(config.ShaderConfig.VertexShaders, config.ShaderConfig.FragmentShaders)
 }

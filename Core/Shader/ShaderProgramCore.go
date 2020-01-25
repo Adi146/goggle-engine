@@ -11,24 +11,32 @@ import (
 )
 
 type ShaderProgramCore struct {
-	programId      uint32
-	vertexShader   *Shader
-	fragmentShader *Shader
-	isBound        bool
+	programId       uint32
+	vertexShaders   []*Shader
+	fragmentShaders []*Shader
+	isBound         bool
 }
 
-func NewShaderProgramFromFiles(vertexShaderFile string, fragmentShaderFile string) (*ShaderProgramCore, error) {
-	vertexShader, err := NewShaderFromFile(vertexShaderFile, gl.VERTEX_SHADER)
-	if err != nil {
-		return nil, err
+func NewShaderProgramFromFiles(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgramCore, error) {
+	var vertexShaders []*Shader
+	for _, vertexShaderFile := range vertexShaderFiles {
+		vertexShader, err := NewShaderFromFile(vertexShaderFile, gl.VERTEX_SHADER)
+		if err != nil {
+			return nil, err
+		}
+		vertexShaders = append(vertexShaders, vertexShader)
 	}
 
-	fragmentShader, err := NewShaderFromFile(fragmentShaderFile, gl.FRAGMENT_SHADER)
-	if err != nil {
-		return nil, err
+	var fragmentShaders []*Shader
+	for _, fragmentShaderFile := range fragmentShaderFiles {
+		fragmentShader, err := NewShaderFromFile(fragmentShaderFile, gl.FRAGMENT_SHADER)
+		if err != nil {
+			return nil, err
+		}
+		fragmentShaders = append(fragmentShaders, fragmentShader)
 	}
 
-	program, err := NewShaderProgram(vertexShader, fragmentShader)
+	program, err := NewShaderProgram(vertexShaders, fragmentShaders)
 	if err != nil {
 		return nil, err
 	}
@@ -36,16 +44,21 @@ func NewShaderProgramFromFiles(vertexShaderFile string, fragmentShaderFile strin
 	return program, nil
 }
 
-func NewShaderProgram(vertexShader *Shader, fragmentShader *Shader) (*ShaderProgramCore, error) {
+func NewShaderProgram(vertexShaders []*Shader, fragmentShaders []*Shader) (*ShaderProgramCore, error) {
 	program := ShaderProgramCore{
-		programId:      gl.CreateProgram(),
-		vertexShader:   vertexShader,
-		fragmentShader: fragmentShader,
-		isBound:        false,
+		programId:       gl.CreateProgram(),
+		vertexShaders:   vertexShaders,
+		fragmentShaders: fragmentShaders,
+		isBound:         false,
 	}
 
-	gl.AttachShader(program.programId, vertexShader.shaderId)
-	gl.AttachShader(program.programId, fragmentShader.shaderId)
+	for _, vertexShader := range vertexShaders {
+		gl.AttachShader(program.programId, vertexShader.shaderId)
+	}
+	for _, fragmentShader := range fragmentShaders {
+		gl.AttachShader(program.programId, fragmentShader.shaderId)
+	}
+
 	gl.LinkProgram(program.programId)
 
 	var status int32
@@ -64,10 +77,14 @@ func NewShaderProgram(vertexShader *Shader, fragmentShader *Shader) (*ShaderProg
 }
 
 func (program *ShaderProgramCore) Destroy() {
-	gl.DetachShader(program.programId, program.vertexShader.shaderId)
-	gl.DetachShader(program.programId, program.fragmentShader.shaderId)
-	program.vertexShader.Destroy()
-	program.fragmentShader.Destroy()
+	for _, vertexShader := range program.vertexShaders {
+		gl.DetachShader(program.programId, vertexShader.shaderId)
+		vertexShader.Destroy()
+	}
+	for _, fragmentShader := range program.fragmentShaders {
+		gl.DetachShader(program.programId, fragmentShader.shaderId)
+		fragmentShader.Destroy()
+	}
 }
 
 func (program *ShaderProgramCore) Bind() {

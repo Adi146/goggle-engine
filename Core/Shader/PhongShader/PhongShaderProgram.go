@@ -68,20 +68,19 @@ type PhongShaderProgram struct {
 	spotLightIndex  int32
 }
 
-func NewPhongShaderProgram(vertexShaderFile string, fragmentShaderFile string) (*PhongShaderProgram, error) {
-	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFile, fragmentShaderFile)
+func NewPhongShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*PhongShaderProgram, error) {
+	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles)
 	if err != nil {
 		return nil, err
 	}
 
 	return &PhongShaderProgram{
 		ShaderProgramCore: shaderCore,
-		pointLightIndex:   0,
 	}, nil
 }
 
-func NewPhongIShaderProgram(vertexShaderFile string, fragmentShaderFile string) (Shader.IShaderProgram, error) {
-	return NewPhongShaderProgram(vertexShaderFile, fragmentShaderFile)
+func NewPhongIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (Shader.IShaderProgram, error) {
+	return NewPhongShaderProgram(vertexShaderFiles, fragmentShaderFiles)
 }
 
 func (program *PhongShaderProgram) BeginDraw() error {

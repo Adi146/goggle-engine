@@ -22,9 +22,18 @@ const (
 	width  = 500
 	height = 500
 
-	modelFile      = "Models/suzanne.obj"
-	vertexShader   = "../Core/Shader/PhongShader/phong.vert"
-	fragmentShader = "../Core/Shader/PhongShader/phong.frag"
+	modelFile = "Models/suzanne.obj"
+)
+
+var (
+	vertexShaders = []string{
+		"../Core/Shader/PhongShader/phong.vert",
+	}
+	fragmentShaders = []string{
+		"../Core/Shader/PhongShader/phong.frag",
+		"../Core/Shader/PhongShader/material.frag",
+		"../Core/Shader/PhongShader/lights.frag",
+	}
 )
 
 func main() {
@@ -50,7 +59,7 @@ func main() {
 		panic(err)
 	}
 
-	shaderProgram, err := PhongShader.NewPhongShaderProgram(vertexShader, fragmentShader)
+	shaderProgram, err := PhongShader.NewPhongShaderProgram(vertexShaders, fragmentShaders)
 	if err != nil {
 		panic(err)
 	}

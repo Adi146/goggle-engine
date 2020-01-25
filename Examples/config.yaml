@@ -13,8 +13,12 @@ window:
 
 shader:
   type: phong
-  vertexShader: ../Core/Shader/PhongShader/phong.vert
-  fragmentShader: ../Core/Shader/PhongShader/phong.frag
+  vertexShaders:
+    - ../Core/Shader/PhongShader/phong.vert
+  fragmentShaders:
+    - ../Core/Shader/PhongShader/phong.frag
+    - ../Core/Shader/PhongShader/material.frag
+    - ../Core/Shader/PhongShader/lights.frag
 
 root:
   type: Scene.ParentBaseNode

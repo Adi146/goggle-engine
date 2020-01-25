@@ -157,13 +157,12 @@ void main() {
     vec3 normal = v_normal;
     if (u_material.numTextureNormals > 0) {
         //transpose is equal to inverse in this case
-        mat3 tbn = transpose(mat3(v_tangent, v_normal, v_biTangent));
+        mat3 tbn = transpose(mat3(v_tangent, v_biTangent, v_normal));
         normal = vec3(0.0, 0.0, 0.0);
         for (int i = 0; i < u_material.numTextureNormals; i++){
-            normal += texture(u_material.texturesNormals[i], v_uv).rgb;
-            normal = normalize(normal * 2.0 - 1.0f);
+            normal += normalize(texture(u_material.texturesNormals[i], v_uv).rgb * 2.0 - 1.0f);
         }
-        normal = normalize(tbn * normal);
+        normal = normalize(normal * tbn);
     }
 
     // calculate lights

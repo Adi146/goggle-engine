@@ -2,7 +2,7 @@ package Scene
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/Utils"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 type ParentNodeBase struct {
@@ -42,12 +42,12 @@ func (node *ParentNodeBase) GetChildren() []IChildNode {
 }
 
 func (node *ParentNodeBase) TickChildren(timeDelta float32) error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	for _, child := range node.GetChildren() {
-		err.Push(child.Tick(timeDelta))
+		err.Push(Error.NewErrorWithFields(child.Tick(timeDelta), child.GetLogFields()))
 		if childAsParent, isParent := child.(IParentNode); isParent {
-			err.Push(childAsParent.TickChildren(timeDelta))
+			err.Push(Error.NewErrorWithFields(childAsParent.TickChildren(timeDelta), childAsParent.GetLogFields()))
 		}
 	}
 
@@ -55,7 +55,7 @@ func (node *ParentNodeBase) TickChildren(timeDelta float32) error {
 }
 
 func (node *ParentNodeBase) DrawChildren() error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	for _, child := range node.GetChildren() {
 		err.Push(child.Draw())

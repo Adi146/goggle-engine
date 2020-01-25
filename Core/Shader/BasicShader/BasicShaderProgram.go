@@ -5,7 +5,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Utils"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 const (
@@ -46,7 +46,7 @@ func (program *BasicShaderProgram) BindObject(i interface{}) error {
 }
 
 func (program *BasicShaderProgram) bindCamera(camera Camera.ICamera) error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(camera.GetProjectionMatrix(), projectionMatrix_uniformAddress))
 	err.Push(program.BindUniform(camera.GetViewMatrix(), viewMatrix_uniformAddress))

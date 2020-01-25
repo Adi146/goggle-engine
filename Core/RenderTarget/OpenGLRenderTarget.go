@@ -1,10 +1,11 @@
 package RenderTarget
 
 import (
+	"fmt"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Window"
-	"log"
+	"github.com/Adi146/goggle-engine/Utils/Log"
 	"unsafe"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -77,5 +78,5 @@ func EnableDebugLogging() {
 }
 
 func openGLDebugCallback(source uint32, gltype uint32, id uint32, severity uint32, length int32, message string, userParam unsafe.Pointer) {
-	log.Printf("[OpenGL Error] %s", message)
+	Log.Error(fmt.Errorf("[OpenGL Error] %s", message), "OpenGL Error")
 }

@@ -1,20 +1,20 @@
-package Utils
+package Error
 
 import "fmt"
 
 type ErrorCollection struct {
-	errors []error
+	Errors []error
 }
 
 func (e *ErrorCollection) Error() string {
-	switch len(e.errors) {
+	switch len(e.Errors) {
 	case 0:
 		return ""
 	case 1:
-		return e.errors[0].Error()
+		return e.Errors[0].Error()
 	default:
-		re := fmt.Sprintf("%d errors occured:", len(e.errors))
-		for _, err := range e.errors {
+		re := fmt.Sprintf("%d Errors occured:", len(e.Errors))
+		for _, err := range e.Errors {
 			re += " " + err.Error()
 		}
 		return re
@@ -22,29 +22,27 @@ func (e *ErrorCollection) Error() string {
 }
 
 func (e *ErrorCollection) Err() error {
-	switch len(e.errors) {
+	switch len(e.Errors) {
 	case 0:
 		return nil
 	case 1:
-		return e.errors[0]
+		return e.Errors[0]
 	default:
 		return e
 	}
 }
 
 func (e *ErrorCollection) Push(err error) {
-	if err == nil {
-		return
-	}
-
 	switch v := err.(type) {
+	case nil:
+		return
 	case *ErrorCollection:
-		e.errors = append(e.errors, v.errors...)
+		e.Errors = append(e.Errors, v.Errors...)
 	default:
-		e.errors = append(e.errors, err)
+		e.Errors = append(e.Errors, err)
 	}
 }
 
 func (e *ErrorCollection) Len() int {
-	return len(e.errors)
+	return len(e.Errors)
 }

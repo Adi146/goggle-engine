@@ -1,10 +1,12 @@
 package AssetImporter
 
-import "github.com/Adi146/goggle-engine/Utils"
+import (
+	"github.com/Adi146/goggle-engine/Utils/Error"
+)
 
 type ImportResult struct {
-	Errors   Utils.ErrorCollection
-	Warnings Utils.ErrorCollection
+	Errors   Error.ErrorCollection
+	Warnings Error.ErrorCollection
 }
 
 func (result *ImportResult) Success() bool {

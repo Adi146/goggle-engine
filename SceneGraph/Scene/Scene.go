@@ -3,7 +3,8 @@ package Scene
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/RenderTarget"
-	"github.com/Adi146/goggle-engine/Utils"
+	"github.com/Adi146/goggle-engine/Utils/Error"
+	"github.com/Adi146/goggle-engine/Utils/Log"
 )
 
 type Scene struct {
@@ -20,12 +21,11 @@ func NewScene(renderTarget *RenderTarget.OpenGLRenderTarget) *Scene {
 
 func (scene *Scene) Draw(timeDelta float32) {
 	scene.OpenGLRenderTarget.Clear(&Vector.Vector4{0, 0, 0, 1})
-	var err Utils.ErrorCollection
 
 	if scene.Root != nil {
-		err.Push(scene.Root.TickChildren(timeDelta))
-		err.Push(scene.GetActiveShaderProgram().BeginDraw())
-		err.Push(scene.Root.DrawChildren())
+		Log.Error(Error.NewErrorWithFields(scene.Root.TickChildren(timeDelta), scene.Root.GetLogFields()), "tick error")
+		Log.Error(scene.GetActiveShaderProgram().BeginDraw(), "begin draw error")
+		Log.Error(Error.NewErrorWithFields(scene.Root.DrawChildren(), scene.Root.GetLogFields()), "render error")
 		scene.GetActiveShaderProgram().EndDraw()
 	}
 }

@@ -44,3 +44,9 @@ func (node *NodeBase) GetLocalPosition() *Vector.Vector3 {
 func (node *NodeBase) GetNodeID() string {
 	return node.nodeID
 }
+
+func (node *NodeBase) GetLogFields() map[string]interface{} {
+	return map[string]interface{}{
+		"NodeID": node.GetNodeID(),
+	}
+}

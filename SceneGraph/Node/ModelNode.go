@@ -5,7 +5,8 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
-	"github.com/Adi146/goggle-engine/Utils"
+	"github.com/Adi146/goggle-engine/Utils/Error"
+	"github.com/Adi146/goggle-engine/Utils/Log"
 	"reflect"
 )
 
@@ -27,7 +28,7 @@ func init() {
 }
 
 func (node *ModelNode) Init(nodeID string) error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	if node.IChildNode == nil {
 		node.IChildNode = &Scene.ChildNodeBase{}
@@ -37,12 +38,16 @@ func (node *ModelNode) Init(nodeID string) error {
 	}
 
 	if node.Model == nil {
+		var importWarnings Error.ErrorCollection
+
 		model, result := AssetImporter.ImportModel(node.File)
 		err.Push(&result.Errors)
+		importWarnings.Push(&result.Warnings)
 		if result.Success() {
 			for _, diffuseTextureFile := range node.Textures.Diffuse {
 				texture, result := AssetImporter.ImportTexture(diffuseTextureFile, Model.DiffuseTexture)
 				err.Push(&result.Errors)
+				importWarnings.Push(&result.Warnings)
 				for _, mesh := range model.Meshes {
 					mesh.Textures = append(mesh.Textures, texture)
 				}
@@ -51,11 +56,13 @@ func (node *ModelNode) Init(nodeID string) error {
 			for _, normalsTextureFile := range node.Textures.Normals {
 				texture, result := AssetImporter.ImportTexture(normalsTextureFile, Model.NormalsTexture)
 				err.Push(&result.Errors)
+				importWarnings.Push(&result.Warnings)
 				for _, mesh := range model.Meshes {
 					mesh.Textures = append(mesh.Textures, texture)
 				}
 			}
 
+			Log.Warn(Error.NewErrorWithFields(&importWarnings, node.GetLogFields()), "import warnings")
 			node.Model = model
 		}
 	}
@@ -69,7 +76,7 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 }
 
 func (node *ModelNode) Draw() error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	scene := node.GetScene()
 	if scene != nil && scene.GetActiveShaderProgram() != nil {

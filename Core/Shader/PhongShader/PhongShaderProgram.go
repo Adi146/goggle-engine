@@ -6,7 +6,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Utils"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 const (
@@ -85,7 +85,7 @@ func NewPhongIShaderProgram(vertexShaderFile string, fragmentShaderFile string) 
 }
 
 func (program *PhongShaderProgram) BeginDraw() error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(program.pointLightIndex, numPointLights_uniformAddress))
 	err.Push(program.BindUniform(program.spotLightIndex, numSpotLights_uniformAddress))
@@ -118,7 +118,7 @@ func (program *PhongShaderProgram) BindObject(i interface{}) error {
 }
 
 func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(&material.DiffuseBaseColor, material_diffuseBase_uniformAddress))
 	err.Push(program.BindUniform(&material.SpecularBaseColor, material_specularBase_uniformAddress))
@@ -139,7 +139,7 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 }
 
 func (program *PhongShaderProgram) bindCamera(camera Camera.ICamera) error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(camera.GetProjectionMatrix(), projectionMatrix_uniformAddress))
 	err.Push(program.BindUniform(camera.GetViewMatrix(), viewMatrix_uniformAddress))
@@ -152,7 +152,7 @@ func (program *PhongShaderProgram) bindModel(model *Model.Model) error {
 }
 
 func (program *PhongShaderProgram) bindDirectionalLight(light *Light.DirectionalLight) error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(&light.Direction, directionalLight_direction_uniformAddress))
 	err.Push(program.BindUniform(&light.Ambient, directionalLight_ambient_uniformAddress))
@@ -163,7 +163,7 @@ func (program *PhongShaderProgram) bindDirectionalLight(light *Light.Directional
 }
 
 func (program *PhongShaderProgram) bindPointLight(light *Light.PointLight) error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(&light.Position, fmt.Sprintf(pointLight_position_uniformAddress, program.pointLightIndex)))
 	err.Push(program.BindUniform(&light.Ambient, fmt.Sprintf(pointLight_ambient_uniformAddress, program.pointLightIndex)))
@@ -177,7 +177,7 @@ func (program *PhongShaderProgram) bindPointLight(light *Light.PointLight) error
 }
 
 func (program *PhongShaderProgram) bindSpotLight(light *Light.SpotLight) error {
-	var err Utils.ErrorCollection
+	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(&light.Position, fmt.Sprintf(spotLight_position_uniformAddress, program.spotLightIndex)))
 	err.Push(program.BindUniform(&light.Direction, fmt.Sprintf(spotLight_direction_uniformAddress, program.spotLightIndex)))

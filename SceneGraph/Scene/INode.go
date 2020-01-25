@@ -19,6 +19,7 @@ type INode interface {
 	GetLocalPosition() *Vector.Vector3
 
 	GetNodeID() string
+	GetLogFields() map[string]interface{}
 }
 
 type IParentNode interface {

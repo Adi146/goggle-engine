@@ -10,6 +10,8 @@ type TextureType int
 
 const (
 	DiffuseTexture TextureType = iota
+	SpecularTexture
+	EmissiveTexture
 	NormalsTexture
 )
 

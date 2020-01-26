@@ -1,6 +1,6 @@
 #version 410 core
 
-#define MAX_TEXTURES 24
+#define MAX_TEXTURES 8
 
 in vec3 v_normal;
 in vec2 v_uv;
@@ -19,9 +19,13 @@ struct Material {
     float shininess;
 
     sampler2D texturesDiffuse[MAX_TEXTURES];
+    sampler2D texturesSpecular[MAX_TEXTURES];
+    sampler2D texturesEmissive[MAX_TEXTURES];
     sampler2D texturesNormals[MAX_TEXTURES];
 
     int numTextureDiffuse;
+    int numTextureSpecular;
+    int numTextureEmissive;
     int numTextureNormals;
 };
 
@@ -41,8 +45,26 @@ MaterialColor GetMaterialColor() {
         color.diffuse = vec3(diffuse);
     }
 
+    if (u_material.numTextureSpecular > 0) {
+        vec4 specular = vec4(0, 0, 0, 0);
+        for (int i = 0; i < u_material.numTextureSpecular; i++) {
+            specular += texture(u_material.texturesSpecular[i], v_uv);
+        }
+        color.specular = vec3(specular);
+    }
+
+    if (u_material.numTextureEmissive > 0) {
+        vec4 emissive = vec4(0, 0, 0, 0);
+        for (int i = 0; i < u_material.numTextureEmissive; i++) {
+            emissive += texture(u_material.texturesEmissive[i], v_uv);
+        }
+        color.emissive = vec3(emissive);
+    }
+
     return color;
 }
+
+
 
 vec3 GetNormalVector () {
     vec3 normal = v_normal;

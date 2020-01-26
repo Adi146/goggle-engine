@@ -12,8 +12,10 @@ import (
 )
 
 var textureTypeMap = map[assimp.TextureMapping]Model.TextureType{
-	assimp.TextureMapping_Diffuse: Model.DiffuseTexture,
-	assimp.TextureMapping_Normals: Model.NormalsTexture,
+	assimp.TextureMapping_Diffuse:  Model.DiffuseTexture,
+	assimp.TextureMapping_Specular: Model.SpecularTexture,
+	assimp.TextureMapping_Emissive: Model.EmissiveTexture,
+	assimp.TextureMapping_Normals:  Model.NormalsTexture,
 }
 
 func ImportModel(filename string) (*Model.Model, ImportResult) {

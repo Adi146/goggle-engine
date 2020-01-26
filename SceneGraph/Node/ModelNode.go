@@ -10,17 +10,19 @@ import (
 	"reflect"
 )
 
-type TextureConfiguration struct {
-	Diffuse []string `yaml:"diffuse"`
-	Normals []string `yaml:"normals"`
-}
-
 type ModelNode struct {
 	Scene.IChildNode
 	*Model.Model
 
-	File     string               `yaml:"file"`
-	Textures TextureConfiguration `yaml:"textures"`
+	File     string              `yaml:"file"`
+	Textures map[string][]string `yaml:"textures"`
+}
+
+var textureTypeMap = map[string]Model.TextureType{
+	"diffuse":  Model.DiffuseTexture,
+	"specular": Model.SpecularTexture,
+	"emissive": Model.EmissiveTexture,
+	"normals":  Model.NormalsTexture,
 }
 
 func init() {
@@ -44,21 +46,14 @@ func (node *ModelNode) Init(nodeID string) error {
 		err.Push(&result.Errors)
 		importWarnings.Push(&result.Warnings)
 		if result.Success() {
-			for _, diffuseTextureFile := range node.Textures.Diffuse {
-				texture, result := AssetImporter.ImportTexture(diffuseTextureFile, Model.DiffuseTexture)
-				err.Push(&result.Errors)
-				importWarnings.Push(&result.Warnings)
-				for _, mesh := range model.Meshes {
-					mesh.Textures = append(mesh.Textures, texture)
-				}
-			}
-
-			for _, normalsTextureFile := range node.Textures.Normals {
-				texture, result := AssetImporter.ImportTexture(normalsTextureFile, Model.NormalsTexture)
-				err.Push(&result.Errors)
-				importWarnings.Push(&result.Warnings)
-				for _, mesh := range model.Meshes {
-					mesh.Textures = append(mesh.Textures, texture)
+			for textureType, textureFiles := range node.Textures {
+				for _, textureFile := range textureFiles {
+					texture, result := AssetImporter.ImportTexture(textureFile, textureTypeMap[textureType])
+					err.Push(&result.Errors)
+					importWarnings.Push(&result.Warnings)
+					for _, mesh := range model.Meshes {
+						mesh.Textures = append(mesh.Textures, texture)
+					}
 				}
 			}
 

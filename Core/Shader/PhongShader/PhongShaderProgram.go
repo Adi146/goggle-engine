@@ -15,10 +15,14 @@ const (
 	material_emissiveBase_uniformAddress = "u_material.baseColor.emissive"
 	material_shineness_uniformAddress    = "u_material.shininess"
 
-	texture_diffuse_unifromAddress    = "u_material.texturesDiffuse[%d]"
-	texture_normals_unifromAddress    = "u_material.texturesNormals[%d]"
-	texture_numDiffuse_uniformAddress = "u_material.numTextureDiffuse"
-	texture_numNormals_uniformAddress = "u_material.numTextureNormals"
+	texture_diffuse_unifromAddress     = "u_material.texturesDiffuse[%d]"
+	texture_specular_uniformAddress    = "u_material.texturesSpecular[%d]"
+	texture_emissive_uniformAddress    = "u_material.texturesEmissive[%d]"
+	texture_normals_unifromAddress     = "u_material.texturesNormals[%d]"
+	texture_numDiffuse_uniformAddress  = "u_material.numTextureDiffuse"
+	texture_numSpecular_uniformAddress = "u_material.numTextureSpecular"
+	texture_numEmissive_uniformAddress = "u_material.numTextureEmissive"
+	texture_numNormals_uniformAddress  = "u_material.numTextureNormals"
 
 	directionalLight_direction_uniformAddress = "u_directionalLight.direction"
 	directionalLight_ambient_uniformAddress   = "u_directionalLight.ambient"
@@ -52,12 +56,16 @@ const (
 
 var (
 	textureUniformMap = map[Model.TextureType]string{
-		Model.DiffuseTexture: texture_diffuse_unifromAddress,
-		Model.NormalsTexture: texture_normals_unifromAddress,
+		Model.DiffuseTexture:  texture_diffuse_unifromAddress,
+		Model.SpecularTexture: texture_specular_uniformAddress,
+		Model.EmissiveTexture: texture_emissive_uniformAddress,
+		Model.NormalsTexture:  texture_normals_unifromAddress,
 	}
 	numTextureUniformMap = map[Model.TextureType]string{
-		Model.DiffuseTexture: texture_numDiffuse_uniformAddress,
-		Model.NormalsTexture: texture_numNormals_uniformAddress,
+		Model.DiffuseTexture:  texture_numDiffuse_uniformAddress,
+		Model.SpecularTexture: texture_numSpecular_uniformAddress,
+		Model.EmissiveTexture: texture_numEmissive_uniformAddress,
+		Model.NormalsTexture:  texture_numNormals_uniformAddress,
 	}
 )
 
@@ -131,7 +139,6 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 	}
 	for textureType, numTextures := range textureIndexMap {
 		err.Push(program.BindUniform(int32(numTextures), numTextureUniformMap[textureType]))
-
 	}
 
 	return err.Err()

@@ -50,7 +50,6 @@ func main() {
 	}
 
 	openGLRenderTarget := &RenderTarget.OpenGLRenderTarget{
-		Window:       window,
 		Culling:      true,
 		DepthTest:    true,
 		DebugLogging: false,
@@ -58,6 +57,7 @@ func main() {
 	if err := openGLRenderTarget.Init(); err != nil {
 		panic(err)
 	}
+	openGLRenderTarget.SetFrameBuffer(window)
 
 	shaderProgram, err := PhongShader.NewPhongShaderProgram(vertexShaders, fragmentShaders)
 	if err != nil {
@@ -151,5 +151,5 @@ func main() {
 	scene.Root.AddChild(modelRotorNode)
 	modelRotorNode.AddChild(modelNode)
 
-	RenderTarget.RunRenderLoop(scene)
+	RenderTarget.RunRenderLoop(scene, window)
 }

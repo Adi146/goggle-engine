@@ -129,3 +129,7 @@ func (window *SDLWindow) EnableVSync() {
 func (window *SDLWindow) EnableAdaptiveSync() {
 	sdl.GLSetSwapInterval(-1)
 }
+
+func (window *SDLWindow) GetFBO() uint32 {
+	return 0
+}

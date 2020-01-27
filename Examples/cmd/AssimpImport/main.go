@@ -53,7 +53,6 @@ func main() {
 	}
 
 	openGLRenderTarget := &RenderTarget.OpenGLRenderTarget{
-		Window:       window,
 		Culling:      true,
 		DepthTest:    true,
 		DebugLogging: false,
@@ -61,6 +60,7 @@ func main() {
 	if err := openGLRenderTarget.Init(); err != nil {
 		panic(err)
 	}
+	openGLRenderTarget.SetFrameBuffer(window)
 
 	shaderProgram, err := PhongShader.NewPhongShaderProgram(vertexShaders, fragmentShaders)
 	if err != nil {
@@ -102,11 +102,11 @@ func main() {
 
 	modelNode := &Node.ModelNode{
 		File: modelFile,
-		Textures: Node.TextureConfiguration{
-			Diffuse: []string{
+		Textures: map[string][]string{
+			"diffuse": {
 				diffuseFile,
 			},
-			Normals: []string{
+			"normals": {
 				normalFile,
 			},
 		},
@@ -128,5 +128,5 @@ func main() {
 	pointLightRotor.AddChild(pointLightNode1)
 	scene.Root.AddChild(modelNode)
 
-	RenderTarget.RunRenderLoop(scene)
+	RenderTarget.RunRenderLoop(scene, window)
 }

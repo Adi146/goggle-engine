@@ -52,48 +52,48 @@ type YamlConfig struct {
 	RootNode Scene.IParentNode
 }
 
-func ReadYamlConfig(file *os.File) (*Scene.Scene, error) {
+func ReadYamlConfig(file *os.File) (*Scene.Scene, Window.IWindow, error) {
 	config := YamlConfig{}
 	bytes, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if err := yaml.Unmarshal(bytes, &config); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	window, err := config.UnmarshalWindow()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	config.RenderTargetConfig.Window = window
 	if err := config.RenderTargetConfig.Init(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	config.RenderTargetConfig.SetFrameBuffer(window)
 
 	shader, err := config.UnmarshalShader()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	config.RenderTargetConfig.SetActiveShaderProgram(shader)
 
 	root, err := config.RootConfig.Unmarshal("root")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if rootAsParent, isParent := root.(Scene.IParentNode); isParent {
 		config.RootNode = rootAsParent
 	} else {
-		return nil, fmt.Errorf("root is not a parent node")
+		return nil, nil, fmt.Errorf("root is not a parent node")
 	}
 
 	scene := Scene.NewScene(config.RenderTargetConfig)
 	scene.SetRoot(config.RootNode)
 
-	return scene, nil
+	return scene, window, nil
 }
 
 func (config *YamlConfig) UnmarshalWindow() (Window.IWindow, error) {

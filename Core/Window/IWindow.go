@@ -1,15 +1,17 @@
 package Window
 
+import "github.com/Adi146/goggle-engine/Core/Buffer"
+
 type IWindow interface {
+	Buffer.IFrameBuffer
+
 	Init() error
-	Destroy()
 
 	SwapWindow()
 	PollEvents()
 	ShouldClose() bool
 
 	GetTimeDeltaAndFPS() (float32, uint32)
-	GetSize() (int32, int32)
 
 	GetKeyboardInput() IKeyboardInput
 	GetMouseInput() IMouseInput

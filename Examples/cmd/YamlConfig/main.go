@@ -25,10 +25,10 @@ func main() {
 	}
 	defer file.Close()
 
-	scene, window, err := Factory.ReadYamlConfig(file)
+	config, err := Factory.ReadYamlConfig(file)
 	if err != nil {
 		panic(err)
 	}
 
-	RenderTarget.RunRenderLoop(scene, window)
+	RenderTarget.RunRenderLoop(config.Scene, config.FrameBuffers)
 }

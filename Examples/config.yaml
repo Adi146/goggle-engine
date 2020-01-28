@@ -11,14 +11,35 @@ window:
     width: 800
     height: 800
 
-shader:
-  type: phong
-  vertexShaders:
-    - ../Core/Shader/PhongShader/phong.vert
-  fragmentShaders:
-    - ../Core/Shader/PhongShader/phong.frag
-    - ../Core/Shader/PhongShader/material.frag
-    - ../Core/Shader/PhongShader/lights.frag
+shaders:
+  shadowDepthShader:
+    type: depth
+    vertexShaders:
+      - ../Core/Shader/DepthShader/depth.vert
+    fragmentShaders:
+      - ../Core/Shader/DepthShader/depth.frag
+  phong:
+    type: phong
+    vertexShaders:
+      - ../Core/Shader/PhongShader/phong.vert
+    fragmentShaders:
+      - ../Core/Shader/PhongShader/phong.frag
+      - ../Core/Shader/PhongShader/material.frag
+      - ../Core/Shader/PhongShader/lights.frag
+
+frameBuffers:
+  - type: sdlWindow
+    config:
+      title: YamlConfig Example
+      type: window
+      width: 800
+      height: 800
+    shader: phong
+  #- type: depthBuffer
+  #  config:
+  #    width: 1024
+  #    height: 1024
+  #  shader: shadowDepthShader
 
 root:
   type: Scene.ParentBaseNode
@@ -54,48 +75,20 @@ root:
     modelRotor:
       type: SceneGraph.Rotor
       config:
-        speed: 1
+        speed: 0
       children:
         suzanne:
           type: Node.ModelNode
           config:
-            file: Models/suzanne.obj
-    lightRotor:
-      type: SceneGraph.Rotor
-      config:
-        speed: -1
-      children:
-        lightBlue1:
-          type: Node.LightNode.PointLightNode
-          config:
-            pointLight: &bluePointLightConfig
-              ambient: [0, 0, 0.2]
-              diffuse: [0, 0, 1]
-              specular: [0, 0, 1]
-              linear: 0.027
-              quadratic: 0.0028
+            file: Models/construction_light/construction_light.fbx
+            textures:
+              diffuse:
+                - Models/construction_light/diffusemap.png
+              specular:
+                - Models/construction_light/specular.png
+              emissive:
+                - Models/construction_light/glow.png
+              normals:
+                - Models/construction_light/normal.png
           transformation:
-            - translation: [0, 0, 30]
-        lightBlue2:
-          type: Node.LightNode.PointLightNode
-          config:
-            pointLight: *bluePointLightConfig
-          transformation:
-            - translation: [0, 0, -30]
-        lightRed1:
-          type: Node.LightNode.PointLightNode
-          config:
-            pointLight: &redPointLightConfig
-              ambient: [0.2, 0, 0]
-              diffuse: [1, 0, 0]
-              specular: [2, 0, 0]
-              linear: 0.027
-              quadratic: 0.0028
-          transformation:
-            - translation: [30, 0, 0]
-        lightRed2:
-          type: Node.LightNode.PointLightNode
-          config:
-            pointLight: *redPointLightConfig
-          transformation:
-            - translation: [-30, 0, 0]
+            - scale: 0.01

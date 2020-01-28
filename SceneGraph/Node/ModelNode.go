@@ -74,10 +74,10 @@ func (node *ModelNode) Draw() error {
 	var err Error.ErrorCollection
 
 	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		err.Push(scene.GetActiveShaderProgram().BindObject(node.Model))
+	if scene != nil && scene.GetFrameBuffer().GetShaderProgram() != nil {
+		err.Push(scene.GetFrameBuffer().GetShaderProgram().BindObject(node.Model))
 		for _, mesh := range node.Meshes {
-			err.Push(scene.GetActiveShaderProgram().BindObject(mesh.Material))
+			err.Push(scene.GetFrameBuffer().GetShaderProgram().BindObject(mesh.Material))
 			mesh.Draw()
 		}
 	}

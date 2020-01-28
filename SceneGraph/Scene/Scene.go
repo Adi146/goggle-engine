@@ -19,14 +19,19 @@ func NewScene(renderTarget *RenderTarget.OpenGLRenderTarget) *Scene {
 	}
 }
 
-func (scene *Scene) Draw(timeDelta float32) {
+func (scene *Scene) Tick(timeDelta float32) {
+	if scene.Root != nil {
+		Log.Error(Error.NewErrorWithFields(scene.Root.TickChildren(timeDelta), scene.Root.GetLogFields()), "tick error")
+	}
+}
+
+func (scene *Scene) Draw() {
 	scene.OpenGLRenderTarget.Clear(&Vector.Vector4{0, 0, 0, 1})
 
 	if scene.Root != nil {
-		Log.Error(Error.NewErrorWithFields(scene.Root.TickChildren(timeDelta), scene.Root.GetLogFields()), "tick error")
-		Log.Error(scene.GetActiveShaderProgram().BeginDraw(), "begin draw error")
+		Log.Error(scene.GetFrameBuffer().GetShaderProgram().BeginDraw(), "begin draw error")
 		Log.Error(Error.NewErrorWithFields(scene.Root.DrawChildren(), scene.Root.GetLogFields()), "render error")
-		scene.GetActiveShaderProgram().EndDraw()
+		scene.GetFrameBuffer().GetShaderProgram().EndDraw()
 	}
 }
 

@@ -2,7 +2,6 @@ package DepthShader
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Light"
@@ -54,7 +53,7 @@ func (program *DepthShaderProgram) bindDirectionalLight(light *Light.Directional
 
 	lightSpaceMatrix := lightView.Mul(lightProjection)
 
-	program.BindUniform(lightSpaceMatrix, lightSpaceMatrix_uniformAddress)
+	return program.BindUniform(lightSpaceMatrix, lightSpaceMatrix_uniformAddress)
 }
 
 func (program *DepthShaderProgram) bindModel(model *Model.Model) error {

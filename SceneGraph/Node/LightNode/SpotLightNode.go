@@ -33,11 +33,13 @@ func (node *SpotLightNode) Init(nodeID string) error {
 func (node *SpotLightNode) Tick(timeDelta float32) error {
 	node.SpotLight.Position = *node.GetGlobalPosition()
 	node.SpotLight.Direction = *node.GetGlobalTransformation().Inverse().Transpose().MulVector(node.InitialDirection).Normalize()
+	return nil
+}
 
+func (node *SpotLightNode) Draw() error {
 	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		return scene.GetActiveShaderProgram().BindObject(&node.SpotLight)
+	if scene != nil && scene.GetFrameBuffer().GetShaderProgram() != nil {
+		return scene.GetFrameBuffer().GetShaderProgram().BindObject(&node.SpotLight)
 	}
-
 	return nil
 }

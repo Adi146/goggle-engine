@@ -1,7 +1,11 @@
 package Window
 
 import (
+	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
+	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/veandco/go-sdl2/sdl"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 var typeFlags = map[string]uint32{
@@ -11,6 +15,8 @@ var typeFlags = map[string]uint32{
 }
 
 type SDLWindow struct {
+	FrameBuffer.FrameBuffer
+
 	window    *sdl.Window
 	glContext sdl.GLContext
 
@@ -57,6 +63,9 @@ func (window *SDLWindow) Init() error {
 	if err != nil {
 		return err
 	}
+	if err := gl.Init(); err != nil {
+		return err
+	}
 
 	window.window = sdlWindow
 	window.glContext = glContext
@@ -64,6 +73,7 @@ func (window *SDLWindow) Init() error {
 	window.mouseInput = NewSDLMouseInput()
 	window.performanceCounterFrequency = sdl.GetPerformanceFrequency()
 	window.lastCounter = sdl.GetPerformanceCounter()
+	window.FBO = 0
 
 	return nil
 }
@@ -130,6 +140,6 @@ func (window *SDLWindow) EnableAdaptiveSync() {
 	sdl.GLSetSwapInterval(-1)
 }
 
-func (window *SDLWindow) GetFBO() uint32 {
-	return 0
+func (window *SDLWindow) GetTextures() []*Model.Texture {
+	return nil
 }

@@ -37,10 +37,13 @@ func (node *DirectionalLightNode) Init(nodeID string) error {
 func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 	node.DirectionalLight.Direction = *node.GetGlobalTransformation().MulVector(node.InitialDirection).Normalize()
 
-	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		return scene.GetActiveShaderProgram().BindObject(&node.DirectionalLight)
-	}
+	return nil
+}
 
+func (node *DirectionalLightNode) Draw() error {
+	scene := node.GetScene()
+	if scene != nil && scene.GetFrameBuffer() != nil {
+		return scene.GetFrameBuffer().GetShaderProgram().BindObject(&node.DirectionalLight)
+	}
 	return nil
 }

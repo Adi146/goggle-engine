@@ -1,11 +1,11 @@
 package Window
 
-import "github.com/Adi146/goggle-engine/Core/Buffer"
+import (
+	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
+)
 
 type IWindow interface {
-	Buffer.IFrameBuffer
-
-	Init() error
+	FrameBuffer.IFrameBuffer
 
 	SwapWindow()
 	PollEvents()

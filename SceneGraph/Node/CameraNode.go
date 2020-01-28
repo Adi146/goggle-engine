@@ -64,11 +64,13 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	node.Camera.Up = invTransGlobalTransformation.MulVector(node.InitialUp).Normalize()
 
 	node.Camera.Tick(timeDelta)
+	return nil
+}
 
+func (node *CameraNode) Draw() error {
 	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		return scene.GetActiveShaderProgram().BindObject(node.Camera)
+	if scene != nil && scene.GetFrameBuffer() != nil {
+		return scene.GetFrameBuffer().GetShaderProgram().BindObject(node.Camera)
 	}
-
 	return nil
 }

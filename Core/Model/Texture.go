@@ -13,10 +13,11 @@ const (
 	SpecularTexture
 	EmissiveTexture
 	NormalsTexture
+	OtherTexture
 )
 
 type Texture struct {
-	textureId   uint32
+	TextureID   uint32
 	TextureType TextureType
 }
 
@@ -25,8 +26,8 @@ func NewTextureFromFile(img *image.RGBA, textureType TextureType) (*Texture, err
 		TextureType: textureType,
 	}
 
-	gl.GenTextures(1, &texture.textureId)
-	gl.BindTexture(gl.TEXTURE_2D, texture.textureId)
+	gl.GenTextures(1, &texture.TextureID)
+	gl.BindTexture(gl.TEXTURE_2D, texture.TextureID)
 
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -40,7 +41,7 @@ func NewTextureFromFile(img *image.RGBA, textureType TextureType) (*Texture, err
 }
 
 func (tex *Texture) Bind() {
-	gl.BindTexture(gl.TEXTURE_2D, tex.textureId)
+	gl.BindTexture(gl.TEXTURE_2D, tex.TextureID)
 }
 
 func (tex *Texture) Unbind() {

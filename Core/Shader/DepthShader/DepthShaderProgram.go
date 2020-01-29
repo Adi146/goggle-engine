@@ -49,7 +49,7 @@ func (program *DepthShaderProgram) bindDirectionalLight(light *Light.Directional
 	farPlane := float32(7.5)
 
 	lightProjection := Matrix.Orthogonal(-10.0, 10, -10, 10, nearPlane, farPlane)
-	lightView := Matrix.LookAt(&Vector.Vector3{-2.0, 4.0, -1.0}, &Vector.Vector3{0.0, 0.0, 0.0}, &Vector.Vector3{0.0, 1.0, 0.0})
+	lightView := Matrix.LookAt(&Vector.Vector3{0, 5, 0}, &Vector.Vector3{0.0, 0.0, 0.0}, &Vector.Vector3{0.0, 1.0, 0.0})
 
 	lightSpaceMatrix := lightView.Mul(lightProjection)
 

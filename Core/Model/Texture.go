@@ -6,14 +6,13 @@ import (
 	_ "image/png"
 )
 
-type TextureType int
+type TextureType string
 
 const (
-	DiffuseTexture TextureType = iota
-	SpecularTexture
-	EmissiveTexture
-	NormalsTexture
-	OtherTexture
+	DiffuseTexture  TextureType = "diffuse"
+	SpecularTexture TextureType = "specular"
+	EmissiveTexture TextureType = "emissive"
+	NormalsTexture  TextureType = "normals"
 )
 
 type Texture struct {

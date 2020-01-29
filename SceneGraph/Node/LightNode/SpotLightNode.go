@@ -38,7 +38,7 @@ func (node *SpotLightNode) Tick(timeDelta float32) error {
 
 func (node *SpotLightNode) Draw() error {
 	scene := node.GetScene()
-	if scene != nil && scene.GetFrameBuffer().GetShaderProgram() != nil {
+	if scene != nil && scene.GetFrameBuffer() != nil {
 		return scene.GetFrameBuffer().GetShaderProgram().BindObject(&node.SpotLight)
 	}
 	return nil

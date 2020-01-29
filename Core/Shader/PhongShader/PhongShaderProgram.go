@@ -6,6 +6,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/Shadow"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
@@ -52,6 +53,8 @@ const (
 
 	viewMatrix_uniformAddress       = "u_viewMatrix"
 	projectionMatrix_uniformAddress = "u_projectionMatrix"
+
+	depthMap_uniformAddress = "u_depthMap"
 )
 
 var (
@@ -60,6 +63,7 @@ var (
 		Model.SpecularTexture: texture_specular_uniformAddress,
 		Model.EmissiveTexture: texture_emissive_uniformAddress,
 		Model.NormalsTexture:  texture_normals_unifromAddress,
+		Shadow.DepthMap:	   depthMap_uniformAddress,
 	}
 	numTextureUniformMap = map[Model.TextureType]string{
 		Model.DiffuseTexture:  texture_numDiffuse_uniformAddress,
@@ -72,8 +76,9 @@ var (
 type PhongShaderProgram struct {
 	*Shader.ShaderProgramCore
 
-	pointLightIndex int32
-	spotLightIndex  int32
+	pointLightIndex 	int32
+	spotLightIndex  	int32
+	textureIndex		int
 }
 
 func NewPhongShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*PhongShaderProgram, error) {
@@ -103,6 +108,7 @@ func (program *PhongShaderProgram) BeginDraw() error {
 func (program *PhongShaderProgram) EndDraw() {
 	program.pointLightIndex = 0
 	program.spotLightIndex = 0
+	program.textureIndex = 0
 }
 
 func (program *PhongShaderProgram) BindObject(i interface{}) error {
@@ -111,6 +117,8 @@ func (program *PhongShaderProgram) BindObject(i interface{}) error {
 		return program.bindMaterial(v)
 	case *Model.Model:
 		return program.bindModel(v)
+	case *Model.Texture:
+		return program.bindTexture(v)
 	case Camera.ICamera:
 		return program.bindCamera(v)
 	case *Light.DirectionalLight:
@@ -134,14 +142,23 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 
 	textureIndexMap := make(map[Model.TextureType]int)
 	for i, texture := range material.Textures {
-		err.Push(program.BindTexture(uint32(i), texture, fmt.Sprintf(textureUniformMap[texture.TextureType], textureIndexMap[texture.TextureType])))
+		err.Push(program.BindTexture(uint32(program.textureIndex + i), texture, fmt.Sprintf(textureUniformMap[texture.TextureType], textureIndexMap[texture.TextureType])))
 		textureIndexMap[texture.TextureType] += 1
 	}
 	for textureType, numTextures := range textureIndexMap {
 		err.Push(program.BindUniform(int32(numTextures), numTextureUniformMap[textureType]))
 	}
 
+	program.textureIndex += len(material.Textures)
+
 	return err.Err()
+}
+
+func (program *PhongShaderProgram) bindTexture(texture *Model.Texture) error {
+	err := program.BindTexture(uint32(program.textureIndex), texture, textureUniformMap[texture.TextureType])
+	program.textureIndex += 1
+
+	return err
 }
 
 func (program *PhongShaderProgram) bindCamera(camera Camera.ICamera) error {

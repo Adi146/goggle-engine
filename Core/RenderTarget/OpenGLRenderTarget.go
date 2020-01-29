@@ -3,7 +3,6 @@ package RenderTarget
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Utils/Log"
 	"unsafe"
 
@@ -48,11 +47,6 @@ func (renderTarget *OpenGLRenderTarget) SetFrameBuffer(frameBuffer FrameBuffer.I
 	frameBuffer.GetShaderProgram().Bind()
 
 	renderTarget.frameBuffer = frameBuffer
-}
-
-func (renderTarget *OpenGLRenderTarget) Clear(color *Vector.Vector4) {
-	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	gl.ClearColor(color[0], color[1], color[2], color[3])
 }
 
 func EnableDepthTest() {

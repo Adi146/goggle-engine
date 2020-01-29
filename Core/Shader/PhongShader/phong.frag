@@ -1,6 +1,7 @@
 #version 410 core
 
 in vec3 v_position;
+in vec2 v_uv;
 
 struct MaterialColor {
     vec3 diffuse;
@@ -18,6 +19,8 @@ vec3 calculateDirectionalLight(in vec3 viewVector, in vec3 normalVector, in Mate
 vec3 calculatePointLight(in vec3 viewVector, in vec3 normalVector, in MaterialColor color, in float shininess);
 vec3 calculateSpotLight(in vec3 viewVector, in vec3 normalVector, in MaterialColor color, in float shininess);
 
+uniform sampler2D u_depthMap;
+
 void main() {
     MaterialColor color = GetMaterialColor();
     float shininess = GetShininess();
@@ -31,5 +34,8 @@ void main() {
     fragmentColor += calculateSpotLight(view, normal, color, shininess);
 
     f_color = vec4(fragmentColor + color.emissive, 1.0f) ;
+
+    //float depthValue = texture(u_depthMap, v_uv).r;
+    //f_color = vec4(vec2(depthValue), 1.0, 1.0);
 }
 

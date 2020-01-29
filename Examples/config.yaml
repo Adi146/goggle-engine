@@ -35,11 +35,11 @@ frameBuffers:
       width: 800
       height: 800
     shader: phong
-  #- type: depthBuffer
-  #  config:
-  #    width: 1024
-  #    height: 1024
-  #  shader: shadowDepthShader
+  - type: depthBuffer
+    config:
+      width: 1024
+      height: 1024
+    shader: shadowDepthShader
 
 root:
   type: Scene.ParentBaseNode
@@ -50,16 +50,23 @@ root:
         keyboardSensitivity: 1
         mouseSensitivity: 0.5
       transformation:
-        - translation: [0, 0, 5]
+        - translation: [0, 5, 0]
       children:
         camera:
           type: Node.Camera
           config:
-            perspective:
-              fovy: 90
-              aspect: 1
+            orthogonal:
+              left: -10
+              right: 10
+              bottom: -10
+              top: 10
               near: 0.1
-              far: 100
+              far: 7.5
+            #perspective:
+            #  fovy: 90
+            #  aspect: 1
+            #  near: 0.1
+            #  far: 100
           transformation:
             - rotation:
                 angle: 180
@@ -72,23 +79,22 @@ root:
           diffuse: [0.8, 0.8, 0.8]
           specular: [0.8, 0.8, 0.8]
         initialDirection: [-1, -1, -1]
-    modelRotor:
-      type: SceneGraph.Rotor
+    arena:
+      type: Node.ModelNode
       config:
-        speed: 0
-      children:
-        suzanne:
-          type: Node.ModelNode
-          config:
-            file: Models/construction_light/construction_light.fbx
-            textures:
-              diffuse:
-                - Models/construction_light/diffusemap.png
-              specular:
-                - Models/construction_light/specular.png
-              emissive:
-                - Models/construction_light/glow.png
-              normals:
-                - Models/construction_light/normal.png
-          transformation:
-            - scale: 0.01
+        file: Models/arena.obj
+    construction_light:
+      type: Node.ModelNode
+      config:
+        file: Models/construction_light/construction_light.fbx
+        textures:
+          diffuse:
+            - Models/construction_light/diffusemap.png
+          specular:
+            - Models/construction_light/specular.png
+          emissive:
+            - Models/construction_light/glow.png
+          normals:
+            - Models/construction_light/normal.png
+      transformation:
+        - scale: 0.01

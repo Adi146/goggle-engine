@@ -7,6 +7,10 @@ import (
 	"github.com/go-gl/gl/all-core/gl"
 )
 
+const (
+	DepthMap Model.TextureType = "depthMap"
+)
+
 type DepthBuffer struct {
 	FrameBuffer.FrameBuffer
 	texture Model.Texture
@@ -18,8 +22,13 @@ type DepthBuffer struct {
 }
 
 func (buff *DepthBuffer) Init() error {
+	if err := gl.Init(); err != nil {
+		return err
+	}
+
 	gl.GenFramebuffers(1, &buff.FBO)
 
+	gl.GenTextures(1, &buff.texture.TextureID)
 	gl.BindTexture(gl.TEXTURE_2D, buff.texture.TextureID)
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, buff.Width, buff.Height, 0, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
 	gl.TextureParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
@@ -33,16 +42,14 @@ func (buff *DepthBuffer) Init() error {
 	gl.ReadBuffer(gl.NONE)
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
 
+	buff.texture.TextureType = DepthMap
+
 	return nil
 }
 
 func (buff *DepthBuffer) Destroy() {
 	gl.DeleteFramebuffers(1, &buff.FBO)
 }
-
-/*func (depthMap *DepthBuffer) Clear() {
-	gl.Clear(gl.DEPTH_BUFFER_BIT)
-}*/
 
 func (buff *DepthBuffer) GetSize() (int32, int32) {
 	return buff.Width, buff.Height

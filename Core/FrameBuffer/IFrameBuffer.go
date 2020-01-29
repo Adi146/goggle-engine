@@ -15,5 +15,7 @@ type IFrameBuffer interface {
 	GetShaderProgram() Shader.IShaderProgram
 	SetShaderProgram(shaderProgram Shader.IShaderProgram)
 
+	Clear()
+
 	GetTextures() []*Model.Texture
 }

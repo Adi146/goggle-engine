@@ -1,13 +1,13 @@
 package RenderTarget
 
 import (
+	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Window"
 )
 
 type IRenderTarget interface {
-	Clear(color *Vector.Vector4)
 	Tick(timeDelta float32)
 	Draw()
 	GetFrameBuffer() FrameBuffer.IFrameBuffer
@@ -22,9 +22,22 @@ func RunRenderLoop(renderer IRenderTarget, frameBuffers []FrameBuffer.IFrameBuff
 
 		timeDelta, _ := window.GetTimeDeltaAndFPS()
 		renderer.Tick(timeDelta)
-		for _, frameBuffer := range frameBuffers {
+
+		var frameBufferTextures []*Model.Texture
+		for i := range frameBuffers {
+			frameBuffer := frameBuffers[len(frameBuffers)-1-i]
 			renderer.SetFrameBuffer(frameBuffer)
+
+			frameBuffer.Clear()
+
+			for _, frameBufferTexture := range frameBufferTextures {
+				err := frameBuffer.GetShaderProgram().BindObject(frameBufferTexture)
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
 			renderer.Draw()
+			frameBufferTextures = frameBuffer.GetTextures()
 		}
 		window.SwapWindow()
 	}

@@ -34,7 +34,7 @@ func (node *PointLightNode) Tick(timeDelta float32) error {
 
 func (node *PointLightNode) Draw() error {
 	scene := node.GetScene()
-	if scene != nil && scene.GetFrameBuffer().GetShaderProgram() != nil {
+	if scene != nil && scene.GetFrameBuffer() != nil {
 		return scene.GetFrameBuffer().GetShaderProgram().BindObject(&node.PointLight)
 	}
 	return nil

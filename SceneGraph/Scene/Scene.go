@@ -1,7 +1,6 @@
 package Scene
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/RenderTarget"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 	"github.com/Adi146/goggle-engine/Utils/Log"
@@ -26,8 +25,6 @@ func (scene *Scene) Tick(timeDelta float32) {
 }
 
 func (scene *Scene) Draw() {
-	scene.OpenGLRenderTarget.Clear(&Vector.Vector4{0, 0, 0, 1})
-
 	if scene.Root != nil {
 		Log.Error(scene.GetFrameBuffer().GetShaderProgram().BeginDraw(), "begin draw error")
 		Log.Error(Error.NewErrorWithFields(scene.Root.DrawChildren(), scene.Root.GetLogFields()), "render error")

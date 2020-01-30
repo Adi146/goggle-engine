@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/Adi146/goggle-engine/Core/RenderTarget"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"os"
 	"runtime"
 
@@ -25,10 +24,10 @@ func main() {
 	}
 	defer file.Close()
 
-	scene, err := Factory.ReadYamlConfig(file)
+	config, err := YamlFactory.ReadConfig(file)
 	if err != nil {
 		panic(err)
 	}
 
-	RenderTarget.RunRenderLoop(scene)
+	config.Pipeline.Run()
 }

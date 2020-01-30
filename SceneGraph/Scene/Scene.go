@@ -1,29 +1,28 @@
 package Scene
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-	"github.com/Adi146/goggle-engine/Core/RenderTarget"
+	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 	"github.com/Adi146/goggle-engine/Utils/Log"
 )
 
 type Scene struct {
-	*RenderTarget.OpenGLRenderTarget
+	coreScene.SceneBase
 	Root IParentNode
 }
 
-func NewScene(renderTarget *RenderTarget.OpenGLRenderTarget) *Scene {
-	return &Scene{
-		OpenGLRenderTarget: renderTarget,
-		Root:               nil,
+func (scene *Scene) Init() error {
+	return nil
+}
+
+func (scene *Scene) Tick(timeDelta float32) {
+	if scene.Root != nil {
+		Log.Error(Error.NewErrorWithFields(scene.Root.TickChildren(timeDelta), scene.Root.GetLogFields()), "tick error")
 	}
 }
 
-func (scene *Scene) Draw(timeDelta float32) {
-	scene.OpenGLRenderTarget.Clear(&Vector.Vector4{0, 0, 0, 1})
-
+func (scene *Scene) Draw() {
 	if scene.Root != nil {
-		Log.Error(Error.NewErrorWithFields(scene.Root.TickChildren(timeDelta), scene.Root.GetLogFields()), "tick error")
 		Log.Error(scene.GetActiveShaderProgram().BeginDraw(), "begin draw error")
 		Log.Error(Error.NewErrorWithFields(scene.Root.DrawChildren(), scene.Root.GetLogFields()), "render error")
 		scene.GetActiveShaderProgram().EndDraw()

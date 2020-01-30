@@ -6,7 +6,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Light"
-	"github.com/Adi146/goggle-engine/Core/RenderTarget"
+	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/Examples/SceneGraph"
@@ -52,7 +52,7 @@ func main() {
 		panic(err)
 	}
 
-	openGLRenderTarget := &RenderTarget.OpenGLRenderTarget{
+	openGLRenderTarget := &Scene.SceneBase{
 		Window:       window,
 		Culling:      true,
 		DepthTest:    true,
@@ -128,5 +128,5 @@ func main() {
 	pointLightRotor.AddChild(pointLightNode1)
 	scene.Root.AddChild(modelNode)
 
-	RenderTarget.RunRenderLoop(scene)
+	Scene.RunRenderLoop(scene)
 }

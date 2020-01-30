@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"reflect"
 )
@@ -18,12 +18,12 @@ type CameraNode struct {
 	InitialFront *Vector.Vector3 `yaml:"initialFront"`
 	InitialUp    *Vector.Vector3 `yaml:"initialUp"`
 
-	PerspectiveMatrixConfig *Factory.PerspectiveConfig `yaml:"perspective"`
-	OrthogonalMatrixConfig  *Factory.OrthogonalConfig  `yaml:"orthogonal"`
+	PerspectiveMatrixConfig *YamlFactory.PerspectiveConfig `yaml:"perspective"`
+	OrthogonalMatrixConfig  *YamlFactory.OrthogonalConfig  `yaml:"orthogonal"`
 }
 
 func init() {
-	Factory.NodeFactory[CameraNodeFactoryName] = reflect.TypeOf((*CameraNode)(nil)).Elem()
+	YamlFactory.NodeFactory[CameraNodeFactoryName] = reflect.TypeOf((*CameraNode)(nil)).Elem()
 }
 
 func (node *CameraNode) Init(nodeID string) error {
@@ -64,11 +64,13 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	node.Camera.Up = invTransGlobalTransformation.MulVector(node.InitialUp).Normalize()
 
 	node.Camera.Tick(timeDelta)
+	return nil
+}
 
+func (node *CameraNode) Draw() error {
 	scene := node.GetScene()
 	if scene != nil && scene.GetActiveShaderProgram() != nil {
 		return scene.GetActiveShaderProgram().BindObject(node.Camera)
 	}
-
 	return nil
 }

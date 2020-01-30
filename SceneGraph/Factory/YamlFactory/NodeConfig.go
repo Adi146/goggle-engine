@@ -1,4 +1,4 @@
-package Factory
+package YamlFactory
 
 import (
 	"fmt"
@@ -7,14 +7,20 @@ import (
 	"reflect"
 )
 
-type YamlNodeConfig struct {
-	Type           string                    `yaml:"type"`
-	Children       map[string]YamlNodeConfig `yaml:"children"`
-	Config         yaml.Node                 `yaml:"config"`
-	Transformation []map[string]yaml.Node    `yaml:"transformation"`
+var NodeFactory = map[string]reflect.Type{
+	"Scene.ChildBaseNode":        reflect.TypeOf((*Scene.ChildNodeBase)(nil)).Elem(),
+	"Scene.ParentBaseNode":       reflect.TypeOf((*Scene.ParentNodeBase)(nil)).Elem(),
+	"Scene.IntermediateNodeBase": reflect.TypeOf((*Scene.IntermediateNodeBase)(nil)).Elem(),
 }
 
-func (nodeConfig *YamlNodeConfig) Unmarshal(nodeID string) (Scene.INode, error) {
+type NodeConfig struct {
+	Type           string                 `yaml:"type"`
+	Children       map[string]NodeConfig  `yaml:"children"`
+	Config         yaml.Node              `yaml:"config"`
+	Transformation []map[string]yaml.Node `yaml:"transformation"`
+}
+
+func (nodeConfig *NodeConfig) Unmarshal(nodeID string) (Scene.INode, error) {
 	nodeType, ok := NodeFactory[nodeConfig.Type]
 	if !ok {
 		return nil, fmt.Errorf("node type %s is not in factory", nodeConfig.Type)
@@ -40,7 +46,7 @@ func (nodeConfig *YamlNodeConfig) Unmarshal(nodeID string) (Scene.INode, error) 
 	return node, nil
 }
 
-func (nodeConfig *YamlNodeConfig) UnmarshalChildren(node Scene.INode) error {
+func (nodeConfig *NodeConfig) UnmarshalChildren(node Scene.INode) error {
 	if nodeAsParent, isParent := node.(Scene.IParentNode); isParent {
 		for childID, child := range nodeConfig.Children {
 			childNode, err := child.Unmarshal(childID)
@@ -59,7 +65,7 @@ func (nodeConfig *YamlNodeConfig) UnmarshalChildren(node Scene.INode) error {
 	return nil
 }
 
-func (nodeConfig *YamlNodeConfig) UnmarshalTransformation(node Scene.INode) error {
+func (nodeConfig *NodeConfig) UnmarshalTransformation(node Scene.INode) error {
 	for _, transformationGroup := range nodeConfig.Transformation {
 		for transformationType, transformationConfig := range transformationGroup {
 			matrixType, ok := MatrixFactory[transformationType]

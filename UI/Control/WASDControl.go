@@ -4,7 +4,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Angle"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"reflect"
 )
@@ -20,7 +20,7 @@ type WASDControl struct {
 }
 
 func init() {
-	Factory.NodeFactory["UI.Control.WASDControl"] = reflect.TypeOf((*WASDControl)(nil)).Elem()
+	YamlFactory.NodeFactory["UI.Control.WASDControl"] = reflect.TypeOf((*WASDControl)(nil)).Elem()
 }
 
 func (node *WASDControl) Init(nodeID string) error {
@@ -37,22 +37,22 @@ func (node *WASDControl) Init(nodeID string) error {
 func (node *WASDControl) Tick(timeDelta float32) error {
 	scene := node.GetScene()
 	if scene != nil {
-		xRel, yRel := scene.GetWindow().GetMouseInput().GetRelativeMovement()
+		xRel, yRel := scene.GetMouseInput().GetRelativeMovement()
 		node.Rotate(Angle.Radians(xRel*node.MouseSensitivity), Angle.Radians(yRel*node.MouseSensitivity))
 
-		if scene.GetWindow().GetKeyboardInput().IsKeyPressed("W") {
+		if scene.GetKeyboardInput().IsKeyPressed("W") {
 			node.MoveForwards(node.KeyboardSensitivity * timeDelta)
 		}
 
-		if scene.GetWindow().GetKeyboardInput().IsKeyPressed("S") {
+		if scene.GetKeyboardInput().IsKeyPressed("S") {
 			node.MoveForwards(-node.KeyboardSensitivity * timeDelta)
 		}
 
-		if scene.GetWindow().GetKeyboardInput().IsKeyPressed("A") {
+		if scene.GetKeyboardInput().IsKeyPressed("A") {
 			node.MoveSidewards(-node.KeyboardSensitivity * timeDelta)
 		}
 
-		if scene.GetWindow().GetKeyboardInput().IsKeyPressed("D") {
+		if scene.GetKeyboardInput().IsKeyPressed("D") {
 			node.MoveSidewards(node.KeyboardSensitivity * timeDelta)
 		}
 	}

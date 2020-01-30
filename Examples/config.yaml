@@ -1,101 +1,82 @@
-renderTarget:
-  culling: true
-  depthTest: true
-  debugLogging: true
+openGlLogging: true
 
-window:
-  library: sdl
-  config:
-    title: YamlConfig Example
-    type: window
-    width: 800
-    height: 800
+processingPipeline:
+  - shader: phong
+    frameBuffer: default
+    scene: main
 
-shader:
-  type: phong
-  vertexShaders:
-    - ../Core/Shader/PhongShader/phong.vert
-  fragmentShaders:
-    - ../Core/Shader/PhongShader/phong.frag
-    - ../Core/Shader/PhongShader/material.frag
-    - ../Core/Shader/PhongShader/lights.frag
+shaders:
+  phong:
+    type: phong
+    vertexShaders:
+      - ../Core/Shader/PhongShader/phong.vert
+    fragmentShaders:
+      - ../Core/Shader/PhongShader/phong.frag
+      - ../Core/Shader/PhongShader/material.frag
+      - ../Core/Shader/PhongShader/lights.frag
 
-root:
-  type: Scene.ParentBaseNode
-  children:
-    cameraControl:
-      type: UI.Control.WASDControl
-      config:
-        keyboardSensitivity: 1
-        mouseSensitivity: 0.5
-      transformation:
-        - translation: [0, 0, 5]
-      children:
-        camera:
-          type: Node.Camera
-          config:
-            perspective:
-              fovy: 90
-              aspect: 1
-              near: 0.1
-              far: 100
-          transformation:
-            - rotation:
-                angle: 180
-                axis: [0, 1, 0]
-    sunLight:
-      type: Node.LightNode.DirectionalLightNode
-      config:
-        directionalLight:
-          ambient: [0.32, 0.32, 0.32]
-          diffuse: [0.8, 0.8, 0.8]
-          specular: [0.8, 0.8, 0.8]
-        initialDirection: [-1, -1, -1]
-    modelRotor:
-      type: SceneGraph.Rotor
-      config:
-        speed: 1
-      children:
-        suzanne:
-          type: Node.ModelNode
-          config:
-            file: Models/suzanne.obj
-    lightRotor:
-      type: SceneGraph.Rotor
-      config:
-        speed: -1
-      children:
-        lightBlue1:
-          type: Node.LightNode.PointLightNode
-          config:
-            pointLight: &bluePointLightConfig
-              ambient: [0, 0, 0.2]
-              diffuse: [0, 0, 1]
-              specular: [0, 0, 1]
-              linear: 0.027
-              quadratic: 0.0028
-          transformation:
-            - translation: [0, 0, 30]
-        lightBlue2:
-          type: Node.LightNode.PointLightNode
-          config:
-            pointLight: *bluePointLightConfig
-          transformation:
-            - translation: [0, 0, -30]
-        lightRed1:
-          type: Node.LightNode.PointLightNode
-          config:
-            pointLight: &redPointLightConfig
-              ambient: [0.2, 0, 0]
-              diffuse: [1, 0, 0]
-              specular: [2, 0, 0]
-              linear: 0.027
-              quadratic: 0.0028
-          transformation:
-            - translation: [30, 0, 0]
-        lightRed2:
-          type: Node.LightNode.PointLightNode
-          config:
-            pointLight: *redPointLightConfig
-          transformation:
-            - translation: [-30, 0, 0]
+frameBuffers:
+  default:
+    type: sdlWindow
+    config:
+      title: YamlConfig Example
+      type: window
+      width: 800
+      height: 800
+      depthTest: true
+      culling: true
+
+scenes:
+  main:
+    type: sceneGraph
+    config:
+      root:
+        type: Scene.ParentBaseNode
+        children:
+          cameraControl:
+            type: UI.Control.WASDControl
+            config:
+              keyboardSensitivity: 1
+              mouseSensitivity: 0.5
+            transformation:
+              - translation: [0, 0, 5]
+            children:
+              camera:
+                type: Node.Camera
+                config:
+                  perspective:
+                    fovy: 90
+                    aspect: 1
+                    near: 0.1
+                    far: 100
+                transformation:
+                  - rotation:
+                      angle: 180
+                      axis: [0, 1, 0]
+          sunLight:
+            type: Node.LightNode.DirectionalLightNode
+            config:
+              directionalLight:
+                ambient: [0.32, 0.32, 0.32]
+                diffuse: [0.8, 0.8, 0.8]
+                specular: [0.8, 0.8, 0.8]
+              initialDirection: [-1, -1, -1]
+          arena:
+            type: Node.ModelNode
+            config:
+              file: Models/arena.obj
+          construction_light:
+            type: Node.ModelNode
+            config:
+              file: Models/construction_light/construction_light.fbx
+              textures:
+                diffuse:
+                  - Models/construction_light/diffusemap.png
+                specular:
+                  - Models/construction_light/specular.png
+                emissive:
+                  - Models/construction_light/glow.png
+                normals:
+                  - Models/construction_light/normal.png
+            transformation:
+              - scale: 0.01

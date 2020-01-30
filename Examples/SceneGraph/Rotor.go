@@ -2,7 +2,7 @@ package SceneGraph
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"reflect"
 )
@@ -13,7 +13,7 @@ type Rotor struct {
 }
 
 func init() {
-	Factory.NodeFactory["SceneGraph.Rotor"] = reflect.TypeOf((*Rotor)(nil)).Elem()
+	YamlFactory.NodeFactory["SceneGraph.Rotor"] = reflect.TypeOf((*Rotor)(nil)).Elem()
 }
 
 func (node *Rotor) Init(nodeID string) error {

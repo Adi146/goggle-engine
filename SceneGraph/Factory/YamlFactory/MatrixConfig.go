@@ -1,10 +1,19 @@
-package Factory
+package YamlFactory
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Angle"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"reflect"
 )
+
+var MatrixFactory = map[string]reflect.Type{
+	"translation": reflect.TypeOf((*TranslationConfig)(nil)).Elem(),
+	"rotation":    reflect.TypeOf((*RotationConfig)(nil)).Elem(),
+	"scale":       reflect.TypeOf((*ScaleConfig)(nil)).Elem(),
+	"orthogonal":  reflect.TypeOf((*OrthogonalConfig)(nil)).Elem(),
+	"perspective": reflect.TypeOf((*PerspectiveConfig)(nil)).Elem(),
+}
 
 type IYamlMatrixConfig interface {
 	Decode() *Matrix.Matrix4x4

@@ -53,7 +53,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	window ,err := config.FrameBuffersConfig.Get("default")
+	window, err := config.FrameBuffersConfig.Get("default")
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 
 	return &Factory.Config{
 		Pipeline: ProcessingPipeline.ProcessingPipeline{
-			Steps: pipelineSteps,
+			Steps:  pipelineSteps,
 			Scenes: config.GetScenes(),
 			Window: window.(Window.IWindow),
 		},

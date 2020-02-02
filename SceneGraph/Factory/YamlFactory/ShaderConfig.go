@@ -3,12 +3,14 @@ package YamlFactory
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/Shader/BasicQuadShader"
 	"github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
 )
 
 var ShaderFactory = map[string]func([]string, []string) (Shader.IShaderProgram, error){
 	//"basic": BasicShader.NewBasicIShaderProgram,
-	"phong": PhongShader.NewPhongIShaderProgram,
+	"phong":     PhongShader.NewPhongIShaderProgram,
+	"basicQuad": BasicQuadShader.NewBasicIQuadShader,
 }
 
 type ShadersConfig struct {

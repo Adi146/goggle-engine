@@ -1,8 +1,11 @@
 openGlLogging: true
 
 processingPipeline:
-  - shader: phong
+  - shader: basicQuad
     frameBuffer: default
+    scene: basicQuad
+  - shader: phong
+    frameBuffer: offScreen
     scene: main
 
 shaders:
@@ -14,6 +17,12 @@ shaders:
       - ../Core/Shader/PhongShader/phong.frag
       - ../Core/Shader/PhongShader/material.frag
       - ../Core/Shader/PhongShader/lights.frag
+  basicQuad:
+    type: basicQuad
+    vertexShaders:
+      - ../Core/Shader/BasicQuadShader/basicQuad.vert
+    fragmentShaders:
+      - ../Core/Shader/BasicQuadShader/basicQuad.frag
 
 frameBuffers:
   default:
@@ -25,8 +34,18 @@ frameBuffers:
       height: 800
       depthTest: true
       culling: true
+  offScreen:
+    type: offScreen
+    config:
+      width: 800
+      height: 800
+      depthTest: true
+      culling: true
 
 scenes:
+  basicQuad:
+    type: basicQuad
+    config:
   main:
     type: sceneGraph
     config:

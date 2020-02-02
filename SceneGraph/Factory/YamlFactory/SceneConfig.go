@@ -9,6 +9,7 @@ import (
 
 var SceneFactory = map[string]reflect.Type{
 	"sceneGraph": reflect.TypeOf((*SceneGraphConfig)(nil)).Elem(),
+	"basicQuad":  reflect.TypeOf((*Scene.BasicQuadScene)(nil)).Elem(),
 }
 
 type ScenesConfig struct {
@@ -37,7 +38,7 @@ func (config *ScenesConfig) Get(name string) (Scene.IScene, error) {
 func (config *ScenesConfig) GetScenes() []Scene.IScene {
 	var scenes []Scene.IScene
 
-	for  _, scene := range config.DecodedScenes {
+	for _, scene := range config.DecodedScenes {
 		scenes = append(scenes, scene)
 	}
 	return scenes

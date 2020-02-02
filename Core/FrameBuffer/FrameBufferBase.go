@@ -1,11 +1,11 @@
 package FrameBuffer
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Shader"
+	"fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-type FrameBuffer struct {
+type FrameBufferBase struct {
 	fbo uint32
 
 	Width  int32 `yaml:"width"`
@@ -13,25 +13,24 @@ type FrameBuffer struct {
 
 	DepthTest bool `yaml:"depthTest"`
 	Culling   bool `yaml:"culling"`
-
-	shaderProgram Shader.IShaderProgram
 }
 
-func (buff *FrameBuffer) GetFBO() uint32 {
+func (buff *FrameBufferBase) GetFBO() uint32 {
 	return buff.fbo
 }
 
-func (buff *FrameBuffer) GetSize() (int32, int32) {
+func (buff *FrameBufferBase) GetSize() (int32, int32) {
 	return buff.Width, buff.Height
 }
 
-func (buff *FrameBuffer) Clear() {
+func (buff *FrameBufferBase) Clear() {
 	gl.Clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
 	gl.ClearColor(0, 0, 0, 1)
 }
 
-func (buff *FrameBuffer) Bind() {
+func (buff *FrameBufferBase) Bind() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.GetFBO())
+	fmt.Println(gl.GetError())
 	width, height := buff.GetSize()
 	gl.Viewport(0, 0, width, height)
 

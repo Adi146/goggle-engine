@@ -15,7 +15,7 @@ var typeFlags = map[string]uint32{
 }
 
 type SDLWindow struct {
-	FrameBuffer.FrameBuffer `yaml:",inline"`
+	FrameBuffer.FrameBufferBase `yaml:",inline"`
 
 	window    *sdl.Window
 	glContext sdl.GLContext

@@ -10,6 +10,7 @@ import (
 
 var FrameBufferFactory = map[string]reflect.Type{
 	"sdlWindow": reflect.TypeOf((*Window.SDLWindow)(nil)).Elem(),
+	"offScreen": reflect.TypeOf((*FrameBuffer.OffScreenBuffer)(nil)).Elem(),
 }
 
 type FrameBuffersConfig struct {

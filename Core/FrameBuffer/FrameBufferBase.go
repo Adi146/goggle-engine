@@ -1,7 +1,6 @@
 package FrameBuffer
 
 import (
-	"fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -30,7 +29,6 @@ func (buff *FrameBufferBase) Clear() {
 
 func (buff *FrameBufferBase) Bind() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.GetFBO())
-	fmt.Println(gl.GetError())
 	width, height := buff.GetSize()
 	gl.Viewport(0, 0, width, height)
 

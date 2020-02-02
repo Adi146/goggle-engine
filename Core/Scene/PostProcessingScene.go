@@ -31,12 +31,12 @@ var (
 	}
 )
 
-type BasicQuadScene struct {
+type PostProcessingScene struct {
 	SceneBase
 	quad *Model.Mesh
 }
 
-func (scene *BasicQuadScene) Init() error {
+func (scene *PostProcessingScene) Init() error {
 	quad, err := Model.NewMesh(quadVertices, Buffer.RegisterVertexBufferAttributes, quadIndices)
 	if err != nil {
 		return err
@@ -46,9 +46,9 @@ func (scene *BasicQuadScene) Init() error {
 	return nil
 }
 
-func (scene *BasicQuadScene) Tick(timeDelta float32) {
+func (scene *PostProcessingScene) Tick(timeDelta float32) {
 }
 
-func (scene *BasicQuadScene) Draw() {
+func (scene *PostProcessingScene) Draw() {
 	scene.quad.Draw()
 }

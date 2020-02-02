@@ -8,8 +8,8 @@ import (
 )
 
 var SceneFactory = map[string]reflect.Type{
-	"sceneGraph": reflect.TypeOf((*SceneGraphConfig)(nil)).Elem(),
-	"basicQuad":  reflect.TypeOf((*Scene.BasicQuadScene)(nil)).Elem(),
+	"sceneGraph":     reflect.TypeOf((*SceneGraphConfig)(nil)).Elem(),
+	"postProcessing": reflect.TypeOf((*Scene.PostProcessingScene)(nil)).Elem(),
 }
 
 type ScenesConfig struct {

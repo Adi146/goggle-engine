@@ -2,6 +2,7 @@ package YamlFactory
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/PostProcessing"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"gopkg.in/yaml.v3"
 	"reflect"
@@ -9,7 +10,7 @@ import (
 
 var SceneFactory = map[string]reflect.Type{
 	"sceneGraph":     reflect.TypeOf((*SceneGraphConfig)(nil)).Elem(),
-	"postProcessing": reflect.TypeOf((*Scene.PostProcessingScene)(nil)).Elem(),
+	"postProcessing": reflect.TypeOf((*PostProcessing.Scene)(nil)).Elem(),
 }
 
 type ScenesConfig struct {

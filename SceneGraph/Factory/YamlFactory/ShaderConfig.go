@@ -2,15 +2,15 @@ package YamlFactory
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/PostProcessing"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
-	"github.com/Adi146/goggle-engine/Core/Shader/PostProcessingShader"
 )
 
 var ShaderFactory = map[string]func([]string, []string) (Shader.IShaderProgram, error){
 	//"basic": BasicShader.NewBasicIShaderProgram,
 	"phong":          PhongShader.NewPhongIShaderProgram,
-	"postProcessing": PostProcessingShader.NewPostProcessingIShaderProgram,
+	"postProcessing": PostProcessing.NewIShaderProgram,
 }
 
 type ShadersConfig struct {

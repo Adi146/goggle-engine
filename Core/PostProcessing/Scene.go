@@ -1,9 +1,10 @@
-package Scene
+package PostProcessing
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Buffer"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Model"
+	sceneCore "github.com/Adi146/goggle-engine/Core/Scene"
 )
 
 var (
@@ -31,12 +32,14 @@ var (
 	}
 )
 
-type PostProcessingScene struct {
-	SceneBase
+type Scene struct {
+	sceneCore.SceneBase
 	quad *Model.Mesh
+
+	Kernel *Kernel `yaml:",inline"`
 }
 
-func (scene *PostProcessingScene) Init() error {
+func (scene *Scene) Init() error {
 	quad, err := Model.NewMesh(quadVertices, Buffer.RegisterVertexBufferAttributes, quadIndices)
 	if err != nil {
 		return err
@@ -46,9 +49,14 @@ func (scene *PostProcessingScene) Init() error {
 	return nil
 }
 
-func (scene *PostProcessingScene) Tick(timeDelta float32) {
+func (scene *Scene) Tick(timeDelta float32) {
 }
 
-func (scene *PostProcessingScene) Draw() {
-	scene.quad.Draw()
+func (scene *Scene) Draw() {
+	if shader := scene.GetActiveShaderProgram(); shader != nil {
+		if scene.Kernel != nil {
+			shader.BindObject(scene.Kernel)
+		}
+		scene.quad.Draw()
+	}
 }

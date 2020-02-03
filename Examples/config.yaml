@@ -20,9 +20,9 @@ shaders:
   postProcessing:
     type: postProcessing
     vertexShaders:
-      - ../Core/Shader/PostProcessingShader/postProcessing.vert
+      - ../Core/PostProcessing/postProcessing.vert
     fragmentShaders:
-      - ../Core/Shader/PostProcessingShader/grayscale.frag
+      - ../Core/PostProcessing/kernel.frag
 
 frameBuffers:
   default:
@@ -46,6 +46,17 @@ scenes:
   postProcessing:
     type: postProcessing
     config:
+      kernel: [
+        1, 2, 1,
+        2, 4, 2,
+        1, 2, 2
+      ]
+      kernelOffset:
+        numerator: 1
+        denominator: 300
+      kernelMultiplier:
+        numerator: 1
+        denominator: 16
   main:
     type: sceneGraph
     config:

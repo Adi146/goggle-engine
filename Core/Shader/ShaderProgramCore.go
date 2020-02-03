@@ -117,6 +117,8 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 		gl.Uniform3fv(location, 1, &v[0])
 	case float32:
 		gl.Uniform1f(location, v)
+	case []float32:
+		gl.Uniform1fv(location, int32(len(v)), &v[0])
 	case int32:
 		gl.Uniform1i(location, v)
 	default:

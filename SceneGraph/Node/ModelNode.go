@@ -3,7 +3,7 @@ package Node
 import (
 	"github.com/Adi146/goggle-engine/Core/AssetImporter"
 	"github.com/Adi146/goggle-engine/Core/Model"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 	"github.com/Adi146/goggle-engine/Utils/Log"
@@ -26,7 +26,7 @@ var textureTypeMap = map[string]Model.TextureType{
 }
 
 func init() {
-	Factory.NodeFactory["Node.ModelNode"] = reflect.TypeOf((*ModelNode)(nil)).Elem()
+	YamlFactory.NodeFactory["Node.ModelNode"] = reflect.TypeOf((*ModelNode)(nil)).Elem()
 }
 
 func (node *ModelNode) Init(nodeID string) error {

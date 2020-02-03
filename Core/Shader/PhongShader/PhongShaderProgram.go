@@ -137,8 +137,8 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 		err.Push(program.BindTexture(uint32(i), texture, fmt.Sprintf(textureUniformMap[texture.TextureType], textureIndexMap[texture.TextureType])))
 		textureIndexMap[texture.TextureType] += 1
 	}
-	for textureType, numTextures := range textureIndexMap {
-		err.Push(program.BindUniform(int32(numTextures), numTextureUniformMap[textureType]))
+	for textureType, uniformAddress := range numTextureUniformMap {
+		err.Push(program.BindUniform(int32(textureIndexMap[textureType]), uniformAddress))
 	}
 
 	return err.Err()

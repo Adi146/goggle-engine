@@ -54,9 +54,9 @@ func (node *SpotLightNode) Tick(timeDelta float32) error {
 }
 
 func (node *SpotLightNode) Draw() error {
-	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		return scene.GetActiveShaderProgram().BindObject(&node.SpotLight)
+	if scene := node.GetScene(); scene != nil {
+		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.SpotLight)
 	}
+
 	return nil
 }

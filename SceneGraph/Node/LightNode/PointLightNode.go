@@ -51,9 +51,9 @@ func (node *PointLightNode) Tick(timeDelta float32) error {
 }
 
 func (node *PointLightNode) Draw() error {
-	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		return scene.GetActiveShaderProgram().BindObject(&node.PointLight)
+	if scene := node.GetScene(); scene != nil {
+		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.PointLight)
 	}
+
 	return nil
 }

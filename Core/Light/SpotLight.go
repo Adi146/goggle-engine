@@ -1,6 +1,9 @@
 package Light
 
-import "github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/Shader"
+)
 
 type SpotLight struct {
 	Position  Vector.Vector3
@@ -15,4 +18,8 @@ type SpotLight struct {
 
 	Linear    float32 `yaml:"linear,flow"`
 	Quadratic float32 `yaml:"quadratic,flow"`
+}
+
+func (light *SpotLight) Draw(shader Shader.IShaderProgram) error {
+	return shader.BindObject(light)
 }

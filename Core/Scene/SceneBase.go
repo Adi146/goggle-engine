@@ -3,6 +3,7 @@ package Scene
 import (
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Window"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 type SceneBase struct {
@@ -10,6 +11,10 @@ type SceneBase struct {
 
 	keyboardInput Window.IKeyboardInput
 	mouseInput    Window.IMouseInput
+
+	PreRenderObjects   []IDrawable
+	OpaqueObjects      []IDrawable
+	TransparentObjects []IDrawable
 }
 
 func (scene *SceneBase) Init() error {
@@ -38,4 +43,20 @@ func (scene *SceneBase) GetMouseInput() Window.IMouseInput {
 
 func (scene *SceneBase) SetMouseInput(input Window.IMouseInput) {
 	scene.mouseInput = input
+}
+
+func (scene *SceneBase) Draw() error {
+	var err Error.ErrorCollection
+
+	for _, drawable := range scene.PreRenderObjects {
+		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
+	}
+	for _, drawable := range scene.OpaqueObjects {
+		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
+	}
+	for _, drawable := range scene.TransparentObjects {
+		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
+	}
+
+	return err.Err()
 }

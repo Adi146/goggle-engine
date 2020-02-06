@@ -2,12 +2,13 @@ package AssetImporter
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Model"
 	"image"
 	"os"
+
+	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
-func ImportTexture(filename string, textureType Model.TextureType) (*Model.Texture, ImportResult) {
+func ImportTexture(filename string, textureType Texture.TextureType) (*Texture.Texture, ImportResult) {
 	var result ImportResult
 
 	file, err := os.Open(filename)
@@ -31,7 +32,7 @@ func ImportTexture(filename string, textureType Model.TextureType) (*Model.Textu
 		}
 	}
 
-	texture, err := Model.NewTextureFromFile(rgba, textureType)
+	texture, err := Texture.NewTextureFromFile(rgba, textureType)
 	result.Errors.Push(err)
 
 	return texture, result

@@ -3,11 +3,12 @@ package Shader
 import (
 	"C"
 	"fmt"
+	"strings"
+
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-	"github.com/Adi146/goggle-engine/Core/Model"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"strings"
 )
 
 type ShaderProgramCore struct {
@@ -128,7 +129,7 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 	return nil
 }
 
-func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture *Model.Texture, uniformAddress string) error {
+func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture *Texture.Texture, uniformAddress string) error {
 	location, err := program.getUniformLocation(uniformAddress)
 	if err != nil {
 		return err

@@ -2,20 +2,22 @@ package AssetImporter
 
 import (
 	"fmt"
+	"path"
+	"strings"
+
 	"github.com/Adi146/assimp"
 	"github.com/Adi146/goggle-engine/Core/Buffer"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Model"
-	"path"
-	"strings"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
-var textureTypeMap = map[assimp.TextureMapping]Model.TextureType{
-	assimp.TextureMapping_Diffuse:  Model.DiffuseTexture,
-	assimp.TextureMapping_Specular: Model.SpecularTexture,
-	assimp.TextureMapping_Emissive: Model.EmissiveTexture,
-	assimp.TextureMapping_Normals:  Model.NormalsTexture,
+var textureTypeMap = map[assimp.TextureMapping]Texture.TextureType{
+	assimp.TextureMapping_Diffuse:  Texture.DiffuseTexture,
+	assimp.TextureMapping_Specular: Texture.SpecularTexture,
+	assimp.TextureMapping_Emissive: Texture.EmissiveTexture,
+	assimp.TextureMapping_Normals:  Texture.NormalsTexture,
 }
 
 func ImportModel(filename string) (*Model.Model, ImportResult) {
@@ -80,7 +82,7 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Mo
 		result.Warnings.Push(fmt.Errorf("could not load shininess"))
 	}
 
-	var modelTextures []*Model.Texture
+	var modelTextures []*Texture.Texture
 	for textureType, _ := range textureTypeMap {
 		textures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, textureType, modelDir)
 		result.Errors.Push(&textureResult.Errors)
@@ -100,9 +102,9 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Mo
 	}, result
 }
 
-func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]*Model.Texture, ImportResult) {
+func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]*Texture.Texture, ImportResult) {
 	var result ImportResult
-	var textures []*Model.Texture
+	var textures []*Texture.Texture
 
 	numTextures := assimpMaterial.GetMaterialTextureCount(assimp.TextureType(textureType))
 	for i := 0; i < numTextures; i++ {

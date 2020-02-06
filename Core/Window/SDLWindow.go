@@ -2,7 +2,7 @@ package Window
 
 import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/Model"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/veandco/go-sdl2/sdl"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -137,6 +137,6 @@ func (window *SDLWindow) EnableAdaptiveSync() {
 	sdl.GLSetSwapInterval(-1)
 }
 
-func (window *SDLWindow) GetTextures() []*Model.Texture {
+func (window *SDLWindow) GetTextures() []*Texture.Texture {
 	return nil
 }

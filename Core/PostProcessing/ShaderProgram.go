@@ -2,8 +2,9 @@ package PostProcessing
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Model"
+
 	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
@@ -35,7 +36,7 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string)
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
-	case *Model.Texture:
+	case *Texture.Texture:
 		return program.bindTexture(v)
 	case *Kernel:
 		return program.bindKernel(v)
@@ -44,7 +45,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	}
 }
 
-func (program *ShaderProgram) bindTexture(texture *Model.Texture) error {
+func (program *ShaderProgram) bindTexture(texture *Texture.Texture) error {
 	return program.BindTexture(0, texture, screenTexture_uniformAddress)
 }
 

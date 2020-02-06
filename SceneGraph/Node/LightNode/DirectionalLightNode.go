@@ -57,9 +57,9 @@ func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 }
 
 func (node *DirectionalLightNode) Draw() error {
-	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		return scene.GetActiveShaderProgram().BindObject(&node.DirectionalLight)
+	if scene := node.GetScene(); scene != nil {
+		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.DirectionalLight)
 	}
+
 	return nil
 }

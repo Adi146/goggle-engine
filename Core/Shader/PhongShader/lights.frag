@@ -1,6 +1,6 @@
 #version 410 core
-#define MAX_POINT_LIGHTS 128
-#define MAX_SPOT_LIGHTS 128
+#define MAX_POINT_LIGHTS 64
+#define MAX_SPOT_LIGHTS 64
 
 in vec3 v_position;
 

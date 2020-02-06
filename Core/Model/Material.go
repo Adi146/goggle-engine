@@ -2,6 +2,7 @@ package Model
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
 type Material struct {
@@ -11,5 +12,5 @@ type Material struct {
 
 	Shininess float32
 
-	Textures []*Texture
+	Textures []*Texture.Texture
 }

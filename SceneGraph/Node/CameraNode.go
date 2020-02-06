@@ -80,9 +80,9 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 }
 
 func (node *CameraNode) Draw() error {
-	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		return scene.GetActiveShaderProgram().BindObject(node.Camera)
+	if scene := node.GetScene(); scene != nil {
+		scene.PreRenderObjects = append(scene.PreRenderObjects, node.Camera)
 	}
+
 	return nil
 }

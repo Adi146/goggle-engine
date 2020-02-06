@@ -1,8 +1,6 @@
 package FrameBuffer
 
-import (
-	"github.com/Adi146/goggle-engine/Core/Model"
-)
+import "github.com/Adi146/goggle-engine/Core/Texture"
 
 type IFrameBuffer interface {
 	Init() error
@@ -15,5 +13,5 @@ type IFrameBuffer interface {
 
 	Clear()
 
-	GetTextures() []*Model.Texture
+	GetTextures() []*Texture.Texture
 }

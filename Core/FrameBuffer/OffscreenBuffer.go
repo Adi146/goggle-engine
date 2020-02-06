@@ -2,13 +2,14 @@ package FrameBuffer
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Model"
+
+	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/go-gl/gl/all-core/gl"
 )
 
 type OffScreenBuffer struct {
 	FrameBufferBase `yaml:",inline"`
-	ColorTexture    Model.Texture
+	ColorTexture    Texture.Texture
 
 	rbo uint32
 }
@@ -51,8 +52,8 @@ func (buff *OffScreenBuffer) Destroy() {
 	//buff.ColorTexture.Destroy()
 }
 
-func (buff *OffScreenBuffer) GetTextures() []*Model.Texture {
-	return []*Model.Texture{
+func (buff *OffScreenBuffer) GetTextures() []*Texture.Texture {
+	return []*Texture.Texture{
 		&buff.ColorTexture,
 	}
 }

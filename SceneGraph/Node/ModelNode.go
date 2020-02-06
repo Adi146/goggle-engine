@@ -5,6 +5,7 @@ import (
 
 	"github.com/Adi146/goggle-engine/Core/AssetImporter"
 	"github.com/Adi146/goggle-engine/Core/Model"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"github.com/Adi146/goggle-engine/Utils/Error"
@@ -13,11 +14,11 @@ import (
 
 const ModelNodeFactoryName = "Node.ModelNode"
 
-var textureTypeMap = map[string]Model.TextureType{
-	"diffuse":  Model.DiffuseTexture,
-	"specular": Model.SpecularTexture,
-	"emissive": Model.EmissiveTexture,
-	"normals":  Model.NormalsTexture,
+var textureTypeMap = map[string]Texture.TextureType{
+	"diffuse":  Texture.DiffuseTexture,
+	"specular": Texture.SpecularTexture,
+	"emissive": Texture.EmissiveTexture,
+	"normals":  Texture.NormalsTexture,
 }
 
 func init() {
@@ -85,16 +86,9 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 }
 
 func (node *ModelNode) Draw() error {
-	var err Error.ErrorCollection
-
-	scene := node.GetScene()
-	if scene != nil && scene.GetActiveShaderProgram() != nil {
-		err.Push(scene.GetActiveShaderProgram().BindObject(node.Model))
-		for _, mesh := range node.Meshes {
-			err.Push(scene.GetActiveShaderProgram().BindObject(mesh.Material))
-			mesh.Draw()
-		}
+	if scene := node.GetScene(); scene != nil {
+		scene.OpaqueObjects = append(scene.OpaqueObjects, node.Model)
 	}
 
-	return err.Err()
+	return nil
 }

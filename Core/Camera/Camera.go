@@ -3,6 +3,7 @@ package Camera
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 )
 
 type Camera struct {
@@ -42,4 +43,8 @@ func (camera *Camera) GetProjectionMatrix() *Matrix.Matrix4x4 {
 
 func (camera *Camera) Tick(timeDelta float32) {
 	camera.viewMatrix = Matrix.LookAt(camera.Position, camera.Position.Add(camera.Front), camera.Up)
+}
+
+func (camera *Camera) Draw(shader Shader.IShaderProgram) error {
+	return shader.BindObject(camera)
 }

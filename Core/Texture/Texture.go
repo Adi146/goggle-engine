@@ -1,9 +1,10 @@
-package Model
+package Texture
 
 import (
-	"github.com/go-gl/gl/v4.1-core/gl"
 	"image"
 	_ "image/png"
+
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type TextureType string

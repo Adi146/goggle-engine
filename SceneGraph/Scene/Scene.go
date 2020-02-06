@@ -25,6 +25,9 @@ func (scene *Scene) Draw() {
 	if scene.Root != nil {
 		Log.Error(scene.GetActiveShaderProgram().BeginDraw(), "begin draw error")
 		Log.Error(Error.NewErrorWithFields(scene.Root.DrawChildren(), scene.Root.GetLogFields()), "render error")
+
+		Log.Error(scene.SceneBase.Draw(), "render error")
+
 		scene.GetActiveShaderProgram().EndDraw()
 	}
 }

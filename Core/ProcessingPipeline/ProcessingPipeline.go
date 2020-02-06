@@ -2,9 +2,9 @@ package ProcessingPipeline
 
 import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/Window"
 )
 
@@ -34,7 +34,7 @@ func (pipeline ProcessingPipeline) Run() {
 			scene.Tick(timeDelta)
 		}
 
-		var results []*Model.Texture
+		var results []*Texture.Texture
 		for i := range pipeline.Steps {
 			step := pipeline.Steps[len(pipeline.Steps)-1-i]
 			step.FrameBuffer.Bind()

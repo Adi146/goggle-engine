@@ -49,6 +49,8 @@ type WASDControl struct {
 }
 
 func (node *WASDControl) Tick(timeDelta float32) error {
+	err := node.IIntermediateNode.Tick(timeDelta)
+
 	scene := node.GetScene()
 	if scene != nil {
 		xRel, yRel := scene.GetMouseInput().GetRelativeMovement()
@@ -71,7 +73,7 @@ func (node *WASDControl) Tick(timeDelta float32) error {
 		}
 	}
 
-	return nil
+	return err
 }
 
 func (node *WASDControl) MoveForwards(amount float32) {

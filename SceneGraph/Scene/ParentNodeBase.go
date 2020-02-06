@@ -51,9 +51,6 @@ func (node *ParentNodeBase) TickChildren(timeDelta float32) error {
 
 	for _, child := range node.GetChildren() {
 		err.Push(Error.NewErrorWithFields(child.Tick(timeDelta), child.GetLogFields()))
-		if childAsParent, isParent := child.(IParentNode); isParent {
-			err.Push(Error.NewErrorWithFields(childAsParent.TickChildren(timeDelta), childAsParent.GetLogFields()))
-		}
 	}
 
 	return err.Err()
@@ -64,9 +61,6 @@ func (node *ParentNodeBase) DrawChildren() error {
 
 	for _, child := range node.GetChildren() {
 		err.Push(child.Draw())
-		if childAsParent, isParent := child.(IParentNode); isParent {
-			err.Push(childAsParent.DrawChildren())
-		}
 	}
 
 	return err.Err()

@@ -43,7 +43,9 @@ type Rotor struct {
 }
 
 func (node *Rotor) Tick(timeDelta float32) error {
+	err := node.IIntermediateNode.Tick(timeDelta)
+
 	node.SetLocalTransformation(node.GetLocalTransformation().Mul(Matrix.RotateY(node.Speed * timeDelta)))
 
-	return nil
+	return err
 }

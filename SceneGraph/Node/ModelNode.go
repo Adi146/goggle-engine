@@ -77,8 +77,11 @@ type ModelNode struct {
 }
 
 func (node *ModelNode) Tick(timeDelta float32) error {
+	err := node.IChildNode.Tick(timeDelta)
+
 	node.ModelMatrix = node.GetGlobalTransformation()
-	return nil
+
+	return err
 }
 
 func (node *ModelNode) Draw() error {

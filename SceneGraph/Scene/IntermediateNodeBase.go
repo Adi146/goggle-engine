@@ -4,6 +4,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Angle"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 type IntermediateNodeBaseConfig struct {
@@ -66,4 +67,22 @@ func (node *IntermediateNodeBase) GetLocalPosition() *Vector.Vector3 {
 
 func (node *IntermediateNodeBase) GetNodeID() string {
 	return node.INode.GetNodeID()
+}
+
+func (node *IntermediateNodeBase) Tick(timeDelta float32) error {
+	var err Error.ErrorCollection
+
+	err.Push(node.ChildNodeBase.Tick(timeDelta))
+	err.Push(node.ParentNodeBase.TickChildren(timeDelta))
+
+	return err.Err()
+}
+
+func (node *IntermediateNodeBase) Draw() error {
+	var err Error.ErrorCollection
+
+	err.Push(node.ChildNodeBase.Draw())
+	err.Push(node.ParentNodeBase.DrawChildren())
+
+	return err.Err()
 }

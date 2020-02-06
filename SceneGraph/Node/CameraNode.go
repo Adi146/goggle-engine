@@ -65,6 +65,8 @@ type CameraNode struct {
 }
 
 func (node *CameraNode) Tick(timeDelta float32) error {
+	err := node.IChildNode.Tick(timeDelta)
+
 	node.Camera.Position = node.GetGlobalPosition()
 
 	invTransGlobalTransformation := node.GetGlobalTransformation().Inverse().Transpose()
@@ -73,7 +75,8 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	node.Camera.Up = invTransGlobalTransformation.MulVector(node.InitialUp).Normalize()
 
 	node.Camera.Tick(timeDelta)
-	return nil
+
+	return err
 }
 
 func (node *CameraNode) Draw() error {

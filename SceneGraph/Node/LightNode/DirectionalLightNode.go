@@ -49,8 +49,11 @@ type DirectionalLightNode struct {
 }
 
 func (node *DirectionalLightNode) Tick(timeDelta float32) error {
+	err := node.IChildNode.Tick(timeDelta)
+
 	node.DirectionalLight.Direction = *node.GetGlobalTransformation().MulVector(node.InitialDirection).Normalize()
-	return nil
+
+	return err
 }
 
 func (node *DirectionalLightNode) Draw() error {

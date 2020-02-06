@@ -45,9 +45,12 @@ type SpotLightNode struct {
 }
 
 func (node *SpotLightNode) Tick(timeDelta float32) error {
+	err := node.IChildNode.Tick(timeDelta)
+
 	node.SpotLight.Position = *node.GetGlobalPosition()
 	node.SpotLight.Direction = *node.GetGlobalTransformation().Inverse().Transpose().MulVector(node.InitialDirection).Normalize()
-	return nil
+
+	return err
 }
 
 func (node *SpotLightNode) Draw() error {

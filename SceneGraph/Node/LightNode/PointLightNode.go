@@ -43,8 +43,11 @@ type PointLightNode struct {
 }
 
 func (node *PointLightNode) Tick(timeDelta float32) error {
+	err := node.IChildNode.Tick(timeDelta)
+
 	node.PointLight.Position = *node.GetGlobalPosition()
-	return nil
+
+	return err
 }
 
 func (node *PointLightNode) Draw() error {

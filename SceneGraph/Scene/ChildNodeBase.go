@@ -45,13 +45,13 @@ func (node *ChildNodeBase) setParent(parent IParentNode) {
 }
 
 func (node *ChildNodeBase) GetGlobalTransformation() *Matrix.Matrix4x4 {
-	if node.GetParent() == nil {
+	if parent := node.GetParent(); parent == nil {
 		return node.INode.GetLocalTransformation()
 	} else {
-		if parentAsChild, isChild := node.GetParent().(IChildNode); isChild {
+		if parentAsChild, isChild := parent.(IChildNode); isChild {
 			return parentAsChild.GetGlobalTransformation().Mul(node.GetLocalTransformation())
 		} else {
-			return node.GetParent().GetLocalTransformation().Mul(node.GetLocalTransformation())
+			return parent.GetLocalTransformation().Mul(node.GetLocalTransformation())
 		}
 	}
 }

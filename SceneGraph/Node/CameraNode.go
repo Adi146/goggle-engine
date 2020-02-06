@@ -2,57 +2,66 @@ package Node
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
-	"reflect"
 )
 
 const CameraNodeFactoryName = "Node.Camera"
 
-type CameraNode struct {
-	Scene.IChildNode
-	*Camera.Camera
+func init() {
+	YamlFactory.NodeFactory[CameraNodeFactoryName] = reflect.TypeOf((*CameraNodeConfig)(nil)).Elem()
+}
 
-	InitialFront *Vector.Vector3 `yaml:"initialFront"`
-	InitialUp    *Vector.Vector3 `yaml:"initialUp"`
-
+type CameraNodeConfig struct {
+	Scene.ChildNodeBaseConfig
+	InitialFront            *Vector.Vector3                `yaml:"initialFront"`
+	InitialUp               *Vector.Vector3                `yaml:"initialUp"`
 	PerspectiveMatrixConfig *YamlFactory.PerspectiveConfig `yaml:"perspective"`
 	OrthogonalMatrixConfig  *YamlFactory.OrthogonalConfig  `yaml:"orthogonal"`
 }
 
-func init() {
-	YamlFactory.NodeFactory[CameraNodeFactoryName] = reflect.TypeOf((*CameraNode)(nil)).Elem()
+func (config CameraNodeConfig) Create() (Scene.INode, error) {
+	return config.CreateAsChildNode()
 }
 
-func (node *CameraNode) Init(nodeID string) error {
-	if node.IChildNode == nil {
-		node.IChildNode = &Scene.ChildNodeBase{}
-		if err := node.IChildNode.Init(nodeID); err != nil {
-			return err
-		}
+func (config CameraNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
+	nodeBase, err := config.ChildNodeBaseConfig.CreateAsChildNode()
+	if err != nil {
+		return nil, err
 	}
 
-	if node.Camera == nil {
-		if node.PerspectiveMatrixConfig != nil {
-			node.Camera = Camera.NewCamera(node.PerspectiveMatrixConfig.Decode())
-		} else if node.OrthogonalMatrixConfig != nil {
-			node.Camera = Camera.NewCamera(node.OrthogonalMatrixConfig.Decode())
-		} else {
-			return fmt.Errorf("no projection matrix specified")
-		}
+	node := &CameraNode{
+		CameraNodeConfig: &config,
+		IChildNode:       nodeBase,
 	}
 
-	if node.InitialUp == nil {
-		node.InitialUp = &Vector.Vector3{0, 1, 0}
+	if config.PerspectiveMatrixConfig != nil {
+		node.Camera = Camera.NewCamera(config.PerspectiveMatrixConfig.Decode())
+	} else if config.OrthogonalMatrixConfig != nil {
+		node.Camera = Camera.NewCamera(config.OrthogonalMatrixConfig.Decode())
+	} else {
+		return nil, fmt.Errorf("no projection matrix specified")
 	}
 
-	if node.InitialFront == nil {
-		node.InitialFront = &Vector.Vector3{0, 0, 1}
+	if config.InitialUp == nil {
+		config.InitialUp = &Vector.Vector3{0, 1, 0}
 	}
 
-	return nil
+	if config.InitialFront == nil {
+		config.InitialFront = &Vector.Vector3{0, 0, 1}
+	}
+
+	return node, nil
+}
+
+type CameraNode struct {
+	*CameraNodeConfig
+	Scene.IChildNode
+	*Camera.Camera
 }
 
 func (node *CameraNode) Tick(timeDelta float32) error {

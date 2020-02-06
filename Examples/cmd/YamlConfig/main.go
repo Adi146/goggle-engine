@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"os"
 	"runtime"
+
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 
 	_ "github.com/Adi146/goggle-engine/Examples/SceneGraph"
 	_ "github.com/Adi146/goggle-engine/SceneGraph/Node"

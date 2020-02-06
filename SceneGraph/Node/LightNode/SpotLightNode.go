@@ -1,33 +1,47 @@
 package LightNode
 
 import (
+	"reflect"
+
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
-	"reflect"
 )
 
-type SpotLightNode struct {
-	Scene.IChildNode
-	Light.SpotLight `yaml:"spotLight"`
+const SpotLightNodeFactoryName = "Node.LightNode.SpotLightNode"
 
+func init() {
+	YamlFactory.NodeFactory[SpotLightNodeFactoryName] = reflect.TypeOf((*SpotLightNodeConfig)(nil)).Elem()
+}
+
+type SpotLightNodeConfig struct {
+	Scene.ChildNodeBaseConfig
+	Light.SpotLight  `yaml:"spotLight"`
 	InitialDirection *Vector.Vector3 `yaml:"initialDirection"`
 }
 
-func init() {
-	YamlFactory.NodeFactory["Node.LightNode.SpotLightNode"] = reflect.TypeOf((*SpotLightNode)(nil)).Elem()
+func (config SpotLightNodeConfig) Create() (Scene.INode, error) {
+	return config.CreateAsChildNode()
 }
 
-func (node *SpotLightNode) Init(nodeID string) error {
-	if node.IChildNode == nil {
-		node.IChildNode = &Scene.ChildNodeBase{}
-		if err := node.IChildNode.Init(nodeID); err != nil {
-			return err
-		}
+func (config SpotLightNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
+	nodeBase, err := config.ChildNodeBaseConfig.CreateAsChildNode()
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	node := &SpotLightNode{
+		SpotLightNodeConfig: &config,
+		IChildNode:          nodeBase,
+	}
+
+	return node, nil
+}
+
+type SpotLightNode struct {
+	*SpotLightNodeConfig
+	Scene.IChildNode
 }
 
 func (node *SpotLightNode) Tick(timeDelta float32) error {

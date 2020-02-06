@@ -6,15 +6,27 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 )
 
-type NodeBase struct {
-	scene          *Scene
-	transformation *Matrix.Matrix4x4
-	nodeID         string
+type NodeBaseConfig struct {
+	NodeID string
 }
 
-func (node *NodeBase) Init(nodeID string) error {
-	node.nodeID = nodeID
-	return nil
+func (config NodeBaseConfig) Create() (INode, error) {
+	node := &NodeBase{
+		NodeBaseConfig: config,
+		transformation: Matrix.Identity(),
+	}
+
+	return node, nil
+}
+
+func (config NodeBaseConfig) SetNodeID(nodeID string) {
+	config.NodeID = nodeID
+}
+
+type NodeBase struct {
+	NodeBaseConfig
+	scene          *Scene
+	transformation *Matrix.Matrix4x4
 }
 
 func (node *NodeBase) GetScene() *Scene {
@@ -42,7 +54,7 @@ func (node *NodeBase) GetLocalPosition() *Vector.Vector3 {
 }
 
 func (node *NodeBase) GetNodeID() string {
-	return node.nodeID
+	return node.NodeID
 }
 
 func (node *NodeBase) GetLogFields() map[string]interface{} {

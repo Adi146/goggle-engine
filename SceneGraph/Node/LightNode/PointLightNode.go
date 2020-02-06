@@ -1,30 +1,45 @@
 package LightNode
 
 import (
+	"reflect"
+
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
-	"reflect"
 )
 
-type PointLightNode struct {
-	Scene.IChildNode
+const PointLightNodeFactoryName = "Node.LightNode.PointLightNode"
+
+func init() {
+	YamlFactory.NodeFactory[PointLightNodeFactoryName] = reflect.TypeOf((*PointLightNodeConfig)(nil)).Elem()
+}
+
+type PointLightNodeConfig struct {
+	Scene.ChildNodeBaseConfig
 	Light.PointLight `yaml:"pointLight"`
 }
 
-func init() {
-	YamlFactory.NodeFactory["Node.LightNode.PointLightNode"] = reflect.TypeOf((*PointLightNode)(nil)).Elem()
+func (config PointLightNodeConfig) Create() (Scene.INode, error) {
+	return config.CreateAsChildNode()
 }
 
-func (node *PointLightNode) Init(nodeID string) error {
-	if node.IChildNode == nil {
-		node.IChildNode = &Scene.ChildNodeBase{}
-		if err := node.IChildNode.Init(nodeID); err != nil {
-			return err
-		}
+func (config PointLightNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
+	nodeBase, err := config.ChildNodeBaseConfig.CreateAsChildNode()
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	node := &PointLightNode{
+		PointLightNodeConfig: &config,
+		IChildNode:           nodeBase,
+	}
+
+	return node, nil
+}
+
+type PointLightNode struct {
+	*PointLightNodeConfig
+	Scene.IChildNode
 }
 
 func (node *PointLightNode) Tick(timeDelta float32) error {

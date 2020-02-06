@@ -1,37 +1,51 @@
 package Control
 
 import (
+	"reflect"
+
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Angle"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
-	"reflect"
 )
 
-type WASDControl struct {
-	Scene.IIntermediateNode
+const WASDControlFactoryName = "UI.Control.WASDControl"
 
+func init() {
+	YamlFactory.NodeFactory[WASDControlFactoryName] = reflect.TypeOf((*WASDControlConfig)(nil)).Elem()
+}
+
+type WASDControlConfig struct {
+	Scene.IntermediateNodeBaseConfig
 	KeyboardSensitivity float32 `yaml:"keyboardSensitivity"`
 	MouseSensitivity    float32 `yaml:"mouseSensitivity"`
+}
+
+func (config WASDControlConfig) Create() (Scene.INode, error) {
+	return config.CreateAsIntermediateNode()
+}
+
+func (config WASDControlConfig) CreateAsIntermediateNode() (Scene.IIntermediateNode, error) {
+	nodeBase, err := config.IntermediateNodeBaseConfig.CreateAsIntermediateNode()
+	if err != nil {
+		return nil, err
+	}
+
+	node := &WASDControl{
+		WASDControlConfig: &config,
+		IIntermediateNode: nodeBase,
+	}
+
+	return node, nil
+}
+
+type WASDControl struct {
+	*WASDControlConfig
+	Scene.IIntermediateNode
 
 	yaw   float32
 	pitch float32
-}
-
-func init() {
-	YamlFactory.NodeFactory["UI.Control.WASDControl"] = reflect.TypeOf((*WASDControl)(nil)).Elem()
-}
-
-func (node *WASDControl) Init(nodeID string) error {
-	if node.IIntermediateNode == nil {
-		node.IIntermediateNode = &Scene.IntermediateNodeBase{}
-		if err := node.IIntermediateNode.Init(nodeID); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func (node *WASDControl) Tick(timeDelta float32) error {

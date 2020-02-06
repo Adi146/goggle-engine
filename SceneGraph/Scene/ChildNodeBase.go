@@ -6,23 +6,29 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 )
 
-type ChildNodeBase struct {
-	*NodeBase
-	parent IParentNode
+type ChildNodeBaseConfig struct {
+	NodeBaseConfig
 }
 
-func (node *ChildNodeBase) Init(nodeID string) error {
-	if node.NodeBase == nil {
-		node.NodeBase = &NodeBase{
-			scene:          nil,
-			transformation: Matrix.Identity(),
-		}
-		if err := node.NodeBase.Init(nodeID); err != nil {
-			return err
-		}
+func (config ChildNodeBaseConfig) Create() (INode, error) {
+	return config.CreateAsChildNode()
+}
+
+func (config ChildNodeBaseConfig) CreateAsChildNode() (IChildNode, error) {
+	nodeBase, err := config.NodeBaseConfig.Create()
+
+	node := &ChildNodeBase{
+		ChildNodeBaseConfig: config,
+		INode:               nodeBase,
 	}
 
-	return nil
+	return node, err
+}
+
+type ChildNodeBase struct {
+	ChildNodeBaseConfig
+	INode
+	parent IParentNode
 }
 
 func (node *ChildNodeBase) GetParent() IParentNode {
@@ -40,7 +46,7 @@ func (node *ChildNodeBase) setParent(parent IParentNode) {
 
 func (node *ChildNodeBase) GetGlobalTransformation() *Matrix.Matrix4x4 {
 	if node.GetParent() == nil {
-		return node.transformation
+		return node.INode.GetLocalTransformation()
 	} else {
 		if parentAsChild, isChild := node.GetParent().(IChildNode); isChild {
 			return parentAsChild.GetGlobalTransformation().Mul(node.GetLocalTransformation())

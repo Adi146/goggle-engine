@@ -51,12 +51,15 @@ func (scene *SceneBase) Draw() error {
 	for _, drawable := range scene.PreRenderObjects {
 		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
 	}
+	scene.PreRenderObjects = []IDrawable{}
 	for _, drawable := range scene.OpaqueObjects {
 		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
 	}
+	scene.OpaqueObjects = []IDrawable{}
 	for _, drawable := range scene.TransparentObjects {
 		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
 	}
+	scene.TransparentObjects = []IDrawable{}
 
 	return err.Err()
 }

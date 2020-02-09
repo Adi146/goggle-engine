@@ -16,46 +16,43 @@ func init() {
 }
 
 type SpotLightNodeConfig struct {
-	Scene.ChildNodeBaseConfig
+	Scene.NodeConfig
 	Light.SpotLight  `yaml:"spotLight"`
 	InitialDirection *Vector.Vector3 `yaml:"initialDirection"`
 }
 
-func (config SpotLightNodeConfig) Create() (Scene.INode, error) {
-	return config.CreateAsChildNode()
-}
-
-func (config SpotLightNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
-	nodeBase, err := config.ChildNodeBaseConfig.CreateAsChildNode()
+func (config *SpotLightNodeConfig) Create() (Scene.INode, error) {
+	nodeBase, err := config.NodeConfig.Create()
 	if err != nil {
 		return nil, err
 	}
 
 	node := &SpotLightNode{
-		SpotLightNodeConfig: &config,
-		IChildNode:          nodeBase,
+		INode:  nodeBase,
+		Config: config,
 	}
 
 	return node, nil
 }
 
 type SpotLightNode struct {
-	*SpotLightNodeConfig
-	Scene.IChildNode
+	Scene.INode
+
+	Config *SpotLightNodeConfig
 }
 
 func (node *SpotLightNode) Tick(timeDelta float32) error {
-	err := node.IChildNode.Tick(timeDelta)
+	err := node.INode.Tick(timeDelta)
 
-	node.SpotLight.Position = *node.GetGlobalPosition()
-	node.SpotLight.Direction = *node.GetGlobalTransformation().Inverse().Transpose().MulVector(node.InitialDirection).Normalize()
+	node.Config.SpotLight.Position = *node.GetGlobalPosition()
+	node.Config.SpotLight.Direction = *node.GetGlobalTransformation().Inverse().Transpose().MulVector(node.Config.InitialDirection).Normalize()
 
 	return err
 }
 
 func (node *SpotLightNode) Draw() error {
 	if scene := node.GetScene(); scene != nil {
-		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.SpotLight)
+		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.Config.SpotLight)
 	}
 
 	return nil

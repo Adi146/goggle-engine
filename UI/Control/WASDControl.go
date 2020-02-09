@@ -17,59 +17,51 @@ func init() {
 }
 
 type WASDControlConfig struct {
-	Scene.IntermediateNodeBaseConfig
+	Scene.NodeConfig
 	KeyboardSensitivity float32 `yaml:"keyboardSensitivity"`
 	MouseSensitivity    float32 `yaml:"mouseSensitivity"`
 }
 
-func (config WASDControlConfig) Create() (Scene.INode, error) {
-	return config.CreateAsIntermediateNode()
-}
+func (config *WASDControlConfig) Create() (Scene.INode, error) {
+	nodeBase, err := config.NodeConfig.Create()
 
-func (config WASDControlConfig) CreateAsIntermediateNode() (Scene.IIntermediateNode, error) {
-	nodeBase, err := config.IntermediateNodeBaseConfig.CreateAsIntermediateNode()
-	if err != nil {
-		return nil, err
-	}
-
-	node := &WASDControl{
-		WASDControlConfig: &config,
-		IIntermediateNode: nodeBase,
-	}
-
-	return node, nil
+	return &WASDControl{
+		INode:  nodeBase,
+		Config: config,
+	}, err
 }
 
 type WASDControl struct {
-	*WASDControlConfig
-	Scene.IIntermediateNode
+	Scene.INode
+
+	Config *WASDControlConfig
 
 	yaw   float32
 	pitch float32
 }
 
 func (node *WASDControl) Tick(timeDelta float32) error {
-	err := node.IIntermediateNode.Tick(timeDelta)
+	err := node.INode.Tick(timeDelta)
 
 	scene := node.GetScene()
 	if scene != nil {
 		xRel, yRel := scene.GetMouseInput().GetRelativeMovement()
-		node.Rotate(Angle.Radians(xRel*node.MouseSensitivity), Angle.Radians(yRel*node.MouseSensitivity))
+		node.Rotate(Angle.Radians(xRel*node.Config.MouseSensitivity), Angle.Radians(yRel*node.Config.MouseSensitivity))
 
 		if scene.GetKeyboardInput().IsKeyPressed("W") {
-			node.MoveForwards(node.KeyboardSensitivity * timeDelta)
+			node.MoveForwards(node.Config.KeyboardSensitivity * timeDelta)
 		}
 
 		if scene.GetKeyboardInput().IsKeyPressed("S") {
-			node.MoveForwards(-node.KeyboardSensitivity * timeDelta)
+			node.MoveForwards(-node.Config.KeyboardSensitivity * timeDelta)
 		}
 
 		if scene.GetKeyboardInput().IsKeyPressed("A") {
-			node.MoveSidewards(-node.KeyboardSensitivity * timeDelta)
+			node.MoveSidewards(-node.Config.KeyboardSensitivity * timeDelta)
 		}
 
 		if scene.GetKeyboardInput().IsKeyPressed("D") {
-			node.MoveSidewards(node.KeyboardSensitivity * timeDelta)
+			node.MoveSidewards(node.Config.KeyboardSensitivity * timeDelta)
 		}
 	}
 

@@ -1,7 +1,6 @@
 package YamlFactory
 
 import (
-	"fmt"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
@@ -20,11 +19,7 @@ func (config *SceneGraphConfig) Init() error {
 		return err
 	}
 
-	if rootAsParent, isParent := root.(Scene.IParentNode); isParent {
-		config.SetRoot(rootAsParent)
-	} else {
-		return fmt.Errorf("root is not a parent node")
-	}
+	config.SetRoot(root)
 
 	return nil
 }

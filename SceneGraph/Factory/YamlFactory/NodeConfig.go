@@ -9,9 +9,7 @@ import (
 )
 
 var NodeFactory = map[string]reflect.Type{
-	"Scene.ChildBaseNode":        reflect.TypeOf((*Scene.ChildNodeBaseConfig)(nil)).Elem(),
-	"Scene.ParentBaseNode":       reflect.TypeOf((*Scene.ParentNodeBaseConfig)(nil)).Elem(),
-	"Scene.IntermediateNodeBase": reflect.TypeOf((*Scene.IntermediateNodeBaseConfig)(nil)).Elem(),
+	"Scene.Node": reflect.TypeOf((*Scene.NodeConfig)(nil)).Elem(),
 }
 
 type NodeConfig struct {
@@ -29,7 +27,6 @@ func (config *NodeConfig) Unmarshal(nodeID string) (Scene.INode, error) {
 
 	nodeConfig := reflect.New(nodeType).Interface().(Scene.INodeConfig)
 	if config.Config.Kind != 0 {
-		nodeConfig.SetNodeID(nodeID)
 		config.Config.Decode(nodeConfig)
 	}
 
@@ -50,19 +47,13 @@ func (config *NodeConfig) Unmarshal(nodeID string) (Scene.INode, error) {
 }
 
 func (config *NodeConfig) UnmarshalChildren(node Scene.INode) error {
-	if nodeAsParent, isParent := node.(Scene.IParentNode); isParent {
-		for childID, child := range config.Children {
-			childNode, err := child.Unmarshal(childID)
-			if err != nil {
-				return err
-			}
-
-			if childNodeAsChild, isChild := childNode.(Scene.IChildNode); isChild {
-				nodeAsParent.AddChild(childNodeAsChild)
-			} else {
-				return fmt.Errorf("node type %s is not a IChildNode", config.Type)
-			}
+	for childID, child := range config.Children {
+		childNode, err := child.Unmarshal(childID)
+		if err != nil {
+			return err
 		}
+
+		node.AddChild(childNode)
 	}
 
 	return nil

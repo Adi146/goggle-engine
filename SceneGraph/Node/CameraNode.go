@@ -17,26 +17,22 @@ func init() {
 }
 
 type CameraNodeConfig struct {
-	Scene.ChildNodeBaseConfig
+	Scene.NodeConfig
 	InitialFront            *Vector.Vector3                `yaml:"initialFront"`
 	InitialUp               *Vector.Vector3                `yaml:"initialUp"`
 	PerspectiveMatrixConfig *YamlFactory.PerspectiveConfig `yaml:"perspective"`
 	OrthogonalMatrixConfig  *YamlFactory.OrthogonalConfig  `yaml:"orthogonal"`
 }
 
-func (config CameraNodeConfig) Create() (Scene.INode, error) {
-	return config.CreateAsChildNode()
-}
-
-func (config CameraNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
-	nodeBase, err := config.ChildNodeBaseConfig.CreateAsChildNode()
+func (config *CameraNodeConfig) Create() (Scene.INode, error) {
+	nodeBase, err := config.NodeConfig.Create()
 	if err != nil {
 		return nil, err
 	}
 
 	node := &CameraNode{
-		CameraNodeConfig: &config,
-		IChildNode:       nodeBase,
+		INode:  nodeBase,
+		Config: config,
 	}
 
 	if config.PerspectiveMatrixConfig != nil {
@@ -59,20 +55,21 @@ func (config CameraNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
 }
 
 type CameraNode struct {
-	*CameraNodeConfig
-	Scene.IChildNode
+	Scene.INode
 	*Camera.Camera
+
+	Config *CameraNodeConfig
 }
 
 func (node *CameraNode) Tick(timeDelta float32) error {
-	err := node.IChildNode.Tick(timeDelta)
+	err := node.INode.Tick(timeDelta)
 
 	node.Camera.Position = node.GetGlobalPosition()
 
 	invTransGlobalTransformation := node.GetGlobalTransformation().Inverse().Transpose()
 
-	node.Camera.Front = invTransGlobalTransformation.MulVector(node.InitialFront).Normalize()
-	node.Camera.Up = invTransGlobalTransformation.MulVector(node.InitialUp).Normalize()
+	node.Camera.Front = invTransGlobalTransformation.MulVector(node.Config.InitialFront).Normalize()
+	node.Camera.Up = invTransGlobalTransformation.MulVector(node.Config.InitialUp).Normalize()
 
 	node.Camera.Tick(timeDelta)
 

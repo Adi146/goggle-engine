@@ -16,49 +16,45 @@ func init() {
 }
 
 type DirectionalLightNodeConfig struct {
-	Scene.ChildNodeBaseConfig
+	Scene.NodeConfig
 	Light.DirectionalLight `yaml:"directionalLight"`
 	InitialDirection       *Vector.Vector3 `yaml:"initialDirection,flow"`
 }
 
-func (config DirectionalLightNodeConfig) Create() (Scene.INode, error) {
-	return config.CreateAsChildNode()
-}
-
-func (config DirectionalLightNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
-	nodeBase, err := config.ChildNodeBaseConfig.CreateAsChildNode()
+func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
+	nodeBase, err := config.NodeConfig.Create()
 	if err != nil {
 		return nil, err
 	}
 
 	node := &DirectionalLightNode{
-		DirectionalLightNodeConfig: &config,
-		IChildNode:                 nodeBase,
+		INode:  nodeBase,
+		Config: config,
 	}
 
 	if config.InitialDirection == nil {
-		node.InitialDirection = &Vector.Vector3{0, 0, 1}
+		config.InitialDirection = &Vector.Vector3{0, 0, 1}
 	}
 
 	return node, nil
 }
 
 type DirectionalLightNode struct {
-	*DirectionalLightNodeConfig
-	Scene.IChildNode
+	Scene.INode
+	Config *DirectionalLightNodeConfig
 }
 
 func (node *DirectionalLightNode) Tick(timeDelta float32) error {
-	err := node.IChildNode.Tick(timeDelta)
+	err := node.INode.Tick(timeDelta)
 
-	node.DirectionalLight.Direction = *node.GetGlobalTransformation().MulVector(node.InitialDirection).Normalize()
+	node.Config.DirectionalLight.Direction = *node.GetGlobalTransformation().MulVector(node.Config.InitialDirection).Normalize()
 
 	return err
 }
 
 func (node *DirectionalLightNode) Draw() error {
 	if scene := node.GetScene(); scene != nil {
-		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.DirectionalLight)
+		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.Config.DirectionalLight)
 	}
 
 	return nil

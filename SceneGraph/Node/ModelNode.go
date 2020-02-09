@@ -26,24 +26,20 @@ func init() {
 }
 
 type ModelNodeConfig struct {
-	Scene.ChildNodeBaseConfig
+	Scene.NodeConfig
 	File     string              `yaml:"file"`
 	Textures map[string][]string `yaml:"textures"`
 }
 
-func (config ModelNodeConfig) Create() (Scene.INode, error) {
-	return config.CreateAsChildNode()
-}
-
-func (config ModelNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
-	nodeBase, err := config.ChildNodeBaseConfig.CreateAsChildNode()
+func (config *ModelNodeConfig) Create() (Scene.INode, error) {
+	nodeBase, err := config.NodeConfig.Create()
 	if err != nil {
 		return nil, err
 	}
 
 	node := &ModelNode{
-		ModelNodeConfig: &config,
-		IChildNode:      nodeBase,
+		INode:  nodeBase,
+		Config: config,
 	}
 
 	var importErrors Error.ErrorCollection
@@ -64,7 +60,7 @@ func (config ModelNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
 			}
 		}
 
-		Log.Warn(Error.NewErrorWithFields(&importWarnings, node.GetLogFields()), "import warnings")
+		Log.Warn(&importWarnings, "import warnings")
 		node.Model = model
 	}
 
@@ -72,13 +68,14 @@ func (config ModelNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
 }
 
 type ModelNode struct {
-	*ModelNodeConfig
-	Scene.IChildNode
+	Scene.INode
 	*Model.Model
+
+	Config *ModelNodeConfig
 }
 
 func (node *ModelNode) Tick(timeDelta float32) error {
-	err := node.IChildNode.Tick(timeDelta)
+	err := node.INode.Tick(timeDelta)
 
 	node.ModelMatrix = node.GetGlobalTransformation()
 

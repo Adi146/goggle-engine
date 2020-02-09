@@ -15,44 +15,41 @@ func init() {
 }
 
 type PointLightNodeConfig struct {
-	Scene.ChildNodeBaseConfig
+	Scene.NodeConfig
 	Light.PointLight `yaml:"pointLight"`
 }
 
-func (config PointLightNodeConfig) Create() (Scene.INode, error) {
-	return config.CreateAsChildNode()
-}
-
-func (config PointLightNodeConfig) CreateAsChildNode() (Scene.IChildNode, error) {
-	nodeBase, err := config.ChildNodeBaseConfig.CreateAsChildNode()
+func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
+	nodeBase, err := config.NodeConfig.Create()
 	if err != nil {
 		return nil, err
 	}
 
 	node := &PointLightNode{
-		PointLightNodeConfig: &config,
-		IChildNode:           nodeBase,
+		INode:  nodeBase,
+		Config: config,
 	}
 
 	return node, nil
 }
 
 type PointLightNode struct {
-	*PointLightNodeConfig
-	Scene.IChildNode
+	Scene.INode
+
+	Config *PointLightNodeConfig
 }
 
 func (node *PointLightNode) Tick(timeDelta float32) error {
-	err := node.IChildNode.Tick(timeDelta)
+	err := node.INode.Tick(timeDelta)
 
-	node.PointLight.Position = *node.GetGlobalPosition()
+	node.Config.PointLight.Position = *node.GetGlobalPosition()
 
 	return err
 }
 
 func (node *PointLightNode) Draw() error {
 	if scene := node.GetScene(); scene != nil {
-		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.PointLight)
+		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.Config.PointLight)
 	}
 
 	return nil

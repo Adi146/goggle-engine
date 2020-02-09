@@ -15,37 +15,33 @@ func init() {
 }
 
 type RotorConfig struct {
-	Scene.IntermediateNodeBaseConfig
+	Scene.NodeConfig
 	Speed float32 `yaml:"speed"`
 }
 
-func (config RotorConfig) Create() (Scene.INode, error) {
-	return config.CreateAsIntermediateNode()
-}
-
-func (config RotorConfig) CreateAsIntermediateNode() (Scene.IIntermediateNode, error) {
-	nodeBase, err := config.IntermediateNodeBaseConfig.CreateAsIntermediateNode()
+func (config *RotorConfig) Create() (Scene.INode, error) {
+	nodeBase, err := config.NodeConfig.Create()
 	if err != nil {
 		return nil, err
 	}
 
 	node := &Rotor{
-		RotorConfig:       &config,
-		IIntermediateNode: nodeBase,
+		INode:  nodeBase,
+		Config: config,
 	}
 
 	return node, err
 }
 
 type Rotor struct {
-	*RotorConfig
-	Scene.IIntermediateNode
+	Scene.INode
+	Config *RotorConfig
 }
 
 func (node *Rotor) Tick(timeDelta float32) error {
-	err := node.IIntermediateNode.Tick(timeDelta)
+	err := node.INode.Tick(timeDelta)
 
-	node.SetLocalTransformation(node.GetLocalTransformation().Mul(Matrix.RotateY(node.Speed * timeDelta)))
+	node.SetLocalTransformation(node.GetLocalTransformation().Mul(Matrix.RotateY(node.Config.Speed * timeDelta)))
 
 	return err
 }

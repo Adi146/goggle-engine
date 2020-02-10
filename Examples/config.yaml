@@ -30,6 +30,7 @@ frameBuffers:
     config:
       title: YamlConfig Example
       type: window
+      sync: adaptive
       width: 800
       height: 800
   offScreen:

@@ -13,7 +13,4 @@ type IWindow interface {
 
 	GetKeyboardInput() IKeyboardInput
 	GetMouseInput() IMouseInput
-
-	EnableVSync()
-	EnableAdaptiveSync()
 }

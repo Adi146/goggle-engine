@@ -8,11 +8,19 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-var typeFlags = map[string]uint32{
-	"window":     0,
-	"borderless": sdl.WINDOW_BORDERLESS,
-	"fullscreen": sdl.WINDOW_FULLSCREEN,
-}
+var (
+	typeFlags = map[string]uint32{
+		"window":     0,
+		"borderless": sdl.WINDOW_BORDERLESS,
+		"fullscreen": sdl.WINDOW_FULLSCREEN,
+	}
+
+	syncFlags = map[string]int{
+		"normal":   0,
+		"adaptive": -1,
+		"vertical": 1,
+	}
+)
 
 type SDLWindow struct {
 	FrameBuffer.FrameBufferBase `yaml:",inline"`
@@ -29,6 +37,7 @@ type SDLWindow struct {
 
 	Title string `yaml:"title"`
 	Type  string `yaml:"type"`
+	Sync  string `yaml:"sync"`
 }
 
 func (window *SDLWindow) Init() error {
@@ -64,6 +73,8 @@ func (window *SDLWindow) Init() error {
 	if err := gl.Init(); err != nil {
 		return err
 	}
+
+	sdl.GLSetSwapInterval(syncFlags[window.Sync])
 
 	window.window = sdlWindow
 	window.glContext = glContext
@@ -127,14 +138,6 @@ func (window *SDLWindow) GetKeyboardInput() IKeyboardInput {
 
 func (window *SDLWindow) GetMouseInput() IMouseInput {
 	return window.mouseInput
-}
-
-func (window *SDLWindow) EnableVSync() {
-	sdl.GLSetSwapInterval(1)
-}
-
-func (window *SDLWindow) EnableAdaptiveSync() {
-	sdl.GLSetSwapInterval(-1)
 }
 
 func (window *SDLWindow) GetTextures() []*Texture.Texture {

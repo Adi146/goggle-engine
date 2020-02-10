@@ -12,6 +12,7 @@ type FrameBufferBase struct {
 
 	DepthTest bool `yaml:"depthTest"`
 	Culling   bool `yaml:"culling"`
+	Blend     bool `yaml:"blend"`
 }
 
 func (buff *FrameBufferBase) GetFBO() uint32 {
@@ -42,5 +43,12 @@ func (buff *FrameBufferBase) Bind() {
 		gl.Enable(gl.CULL_FACE)
 	} else {
 		gl.Disable(gl.CULL_FACE)
+	}
+
+	if buff.Blend {
+		gl.Enable(gl.BLEND)
+		gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	} else {
+		gl.Disable(gl.BLEND)
 	}
 }

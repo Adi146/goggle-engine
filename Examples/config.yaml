@@ -22,7 +22,7 @@ shaders:
     vertexShaders:
       - ../Core/PostProcessing/postProcessing.vert
     fragmentShaders:
-      - ../Core/PostProcessing/kernel.frag
+      - ../Core/PostProcessing/none.frag
 
 frameBuffers:
   default:
@@ -32,8 +32,6 @@ frameBuffers:
       type: window
       width: 800
       height: 800
-      depthTest: true
-      culling: true
   offScreen:
     type: offScreen
     config:
@@ -41,6 +39,7 @@ frameBuffers:
       height: 800
       depthTest: true
       culling: true
+      blend: true
 
 scenes:
   postProcessing:
@@ -61,7 +60,7 @@ scenes:
     type: sceneGraph
     config:
       root:
-        type: Scene.ParentBaseNode
+        type: Scene.Node
         children:
           cameraControl:
             type: UI.Control.WASDControl
@@ -95,18 +94,26 @@ scenes:
             type: Node.ModelNode
             config:
               file: Models/arena.obj
-          construction_light:
+          fern:
             type: Node.ModelNode
             config:
-              file: Models/construction_light/construction_light.fbx
+              file: Models/fern/fern.fbx
+            transformation:
+              - scale: 0.01
+          window1:
+            type: Node.ModelNode
+            config: &windowConfig
+              file: Models/plain.fbx
               textures:
                 diffuse:
-                  - Models/construction_light/diffusemap.png
-                specular:
-                  - Models/construction_light/specular.png
-                emissive:
-                  - Models/construction_light/glow.png
-                normals:
-                  - Models/construction_light/normal.png
+                  - Models/blending_transparent_window.png
+              isTransparent: true
             transformation:
+              - translation: [0, 0, 5]
+              - scale: 0.01
+          window2:
+            type: Node.ModelNode
+            config: *windowConfig
+            transformation:
+              - translation: [0, 0, 3]
               - scale: 0.01

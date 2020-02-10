@@ -23,3 +23,7 @@ type SpotLight struct {
 func (light *SpotLight) Draw(shader Shader.IShaderProgram) error {
 	return shader.BindObject(light)
 }
+
+func (light *SpotLight) GetPosition() *Vector.Vector3 {
+	return &light.Position
+}

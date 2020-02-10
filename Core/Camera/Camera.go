@@ -48,3 +48,7 @@ func (camera *Camera) Tick(timeDelta float32) {
 func (camera *Camera) Draw(shader Shader.IShaderProgram) error {
 	return shader.BindObject(camera)
 }
+
+func (camera *Camera) GetPosition() *Vector.Vector3 {
+	return camera.Position
+}

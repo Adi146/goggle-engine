@@ -3,7 +3,7 @@
 in vec3 v_position;
 
 struct MaterialColor {
-    vec3 diffuse;
+    vec4 diffuse;
     vec3 specular;
     vec3 emissive;
 };
@@ -30,6 +30,6 @@ void main() {
     fragmentColor += calculatePointLight(view, normal, color, shininess);
     fragmentColor += calculateSpotLight(view, normal, color, shininess);
 
-    f_color = vec4(fragmentColor + color.emissive, 1.0f) ;
+    f_color = vec4(fragmentColor + color.emissive, color.diffuse.a) ;
 }
 

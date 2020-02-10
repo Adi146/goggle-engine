@@ -8,7 +8,7 @@ in vec3 v_tangent;
 in vec3 v_biTangent;
 
 struct MaterialColor {
-    vec3 diffuse;
+    vec4 diffuse;
     vec3 specular;
     vec3 emissive;
 };
@@ -38,11 +38,10 @@ MaterialColor GetMaterialColor() {
         for (int i = 0; i < u_material.numTextureDiffuse; i++){
             diffuse += texture(u_material.texturesDiffuse[i], v_uv);
         }
-        // check if material is transparent
-        if (diffuse.w < 0.9){
+        if (diffuse.a < 0.1) {
             discard;
         }
-        color.diffuse = vec3(diffuse);
+        color.diffuse = diffuse;
     }
 
     if (u_material.numTextureSpecular > 0) {
@@ -63,8 +62,6 @@ MaterialColor GetMaterialColor() {
 
     return color;
 }
-
-
 
 vec3 GetNormalVector () {
     vec3 normal = v_normal;

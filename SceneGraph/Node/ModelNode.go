@@ -27,8 +27,9 @@ func init() {
 
 type ModelNodeConfig struct {
 	Scene.NodeConfig
-	File     string              `yaml:"file"`
-	Textures map[string][]string `yaml:"textures"`
+	File          string              `yaml:"file"`
+	Textures      map[string][]string `yaml:"textures"`
+	IsTransparent bool                `yaml:"isTransparent"`
 }
 
 func (config *ModelNodeConfig) Create() (Scene.INode, error) {
@@ -84,7 +85,11 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 
 func (node *ModelNode) Draw() error {
 	if scene := node.GetScene(); scene != nil {
-		scene.OpaqueObjects = append(scene.OpaqueObjects, node.Model)
+		if node.Config.IsTransparent {
+			scene.TransparentObjects = append(scene.TransparentObjects, node.Model)
+		} else {
+			scene.OpaqueObjects = append(scene.OpaqueObjects, node.Model)
+		}
 	}
 
 	return nil

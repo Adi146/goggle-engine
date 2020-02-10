@@ -116,6 +116,8 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 		gl.UniformMatrix4fv(location, 1, false, &v[0][0])
 	case *Vector.Vector3:
 		gl.Uniform3fv(location, 1, &v[0])
+	case *Vector.Vector4:
+		gl.Uniform4fv(location, 1, &v[0])
 	case float32:
 		gl.Uniform1f(location, v)
 	case []float32:

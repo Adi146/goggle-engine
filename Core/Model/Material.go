@@ -6,7 +6,7 @@ import (
 )
 
 type Material struct {
-	DiffuseBaseColor  Vector.Vector3
+	DiffuseBaseColor  Vector.Vector4
 	SpecularBaseColor Vector.Vector3
 	EmissiveBaseColor Vector.Vector3
 

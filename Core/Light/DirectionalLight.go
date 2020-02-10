@@ -1,6 +1,8 @@
 package Light
 
 import (
+	"math"
+
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 )
@@ -15,4 +17,8 @@ type DirectionalLight struct {
 
 func (light *DirectionalLight) Draw(shader Shader.IShaderProgram) error {
 	return shader.BindObject(light)
+}
+
+func (light *DirectionalLight) GetPosition() *Vector.Vector3 {
+	return light.Direction.MulScalar(-math.MaxFloat32)
 }

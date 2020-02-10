@@ -92,7 +92,7 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Mo
 	}
 
 	return &Model.Material{
-		DiffuseBaseColor:  Vector.Vector3{assimpDiffuse.R(), assimpDiffuse.G(), assimpDiffuse.B()},
+		DiffuseBaseColor:  Vector.Vector4{assimpDiffuse.R(), assimpDiffuse.G(), assimpDiffuse.B(), assimpDiffuse.A()},
 		SpecularBaseColor: Vector.Vector3{assimpSpecular.R(), assimpSpecular.G(), assimpSpecular.B()},
 		EmissiveBaseColor: Vector.Vector3{assimpEmissive.R(), assimpEmissive.G(), assimpEmissive.B()},
 

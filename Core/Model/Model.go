@@ -2,6 +2,7 @@ package Model
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
@@ -26,4 +27,8 @@ func (model *Model) Draw(shader Shader.IShaderProgram) error {
 	}
 
 	return err.Err()
+}
+
+func (model *Model) GetPosition() *Vector.Vector3 {
+	return model.ModelMatrix.MulVector(&Vector.Vector3{0, 0, 0})
 }

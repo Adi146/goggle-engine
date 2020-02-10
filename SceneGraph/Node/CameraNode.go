@@ -79,6 +79,7 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 func (node *CameraNode) Draw() error {
 	if scene := node.GetScene(); scene != nil {
 		scene.PreRenderObjects = append(scene.PreRenderObjects, node.Camera)
+		scene.CameraPosition = node.GetGlobalPosition()
 	}
 
 	return nil

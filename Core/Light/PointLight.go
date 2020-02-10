@@ -19,3 +19,7 @@ type PointLight struct {
 func (light *PointLight) Draw(shader Shader.IShaderProgram) error {
 	return shader.BindObject(light)
 }
+
+func (light *PointLight) GetPosition() *Vector.Vector3 {
+	return &light.Position
+}

@@ -10,6 +10,8 @@ import (
 	_ "github.com/Adi146/goggle-engine/SceneGraph/Node"
 	_ "github.com/Adi146/goggle-engine/SceneGraph/Node/LightNode"
 	_ "github.com/Adi146/goggle-engine/UI/Control"
+
+	_ "github.com/ftrvxmtrx/tga"
 )
 
 const (

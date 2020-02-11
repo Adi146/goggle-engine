@@ -168,10 +168,6 @@ func (program *ShaderProgramCore) getUniformLocation(uniformAddress string) (int
 }
 
 func (program *ShaderProgramCore) getUniformBlockIndex(uniformAddress string) (uint32, error) {
-	if !program.isBound {
-		return 0, fmt.Errorf("shader is not bound")
-	}
-
 	index := gl.GetUniformBlockIndex(program.programId, gl.Str(uniformAddress+"\x00"))
 	if index == gl.INVALID_INDEX {
 		return index, fmt.Errorf("uniform block %s not found", uniformAddress)

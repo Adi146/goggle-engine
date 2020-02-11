@@ -62,7 +62,9 @@ func (config *YamlShaderConfig) Unmarshal() (Shader.IShaderProgram, error) {
 		if err != nil {
 			return nil, err
 		}
-		shader.BindObject(fbo)
+		if err := shader.BindObject(fbo); err != nil {
+			return nil, err
+		}
 	}
 
 	return shader, nil

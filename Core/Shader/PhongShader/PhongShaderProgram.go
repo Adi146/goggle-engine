@@ -52,8 +52,7 @@ const (
 
 	modelMatrix_uniformAddress = "u_modelMatrix"
 
-	viewMatrix_uniformAddress       = "u_viewMatrix"
-	projectionMatrix_uniformAddress = "u_projectionMatrix"
+	cameraUBO_uniformAddress = "Camera"
 )
 
 var (
@@ -113,14 +112,14 @@ func (program *PhongShaderProgram) BindObject(i interface{}) error {
 		return program.bindMaterial(v)
 	case *Model.Model:
 		return program.bindModel(v)
-	case Camera.ICamera:
-		return program.bindCamera(v)
 	case *Light.DirectionalLight:
 		return program.bindDirectionalLight(v)
 	case *Light.PointLight:
 		return program.bindPointLight(v)
 	case *Light.SpotLight:
 		return program.bindSpotLight(v)
+	case *Camera.UniformBuffer:
+		return program.BindUniform(v, cameraUBO_uniformAddress)
 	default:
 		return fmt.Errorf("type %T not supported", v)
 	}
@@ -142,15 +141,6 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 	for textureType, uniformAddress := range numTextureUniformMap {
 		err.Push(program.BindUniform(int32(textureIndexMap[textureType]), uniformAddress))
 	}
-
-	return err.Err()
-}
-
-func (program *PhongShaderProgram) bindCamera(camera Camera.ICamera) error {
-	var err Error.ErrorCollection
-
-	err.Push(program.BindUniform(camera.GetProjectionMatrix(), projectionMatrix_uniformAddress))
-	err.Push(program.BindUniform(camera.GetViewMatrix(), viewMatrix_uniformAddress))
 
 	return err.Err()
 }

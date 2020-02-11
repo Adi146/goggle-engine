@@ -1,4 +1,4 @@
-package Node
+package CameraNode
 
 import (
 	"fmt"
@@ -25,6 +25,10 @@ type CameraNodeConfig struct {
 }
 
 func (config *CameraNodeConfig) Create() (Scene.INode, error) {
+	return config.CreateAsCameraNode()
+}
+
+func (config *CameraNodeConfig) CreateAsCameraNode() (*CameraNode, error) {
 	nodeBase, err := config.NodeConfig.Create()
 	if err != nil {
 		return nil, err

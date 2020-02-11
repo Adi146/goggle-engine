@@ -1,6 +1,11 @@
 package YamlFactory
 
 import (
+	"io/ioutil"
+	"os"
+
+	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/ProcessingPipeline"
 	"github.com/Adi146/goggle-engine/Core/Scene"
@@ -8,15 +13,15 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Utils/Log"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
-	"os"
 )
 
 type config struct {
-	ScenesConfig       `yaml:",inline"`
-	ShadersConfig      `yaml:",inline"`
-	FrameBuffersConfig `yaml:",inline"`
+	ScenesConfig                              `yaml:",inline"`
+	ShadersConfig                             `yaml:",inline"`
+	FrameBuffersConfig                        `yaml:",inline"`
+	UniformBufferFactory.UniformBuffersConfig `yaml:",inline"`
 
 	OpenGlLogging bool `yaml:"openGlLogging"`
 
@@ -38,6 +43,9 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 		FrameBuffersConfig: FrameBuffersConfig{
 			DecodedFrameBuffers: map[string]FrameBuffer.IFrameBuffer{},
 		},
+		UniformBuffersConfig: UniformBufferFactory.UniformBuffersConfig{
+			DecodedUniformBuffers: map[string]UniformBuffer.IUniformBuffer{},
+		},
 	}
 
 	bytes, err := ioutil.ReadAll(file)
@@ -48,6 +56,8 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	if err := yaml.Unmarshal(bytes, &config); err != nil {
 		return nil, err
 	}
+
+	UniformBufferFactory.SetConfig(config.UniformBuffersConfig)
 
 	pipelineSteps, err := config.UnmarshalProcessingPipeline()
 	if err != nil {

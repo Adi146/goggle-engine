@@ -8,6 +8,7 @@ import (
 
 	_ "github.com/Adi146/goggle-engine/Examples/SceneGraph"
 	_ "github.com/Adi146/goggle-engine/SceneGraph/Node"
+	_ "github.com/Adi146/goggle-engine/SceneGraph/Node/CameraNode"
 	_ "github.com/Adi146/goggle-engine/SceneGraph/Node/LightNode"
 	_ "github.com/Adi146/goggle-engine/UI/Control"
 

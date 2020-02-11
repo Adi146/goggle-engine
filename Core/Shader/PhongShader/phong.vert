@@ -5,8 +5,10 @@ layout(location = 1) in vec3 a_normal;
 layout(location = 2) in vec2 a_uv;
 layout(location = 3) in vec3 a_tangent;
 
-uniform mat4 u_projectionMatrix;
-uniform mat4 u_viewMatrix;
+layout (std140) uniform Camera {
+    mat4 u_projectionMatrix;
+    mat4 u_viewMatrix;
+};
 
 uniform mat4 u_modelMatrix;
 

@@ -44,7 +44,10 @@ struct SpotLight{
     float quadratic;
 };
 
-uniform mat4 u_viewMatrix;
+layout (std140) uniform Camera {
+    mat4 u_projectionMatrix;
+    mat4 u_viewMatrix;
+};
 
 uniform DirectionalLight u_directionalLight;
 uniform PointLight u_pointLights[MAX_POINT_LIGHTS];

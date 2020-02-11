@@ -8,6 +8,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Texture"
+	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -106,32 +107,41 @@ func (program *ShaderProgramCore) EndDraw() {
 }
 
 func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress string) error {
-	location, err := program.getUniformLocation(uniformAddress)
-	if err != nil {
-		return err
-	}
-
 	switch v := i.(type) {
-	case *Matrix.Matrix4x4:
-		gl.UniformMatrix4fv(location, 1, false, &v[0][0])
-	case *Vector.Vector3:
-		gl.Uniform3fv(location, 1, &v[0])
-	case *Vector.Vector4:
-		gl.Uniform4fv(location, 1, &v[0])
-	case float32:
-		gl.Uniform1f(location, v)
-	case []float32:
-		gl.Uniform1fv(location, int32(len(v)), &v[0])
-	case int32:
-		gl.Uniform1i(location, v)
+	case UniformBuffer.IUniformBuffer:
+		index, err := program.getUniformBlockIndex(uniformAddress)
+		if err != nil {
+			return err
+		}
+		gl.UniformBlockBinding(program.programId, index, v.GetIndex())
 	default:
-		return fmt.Errorf("type %T not supported", v)
+		location, err := program.getUniformLocation(uniformAddress)
+		if err != nil {
+			return err
+		}
+
+		switch v := i.(type) {
+		case *Matrix.Matrix4x4:
+			gl.UniformMatrix4fv(location, 1, false, &v[0][0])
+		case *Vector.Vector3:
+			gl.Uniform3fv(location, 1, &v[0])
+		case *Vector.Vector4:
+			gl.Uniform4fv(location, 1, &v[0])
+		case float32:
+			gl.Uniform1f(location, v)
+		case []float32:
+			gl.Uniform1fv(location, int32(len(v)), &v[0])
+		case int32:
+			gl.Uniform1i(location, v)
+		default:
+			return fmt.Errorf("type %T not supported", v)
+		}
 	}
 
 	return nil
 }
 
-func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture *Texture.Texture, uniformAddress string) error {
+func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture Texture.ITexture, uniformAddress string) error {
 	location, err := program.getUniformLocation(uniformAddress)
 	if err != nil {
 		return err
@@ -155,4 +165,17 @@ func (program *ShaderProgramCore) getUniformLocation(uniformAddress string) (int
 	}
 
 	return location, nil
+}
+
+func (program *ShaderProgramCore) getUniformBlockIndex(uniformAddress string) (uint32, error) {
+	if !program.isBound {
+		return 0, fmt.Errorf("shader is not bound")
+	}
+
+	index := gl.GetUniformBlockIndex(program.programId, gl.Str(uniformAddress+"\x00"))
+	if index == gl.INVALID_INDEX {
+		return index, fmt.Errorf("uniform block %s not found", uniformAddress)
+	}
+
+	return index, nil
 }

@@ -19,6 +19,7 @@ shaders:
       - ../Core/Shader/PhongShader/lights.frag
     uniformBuffers:
       - camera
+      - directionalLight
   postProcessing:
     type: postProcessing
     vertexShaders:
@@ -49,6 +50,10 @@ uniformBuffers:
     type: camera
     config:
       index: 0
+  directionalLight:
+    type: directionalLight
+    config:
+      index: 1
 
 scenes:
   postProcessing:
@@ -80,7 +85,7 @@ scenes:
               - translation: [0, 0, 5]
             children:
               camera:
-                type: Node.CameraUBO
+                type: Node.Camera
                 config:
                   perspective:
                     fovy: 90
@@ -96,10 +101,11 @@ scenes:
             type: Node.LightNode.DirectionalLightNode
             config:
               directionalLight:
+                direction: [-1, -1, -1]
                 ambient: [0.32, 0.32, 0.32]
                 diffuse: [0.8, 0.8, 0.8]
                 specular: [0.8, 0.8, 0.8]
-              initialDirection: [-1, -1, -1]
+              uniformBuffer: directionalLight
           arena:
             type: Node.ModelNode
             config:

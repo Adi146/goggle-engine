@@ -49,7 +49,10 @@ layout (std140) uniform Camera {
     mat4 u_viewMatrix;
 };
 
-uniform DirectionalLight u_directionalLight;
+layout (std140) uniform directionalLight {
+    DirectionalLight u_directionalLight;
+};
+
 uniform PointLight u_pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight u_spotLights[MAX_SPOT_LIGHTS];
 uniform int u_numPointLights;

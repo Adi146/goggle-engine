@@ -3,6 +3,8 @@ package PhongShader
 import (
 	"fmt"
 
+	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
+
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
@@ -26,11 +28,6 @@ const (
 	texture_numEmissive_uniformAddress = "u_material.numTextureEmissive"
 	texture_numNormals_uniformAddress  = "u_material.numTextureNormals"
 
-	directionalLight_direction_uniformAddress = "u_directionalLight.direction"
-	directionalLight_ambient_uniformAddress   = "u_directionalLight.ambient"
-	directionalLight_diffuse_uniformAddress   = "u_directionalLight.diffuse"
-	directionalLight_specular_uniformAddress  = "u_directionalLight.specular"
-
 	pointLight_position_uniformAddress  = "u_pointLights[%d].position"
 	pointLight_ambient_uniformAddress   = "u_pointLights[%d].ambient"
 	pointLight_diffuse_uniformAddress   = "u_pointLights[%d].diffuse"
@@ -52,7 +49,8 @@ const (
 
 	modelMatrix_uniformAddress = "u_modelMatrix"
 
-	cameraUBO_uniformAddress = "Camera"
+	cameraUBO_uniformAddress           = "Camera"
+	directionalLightUBO_uniformAddress = "directionalLight"
 )
 
 var (
@@ -112,8 +110,8 @@ func (program *PhongShaderProgram) BindObject(i interface{}) error {
 		return program.bindMaterial(v)
 	case *Model.Model:
 		return program.bindModel(v)
-	case *Light.DirectionalLight:
-		return program.bindDirectionalLight(v)
+	case *DirectionalLight.UniformBuffer:
+		return program.BindUniform(v, directionalLightUBO_uniformAddress)
 	case *Light.PointLight:
 		return program.bindPointLight(v)
 	case *Light.SpotLight:
@@ -147,17 +145,6 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 
 func (program *PhongShaderProgram) bindModel(model *Model.Model) error {
 	return program.BindUniform(model.ModelMatrix, modelMatrix_uniformAddress)
-}
-
-func (program *PhongShaderProgram) bindDirectionalLight(light *Light.DirectionalLight) error {
-	var err Error.ErrorCollection
-
-	err.Push(program.BindUniform(&light.Direction, directionalLight_direction_uniformAddress))
-	err.Push(program.BindUniform(&light.Ambient, directionalLight_ambient_uniformAddress))
-	err.Push(program.BindUniform(&light.Diffuse, directionalLight_diffuse_uniformAddress))
-	err.Push(program.BindUniform(&light.Specular, directionalLight_specular_uniformAddress))
-
-	return err.Err()
 }
 
 func (program *PhongShaderProgram) bindPointLight(light *Light.PointLight) error {

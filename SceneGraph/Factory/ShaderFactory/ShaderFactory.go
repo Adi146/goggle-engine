@@ -1,4 +1,4 @@
-package YamlFactory
+package ShaderFactory
 
 import (
 	"fmt"
@@ -9,16 +9,29 @@ import (
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 )
 
-var ShaderFactory = map[string]func([]string, []string) (Shader.IShaderProgram, error){
-	//"basic": BasicShader.NewBasicIShaderProgram,
-	"phong":          PhongShader.NewPhongIShaderProgram,
-	"postProcessing": PostProcessing.NewIShaderProgram,
+var (
+	typeFactory = map[string]func([]string, []string) (Shader.IShaderProgram, error){
+		"phong":          PhongShader.NewPhongIShaderProgram,
+		"postProcessing": PostProcessing.NewIShaderProgram,
+	}
+	globalConfig ShadersConfig
+)
+
+func AddType(key string, constructor func([]string, []string) (Shader.IShaderProgram, error)) {
+	typeFactory[key] = constructor
+}
+
+func Get(key string) (Shader.IShaderProgram, error) {
+	return globalConfig.Get(key)
+}
+
+func SetConfig(config ShadersConfig) {
+	globalConfig = config
 }
 
 type ShadersConfig struct {
 	ShaderConfig   map[string]YamlShaderConfig `yaml:"shaders"`
 	DecodedShaders map[string]Shader.IShaderProgram
-	BaseConfig     *config
 }
 
 func (config *ShadersConfig) Get(name string) (Shader.IShaderProgram, error) {
@@ -47,7 +60,7 @@ type YamlShaderConfig struct {
 }
 
 func (config *YamlShaderConfig) Unmarshal() (Shader.IShaderProgram, error) {
-	shaderConstructor, ok := ShaderFactory[config.Type]
+	shaderConstructor, ok := typeFactory[config.Type]
 	if !ok {
 		return nil, fmt.Errorf("shader type %s is not in factory", config.Type)
 	}

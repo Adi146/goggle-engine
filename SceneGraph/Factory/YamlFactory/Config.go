@@ -13,13 +13,14 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Utils/Log"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"gopkg.in/yaml.v3"
 )
 
 type config struct {
 	ScenesConfig                              `yaml:",inline"`
-	ShadersConfig                             `yaml:",inline"`
+	ShaderFactory.ShadersConfig               `yaml:",inline"`
 	FrameBuffersConfig                        `yaml:",inline"`
 	UniformBufferFactory.UniformBuffersConfig `yaml:",inline"`
 
@@ -37,7 +38,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 		ScenesConfig: ScenesConfig{
 			DecodedScenes: map[string]Scene.IScene{},
 		},
-		ShadersConfig: ShadersConfig{
+		ShadersConfig: ShaderFactory.ShadersConfig{
 			DecodedShaders: map[string]Shader.IShaderProgram{},
 		},
 		FrameBuffersConfig: FrameBuffersConfig{
@@ -58,6 +59,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	}
 
 	UniformBufferFactory.SetConfig(config.UniformBuffersConfig)
+	ShaderFactory.SetConfig(config.ShadersConfig)
 
 	pipelineSteps, err := config.UnmarshalProcessingPipeline()
 	if err != nil {

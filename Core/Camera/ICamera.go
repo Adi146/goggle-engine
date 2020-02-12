@@ -5,7 +5,12 @@ import (
 )
 
 type ICamera interface {
-	GetViewMatrix() *Matrix.Matrix4x4
-	GetProjectionMatrix() *Matrix.Matrix4x4
-	Tick(timeDelta float32)
+	Get() Camera
+	Set(camera Camera)
+
+	GetViewMatrix() Matrix.Matrix4x4
+	SetViewMatrix(matrix Matrix.Matrix4x4)
+
+	GetProjectionMatrix() Matrix.Matrix4x4
+	SetProjectionMatrix(matrix Matrix.Matrix4x4)
 }

@@ -6,4 +6,6 @@ type IUniformBuffer interface {
 	Bind()
 	UpdateData(data interface{}, offset int, size int)
 	GetIndex() uint32
+
+	ForceUpdate()
 }

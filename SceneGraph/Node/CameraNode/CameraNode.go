@@ -5,84 +5,97 @@ import (
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/Camera"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
 const CameraNodeFactoryName = "Node.Camera"
+const CameraUBOFactoryName = "camera"
 
 func init() {
 	YamlFactory.NodeFactory[CameraNodeFactoryName] = reflect.TypeOf((*CameraNodeConfig)(nil)).Elem()
+	UniformBufferFactory.AddType(CameraUBOFactoryName, reflect.TypeOf((*Camera.UniformBuffer)(nil)).Elem())
 }
 
 type CameraNodeConfig struct {
 	Scene.NodeConfig
-	InitialFront            *Vector.Vector3                `yaml:"initialFront"`
-	InitialUp               *Vector.Vector3                `yaml:"initialUp"`
+	FrontVector             Vector.Vector3                 `yaml:"front"`
+	UpVector                Vector.Vector3                 `yaml:"up"`
 	PerspectiveMatrixConfig *YamlFactory.PerspectiveConfig `yaml:"perspective"`
 	OrthogonalMatrixConfig  *YamlFactory.OrthogonalConfig  `yaml:"orthogonal"`
+	UBO                     string                         `yaml:"uniformBuffer"`
 }
 
 func (config *CameraNodeConfig) Create() (Scene.INode, error) {
-	return config.CreateAsCameraNode()
-}
+	config.SetDefaults()
 
-func (config *CameraNodeConfig) CreateAsCameraNode() (*CameraNode, error) {
 	nodeBase, err := config.NodeConfig.Create()
 	if err != nil {
 		return nil, err
 	}
 
-	node := &CameraNode{
-		INode:  nodeBase,
-		Config: config,
+	ubo, err := UniformBufferFactory.Get(config.UBO)
+	if err != nil {
+		return nil, err
 	}
 
+	var cameraBase *Camera.Camera
+
 	if config.PerspectiveMatrixConfig != nil {
-		node.Camera = Camera.NewCamera(config.PerspectiveMatrixConfig.Decode())
+		cameraBase = Camera.NewCamera(*config.PerspectiveMatrixConfig.Decode())
 	} else if config.OrthogonalMatrixConfig != nil {
-		node.Camera = Camera.NewCamera(config.OrthogonalMatrixConfig.Decode())
+		cameraBase = Camera.NewCamera(*config.OrthogonalMatrixConfig.Decode())
 	} else {
 		return nil, fmt.Errorf("no projection matrix specified")
 	}
 
-	if config.InitialUp == nil {
-		config.InitialUp = &Vector.Vector3{0, 1, 0}
-	}
+	camera := ubo.(Camera.ICamera)
+	camera.Set(*cameraBase)
 
-	if config.InitialFront == nil {
-		config.InitialFront = &Vector.Vector3{0, 0, 1}
+	node := &CameraNode{
+		INode:   nodeBase,
+		ICamera: camera,
+
+		Config: config,
 	}
 
 	return node, nil
 }
 
+func (config *CameraNodeConfig) SetDefaults() {
+	if config.UpVector.Length() == 0 {
+		config.UpVector = Vector.Vector3{0, 1, 0}
+	}
+
+	if config.FrontVector.Length() == 0 {
+		config.FrontVector = Vector.Vector3{0, 0, 1}
+	}
+}
+
 type CameraNode struct {
 	Scene.INode
-	*Camera.Camera
+	Camera.ICamera
 
 	Config *CameraNodeConfig
 }
 
 func (node *CameraNode) Tick(timeDelta float32) error {
-	err := node.INode.Tick(timeDelta)
-
-	node.Camera.Position = node.GetGlobalPosition()
+	position := node.GetGlobalPosition()
 
 	invTransGlobalTransformation := node.GetGlobalTransformation().Inverse().Transpose()
+	front := invTransGlobalTransformation.MulVector(&node.Config.FrontVector).Normalize()
+	up := invTransGlobalTransformation.MulVector(&node.Config.UpVector).Normalize()
 
-	node.Camera.Front = invTransGlobalTransformation.MulVector(node.Config.InitialFront).Normalize()
-	node.Camera.Up = invTransGlobalTransformation.MulVector(node.Config.InitialUp).Normalize()
+	node.ICamera.SetViewMatrix(*Matrix.LookAt(position, position.Add(front), up))
 
-	node.Camera.Tick(timeDelta)
-
-	return err
+	return nil
 }
 
 func (node *CameraNode) Draw() error {
 	if scene := node.GetScene(); scene != nil {
-		scene.PreRenderObjects = append(scene.PreRenderObjects, node.Camera)
 		scene.CameraPosition = node.GetGlobalPosition()
 	}
 

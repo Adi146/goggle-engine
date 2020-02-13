@@ -4,6 +4,12 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
+const (
+	Std140_size_single = 4
+	Std140_size_vec3 = 16
+	Std140_size_mat4 = 64
+)
+
 type UniformBufferBase struct {
 	ubo   uint32
 	Size  int    `yaml:"size"`

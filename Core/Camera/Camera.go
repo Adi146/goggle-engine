@@ -29,7 +29,7 @@ func (camera *Camera) Get() Camera {
 }
 
 func (camera *Camera) Set(val Camera) {
-	camera = &val
+	*camera = val
 }
 
 func (camera *Camera) GetViewMatrix() Matrix.Matrix4x4 {

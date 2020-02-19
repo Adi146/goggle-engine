@@ -20,6 +20,7 @@ shaders:
     uniformBuffers:
       - camera
       - directionalLight
+      - pointLight
   postProcessing:
     type: postProcessing
     vertexShaders:
@@ -54,6 +55,10 @@ uniformBuffers:
     type: directionalLight
     config:
       index: 1
+  pointLight:
+    type: pointLight
+    config:
+      index: 2
 
 scenes:
   postProcessing:
@@ -116,6 +121,35 @@ scenes:
               file: Models/fern/fern.fbx
             transformation:
               - scale: 0.01
+          lightRotator:
+            type: SceneGraph.Rotor
+            config:
+              speed: 1
+            children:
+              blueLight:
+                type: Node.LightNode.PointLightNode
+                config:
+                  pointLight:
+                    ambient: [0.0, 0.0, 0.2]
+                    diffuse: [0.0, 0.0, 1.0]
+                    specular: [0.0, 0.0, 1.0]
+                    linear: 0.027
+                    quadratic: 0.0028
+                  uniformBuffer: pointLight
+                transformation:
+                  - translation: [0, 1, -3]
+              redLight:
+                type: Node.LightNode.PointLightNode
+                config:
+                  pointLight:
+                    ambient: [0.2, 0.0, 0.0]
+                    diffuse: [1.0, 0.0, 0.0]
+                    specular: [1.0, 0.0, 0.0]
+                    linear: 0.027
+                    quadratic: 0.0028
+                  uniformBuffer: pointLight
+                transformation:
+                  - translation: [0, 1, 3]
           window1:
             type: Node.ModelNode
             config: &windowConfig

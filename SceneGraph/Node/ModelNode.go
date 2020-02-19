@@ -84,6 +84,8 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 }
 
 func (node *ModelNode) Draw() error {
+	err := node.INode.Draw()
+
 	if scene := node.GetScene(); scene != nil {
 		if node.Config.IsTransparent {
 			scene.TransparentObjects = append(scene.TransparentObjects, node.Model)
@@ -92,5 +94,5 @@ func (node *ModelNode) Draw() error {
 		}
 	}
 
-	return nil
+	return err
 }

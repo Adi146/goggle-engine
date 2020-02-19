@@ -6,8 +6,8 @@ import (
 
 const (
 	Std140_size_single = 4
-	Std140_size_vec3 = 16
-	Std140_size_mat4 = 64
+	Std140_size_vec3   = 16
+	Std140_size_mat4   = 64
 )
 
 type UniformBufferBase struct {

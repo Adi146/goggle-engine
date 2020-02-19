@@ -7,7 +7,7 @@ import (
 
 const (
 	projectionMatrix_offset = 0
-	viewMatrix_offset = 64
+	viewMatrix_offset       = 64
 )
 
 type UniformBuffer struct {

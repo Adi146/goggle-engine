@@ -5,7 +5,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Angle"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-	"github.com/Adi146/goggle-engine/Core/Light"
+	"github.com/Adi146/goggle-engine/Core/Light/PointLight"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
 	"github.com/Adi146/goggle-engine/Core/Window"
@@ -88,7 +88,7 @@ func main() {
 	pointLightRotor.Init("pointLightRotor")
 
 	pointLightNode1 := &LightNode.PointLightNode{
-		PointLight: Light.PointLight{
+		PointLight: PointLight.PointLight{
 			Position:  Vector.Vector3{0.0, 0.0, 0.0},
 			Ambient:   Vector.Vector3{0.32, 0.32, 0.32},
 			Diffuse:   Vector.Vector3{0.8, 0.8, 0.8},

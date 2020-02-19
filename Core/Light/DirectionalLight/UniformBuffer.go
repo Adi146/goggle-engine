@@ -7,9 +7,9 @@ import (
 
 const (
 	direction_offset = 0
-	ambient_offset = 16
-	diffuse_offset = 32
-	specular_offset = 48
+	ambient_offset   = 16
+	diffuse_offset   = 32
+	specular_offset  = 48
 )
 
 type UniformBuffer struct {

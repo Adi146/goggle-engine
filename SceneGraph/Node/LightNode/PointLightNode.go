@@ -1,22 +1,26 @@
 package LightNode
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Light/PointLight"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"reflect"
 
-	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
 const PointLightNodeFactoryName = "Node.LightNode.PointLightNode"
+const PointLightUBOFactoryName = "pointLight"
 
 func init() {
 	YamlFactory.NodeFactory[PointLightNodeFactoryName] = reflect.TypeOf((*PointLightNodeConfig)(nil)).Elem()
+	UniformBufferFactory.AddType(PointLightUBOFactoryName, reflect.TypeOf((*PointLight.UniformBuffer)(nil)).Elem())
 }
 
 type PointLightNodeConfig struct {
 	Scene.NodeConfig
-	Light.PointLight `yaml:"pointLight"`
+	PointLight.PointLight `yaml:"pointLight"`
+	UBO                   string `yaml:"uniformBuffer"`
 }
 
 func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
@@ -25,9 +29,23 @@ func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
+	ubo, err := UniformBufferFactory.Get(config.UBO)
+	if err != nil {
+		return nil, err
+	}
+
+	lightUbo := ubo.(PointLight.IUniformBuffer)
+	light, err := lightUbo.GetNewElement()
+	if err != nil {
+		return nil, err
+	}
+
+	light.Set(config.PointLight)
+
 	node := &PointLightNode{
-		INode:  nodeBase,
-		Config: config,
+		INode:       nodeBase,
+		IPointLight: light,
+		Config:      config,
 	}
 
 	return node, nil
@@ -35,22 +53,14 @@ func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
 
 type PointLightNode struct {
 	Scene.INode
-
+	PointLight.IPointLight
 	Config *PointLightNodeConfig
 }
 
 func (node *PointLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.Config.PointLight.Position = *node.GetGlobalPosition()
+	node.IPointLight.SetPosition(*node.GetGlobalPosition())
 
 	return err
-}
-
-func (node *PointLightNode) Draw() error {
-	if scene := node.GetScene(); scene != nil {
-		scene.PreRenderObjects = append(scene.PreRenderObjects, &node.Config.PointLight)
-	}
-
-	return nil
 }

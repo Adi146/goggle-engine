@@ -2,8 +2,8 @@ package PhongShader
 
 import (
 	"fmt"
-
 	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
+	"github.com/Adi146/goggle-engine/Core/Light/PointLight"
 
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/Light"
@@ -28,14 +28,6 @@ const (
 	texture_numEmissive_uniformAddress = "u_material.numTextureEmissive"
 	texture_numNormals_uniformAddress  = "u_material.numTextureNormals"
 
-	pointLight_position_uniformAddress  = "u_pointLights[%d].position"
-	pointLight_ambient_uniformAddress   = "u_pointLights[%d].ambient"
-	pointLight_diffuse_uniformAddress   = "u_pointLights[%d].diffuse"
-	pointLight_specular_uniformAddress  = "u_pointLights[%d].specular"
-	pointLight_linear_uniformAddress    = "u_pointLights[%d].linear"
-	pointLight_quadratic_uniformAddress = "u_pointLights[%d].quadratic"
-	numPointLights_uniformAddress       = "u_numPointLights"
-
 	spotLight_position_uniformAddress  = "u_spotLights[%d].position"
 	spotLight_direction_uniformAddress = "u_spotLights[%d].direction"
 	spotLight_innerCone_uniformAddress = "u_spotLights[%d].innerCone"
@@ -51,6 +43,7 @@ const (
 
 	cameraUBO_uniformAddress           = "Camera"
 	directionalLightUBO_uniformAddress = "directionalLight"
+	pointLightUBO_uniformAddrress      = "pointLight"
 )
 
 var (
@@ -71,7 +64,6 @@ var (
 type PhongShaderProgram struct {
 	*Shader.ShaderProgramCore
 
-	pointLightIndex int32
 	spotLightIndex  int32
 }
 
@@ -93,14 +85,12 @@ func NewPhongIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []st
 func (program *PhongShaderProgram) BeginDraw() error {
 	var err Error.ErrorCollection
 
-	err.Push(program.BindUniform(program.pointLightIndex, numPointLights_uniformAddress))
 	err.Push(program.BindUniform(program.spotLightIndex, numSpotLights_uniformAddress))
 
 	return err.Err()
 }
 
 func (program *PhongShaderProgram) EndDraw() {
-	program.pointLightIndex = 0
 	program.spotLightIndex = 0
 }
 
@@ -112,8 +102,8 @@ func (program *PhongShaderProgram) BindObject(i interface{}) error {
 		return program.bindModel(v)
 	case *DirectionalLight.UniformBuffer:
 		return program.BindUniform(v, directionalLightUBO_uniformAddress)
-	case *Light.PointLight:
-		return program.bindPointLight(v)
+	case *PointLight.UniformBuffer:
+		return program.BindUniform(v, pointLightUBO_uniformAddrress)
 	case *Light.SpotLight:
 		return program.bindSpotLight(v)
 	case *Camera.UniformBuffer:
@@ -145,20 +135,6 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 
 func (program *PhongShaderProgram) bindModel(model *Model.Model) error {
 	return program.BindUniform(model.ModelMatrix, modelMatrix_uniformAddress)
-}
-
-func (program *PhongShaderProgram) bindPointLight(light *Light.PointLight) error {
-	var err Error.ErrorCollection
-
-	err.Push(program.BindUniform(&light.Position, fmt.Sprintf(pointLight_position_uniformAddress, program.pointLightIndex)))
-	err.Push(program.BindUniform(&light.Ambient, fmt.Sprintf(pointLight_ambient_uniformAddress, program.pointLightIndex)))
-	err.Push(program.BindUniform(&light.Diffuse, fmt.Sprintf(pointLight_diffuse_uniformAddress, program.pointLightIndex)))
-	err.Push(program.BindUniform(&light.Specular, fmt.Sprintf(pointLight_specular_uniformAddress, program.pointLightIndex)))
-	err.Push(program.BindUniform(light.Linear, fmt.Sprintf(pointLight_linear_uniformAddress, program.pointLightIndex)))
-	err.Push(program.BindUniform(light.Quadratic, fmt.Sprintf(pointLight_quadratic_uniformAddress, program.pointLightIndex)))
-
-	program.pointLightIndex++
-	return err.Err()
 }
 
 func (program *PhongShaderProgram) bindSpotLight(light *Light.SpotLight) error {

@@ -53,9 +53,12 @@ layout (std140) uniform directionalLight {
     DirectionalLight u_directionalLight;
 };
 
-uniform PointLight u_pointLights[MAX_POINT_LIGHTS];
+layout (std140) uniform pointLight {
+    int u_numPointLights;
+    PointLight u_pointLights[MAX_POINT_LIGHTS];
+};
+
 uniform SpotLight u_spotLights[MAX_SPOT_LIGHTS];
-uniform int u_numPointLights;
 uniform int u_numSpotLights;
 
 vec3 calculateDirectionalLight(in vec3 viewVector, in vec3 normalVector, in MaterialColor color, in float shininess) {

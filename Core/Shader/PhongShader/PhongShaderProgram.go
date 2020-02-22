@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
 	"github.com/Adi146/goggle-engine/Core/Light/PointLight"
+	"github.com/Adi146/goggle-engine/Core/Light/SpotLight"
 
 	"github.com/Adi146/goggle-engine/Core/Camera"
-	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
@@ -28,22 +28,12 @@ const (
 	texture_numEmissive_uniformAddress = "u_material.numTextureEmissive"
 	texture_numNormals_uniformAddress  = "u_material.numTextureNormals"
 
-	spotLight_position_uniformAddress  = "u_spotLights[%d].position"
-	spotLight_direction_uniformAddress = "u_spotLights[%d].direction"
-	spotLight_innerCone_uniformAddress = "u_spotLights[%d].innerCone"
-	spotLight_outerCone_uniformAddress = "u_spotLights[%d].outerCone"
-	spotLight_ambient_uniformAddress   = "u_spotLights[%d].ambient"
-	spotLight_diffuse_uniformAddress   = "u_spotLights[%d].diffuse"
-	spotLight_specular_uniformAddress  = "u_spotLights[%d].specular"
-	spotLight_linear_uniformAddress    = "u_spotLights[%d].linear"
-	spotLight_quadratic_uniformAddress = "u_spotLights[%d].quadratic"
-	numSpotLights_uniformAddress       = "u_numSpotLights"
-
 	modelMatrix_uniformAddress = "u_modelMatrix"
 
 	cameraUBO_uniformAddress           = "Camera"
 	directionalLightUBO_uniformAddress = "directionalLight"
-	pointLightUBO_uniformAddrress      = "pointLight"
+	pointLightUBO_uniformAddress       = "pointLight"
+	spotLightUBO_uniformAddress        = "spotLight"
 )
 
 var (
@@ -63,8 +53,6 @@ var (
 
 type PhongShaderProgram struct {
 	*Shader.ShaderProgramCore
-
-	spotLightIndex  int32
 }
 
 func NewPhongShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*PhongShaderProgram, error) {
@@ -82,18 +70,6 @@ func NewPhongIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []st
 	return NewPhongShaderProgram(vertexShaderFiles, fragmentShaderFiles)
 }
 
-func (program *PhongShaderProgram) BeginDraw() error {
-	var err Error.ErrorCollection
-
-	err.Push(program.BindUniform(program.spotLightIndex, numSpotLights_uniformAddress))
-
-	return err.Err()
-}
-
-func (program *PhongShaderProgram) EndDraw() {
-	program.spotLightIndex = 0
-}
-
 func (program *PhongShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *Model.Material:
@@ -103,9 +79,9 @@ func (program *PhongShaderProgram) BindObject(i interface{}) error {
 	case *DirectionalLight.UniformBuffer:
 		return program.BindUniform(v, directionalLightUBO_uniformAddress)
 	case *PointLight.UniformBuffer:
-		return program.BindUniform(v, pointLightUBO_uniformAddrress)
-	case *Light.SpotLight:
-		return program.bindSpotLight(v)
+		return program.BindUniform(v, pointLightUBO_uniformAddress)
+	case *SpotLight.UniformBuffer:
+		return program.BindUniform(v, spotLightUBO_uniformAddress)
 	case *Camera.UniformBuffer:
 		return program.BindUniform(v, cameraUBO_uniformAddress)
 	default:
@@ -135,21 +111,4 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 
 func (program *PhongShaderProgram) bindModel(model *Model.Model) error {
 	return program.BindUniform(model.ModelMatrix, modelMatrix_uniformAddress)
-}
-
-func (program *PhongShaderProgram) bindSpotLight(light *Light.SpotLight) error {
-	var err Error.ErrorCollection
-
-	err.Push(program.BindUniform(&light.Position, fmt.Sprintf(spotLight_position_uniformAddress, program.spotLightIndex)))
-	err.Push(program.BindUniform(&light.Direction, fmt.Sprintf(spotLight_direction_uniformAddress, program.spotLightIndex)))
-	err.Push(program.BindUniform(light.InnerCone, fmt.Sprintf(spotLight_innerCone_uniformAddress, program.spotLightIndex)))
-	err.Push(program.BindUniform(light.OuterCone, fmt.Sprintf(spotLight_outerCone_uniformAddress, program.spotLightIndex)))
-	err.Push(program.BindUniform(&light.Ambient, fmt.Sprintf(spotLight_ambient_uniformAddress, program.spotLightIndex)))
-	err.Push(program.BindUniform(&light.Diffuse, fmt.Sprintf(spotLight_diffuse_uniformAddress, program.spotLightIndex)))
-	err.Push(program.BindUniform(&light.Specular, fmt.Sprintf(spotLight_specular_uniformAddress, program.spotLightIndex)))
-	err.Push(program.BindUniform(light.Linear, fmt.Sprintf(spotLight_linear_uniformAddress, program.spotLightIndex)))
-	err.Push(program.BindUniform(light.Quadratic, fmt.Sprintf(spotLight_quadratic_uniformAddress, program.spotLightIndex)))
-
-	program.spotLightIndex++
-	return err.Err()
 }

@@ -58,8 +58,10 @@ layout (std140) uniform pointLight {
     PointLight u_pointLights[MAX_POINT_LIGHTS];
 };
 
-uniform SpotLight u_spotLights[MAX_SPOT_LIGHTS];
-uniform int u_numSpotLights;
+layout (std140) uniform spotLight {
+    uniform int u_numSpotLights;
+    uniform SpotLight u_spotLights[MAX_SPOT_LIGHTS];
+};
 
 vec3 calculateDirectionalLight(in vec3 viewVector, in vec3 normalVector, in MaterialColor color, in float shininess) {
     vec3 lightDirection = vec3(vec4(u_directionalLight.direction, 1.0f) * transpose(inverse(u_viewMatrix)));

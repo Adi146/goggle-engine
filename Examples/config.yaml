@@ -21,6 +21,7 @@ shaders:
       - camera
       - directionalLight
       - pointLight
+      - spotLight
   postProcessing:
     type: postProcessing
     vertexShaders:
@@ -59,6 +60,10 @@ uniformBuffers:
     type: pointLight
     config:
       index: 2
+  spotLight:
+    type: spotLight
+    config:
+      index: 3
 
 scenes:
   postProcessing:
@@ -102,6 +107,19 @@ scenes:
                   - rotation:
                       angle: 180
                       axis: [0, 1, 0]
+              flash_light:
+                type: Node.LightNode.SpotLightNode
+                config:
+                  spotLight:
+                    innerCone: 0.80
+                    outerCone: 0.95
+                    ambient: [0, 0.2, 0]
+                    diffuse: [0, 1, 0]
+                    specular: [0, 1, 0]
+                    linear: 0.027
+                    quadratic: 0.0028
+                    direction: [0, 0, 1]
+                  uniformBuffer: spotLight
           sunLight:
             type: Node.LightNode.DirectionalLightNode
             config:
@@ -120,6 +138,22 @@ scenes:
             config:
               file: Models/fern/fern.fbx
             transformation:
+              - scale: 0.01
+          construction_light:
+            type: Node.ModelNode
+            config:
+              file: Models/construction_light/Construction_Light.fbx
+              textures:
+                diffuse:
+                  - Models/construction_light/DiffuseMap.png
+                normals:
+                  - Models/construction_light/Normal.png
+                specular:
+                  - Models/construction_light/Specular.png
+                emissive:
+                  - Models/construction_light/Glow.png
+            transformation:
+              - translation: [0, 0, -5]
               - scale: 0.01
           lightRotator:
             type: SceneGraph.Rotor

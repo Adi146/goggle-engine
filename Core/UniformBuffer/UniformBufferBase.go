@@ -6,7 +6,7 @@ import (
 
 const (
 	Std140_size_single = 4
-	Std140_size_vec3   = 16
+	Std140_size_vec3   = 12
 	Std140_size_mat4   = 64
 )
 
@@ -40,9 +40,7 @@ func (buff *UniformBufferBase) Unbind() {
 }
 
 func (buff *UniformBufferBase) UpdateData(data interface{}, offset int, size int) {
-	buff.Bind()
-	gl.BufferSubData(gl.UNIFORM_BUFFER, offset, size, gl.Ptr(data))
-	buff.Unbind()
+	gl.NamedBufferSubData(buff.ubo, offset, size, gl.Ptr(data))
 }
 
 func (buff *UniformBufferBase) GetIndex() uint32 {

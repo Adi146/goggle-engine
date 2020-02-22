@@ -3,8 +3,6 @@ package Light
 import "github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 
 type IPositionalLight interface {
-	ILight
-
 	GetPosition() Vector.Vector3
 	SetPosition(pos Vector.Vector3)
 

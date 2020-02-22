@@ -10,8 +10,7 @@ import (
 
 type DirectionalLight struct {
 	Light.LightBase `yaml:",inline"`
-
-	Direction Vector.Vector3 `yaml:"direction,flow"`
+	Light.DirectionalLightBase `yaml:",inline"`
 }
 
 func (light *DirectionalLight) Draw(shader Shader.IShaderProgram) error {
@@ -28,12 +27,4 @@ func (light *DirectionalLight) Set(val DirectionalLight) {
 
 func (light *DirectionalLight) Get() DirectionalLight {
 	return *light
-}
-
-func (light *DirectionalLight) GetDirection() Vector.Vector3 {
-	return light.Direction
-}
-
-func (light *DirectionalLight) SetDirection(direction Vector.Vector3) {
-	light.Direction = direction
 }

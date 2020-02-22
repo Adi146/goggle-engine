@@ -5,6 +5,7 @@ import (
 )
 
 type IPointLight interface {
+	Light.ILight
 	Light.IPositionalLight
 
 	Get() PointLight

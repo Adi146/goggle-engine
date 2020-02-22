@@ -1,7 +1,6 @@
 package SpotLight
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 )
@@ -9,8 +8,7 @@ import (
 type SpotLight struct {
 	Light.LightBase           `yaml:",inline"`
 	Light.PositionalLightBase `yaml:",inline"`
-
-	Direction Vector.Vector3 `yaml:"direction,flow"`
+	Light.DirectionalLightBase `yaml:",inline"`
 
 	InnerCone float32 `yaml:"innerCone,flow"`
 	OuterCone float32 `yaml:"outerCone,flow"`
@@ -26,14 +24,6 @@ func (light *SpotLight) Get() SpotLight {
 
 func (light *SpotLight) Set(val SpotLight) {
 	*light = val
-}
-
-func (light *SpotLight) GetDirection() Vector.Vector3 {
-	return light.Direction
-}
-
-func (light *SpotLight) SetDirection(val Vector.Vector3) {
-	light.Direction = val
 }
 
 func (light *SpotLight) GetInnerCone() float32 {

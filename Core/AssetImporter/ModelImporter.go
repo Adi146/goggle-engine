@@ -2,6 +2,7 @@ package AssetImporter
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"path"
 	"strings"
 
@@ -20,7 +21,7 @@ var textureTypeMap = map[assimp.TextureMapping]Texture.TextureType{
 	assimp.TextureMapping_Normals:  Texture.NormalsTexture,
 }
 
-func ImportModel(filename string) (*Model.Model, ImportResult) {
+func ImportModel(filename string, shader Shader.IShaderProgram) (*Model.Model, ImportResult) {
 	var result ImportResult
 
 	assimpScene := assimp.ImportFile(filename, 0)
@@ -59,6 +60,7 @@ func ImportModel(filename string) (*Model.Model, ImportResult) {
 	return &Model.Model{
 		Meshes:      meshes,
 		ModelMatrix: Matrix.Identity(),
+		Shader: shader,
 	}, result
 }
 

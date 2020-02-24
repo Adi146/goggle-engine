@@ -22,12 +22,8 @@ func (scene *Scene) Tick(timeDelta float32) {
 
 func (scene *Scene) Draw() {
 	if scene.Root != nil {
-		Log.Error(scene.GetActiveShaderProgram().BeginDraw(), "begin draw error")
 		Log.Error(scene.Root.Draw(), "render error")
-
 		Log.Error(scene.SceneBase.Draw(), "render error")
-
-		scene.GetActiveShaderProgram().EndDraw()
 	}
 }
 

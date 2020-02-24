@@ -2,7 +2,6 @@ package SpotLight
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Light"
-	"github.com/Adi146/goggle-engine/Core/Shader"
 )
 
 type SpotLight struct {
@@ -12,10 +11,6 @@ type SpotLight struct {
 
 	InnerCone float32 `yaml:"innerCone,flow"`
 	OuterCone float32 `yaml:"outerCone,flow"`
-}
-
-func (light *SpotLight) Draw(shader Shader.IShaderProgram) error {
-	return shader.BindObject(light)
 }
 
 func (light *SpotLight) Get() SpotLight {

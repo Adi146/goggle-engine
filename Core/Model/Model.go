@@ -15,16 +15,19 @@ type MeshesWithMaterial struct {
 type Model struct {
 	Meshes      []MeshesWithMaterial
 	ModelMatrix *Matrix.Matrix4x4
+	Shader Shader.IShaderProgram
 }
 
-func (model *Model) Draw(shader Shader.IShaderProgram) error {
+func (model *Model) Draw() error {
 	var err Error.ErrorCollection
 
-	err.Push(shader.BindObject(model))
+	model.Shader.Bind()
+	err.Push(model.Shader.BindObject(model))
 	for _, mesh := range model.Meshes {
-		err.Push(shader.BindObject(mesh.Material))
+		err.Push(model.Shader.BindObject(mesh.Material))
 		mesh.Draw()
 	}
+	model.Shader.Unbind()
 
 	return err.Err()
 }

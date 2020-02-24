@@ -27,7 +27,6 @@ type config struct {
 	OpenGlLogging bool `yaml:"openGlLogging"`
 
 	ProcessingPipelineConfig []struct {
-		Shader      string `yaml:"shader"`
 		FrameBuffer string `yaml:"frameBuffer"`
 		Scene       string `yaml:"scene"`
 	} `yaml:"processingPipeline"`
@@ -95,17 +94,12 @@ func (config *config) UnmarshalProcessingPipeline() ([]ProcessingPipeline.Proces
 		if err != nil {
 			return nil, err
 		}
-		shader, err := config.ShadersConfig.Get(stepConfig.Shader)
-		if err != nil {
-			return nil, err
-		}
 
 		Pipeline = append(
 			Pipeline,
 			ProcessingPipeline.ProcessingPipelineStep{
 				Scene:       scene,
 				FrameBuffer: frameBuffer,
-				Shader:      shader,
 			},
 		)
 	}

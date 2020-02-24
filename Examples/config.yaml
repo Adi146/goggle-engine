@@ -1,11 +1,9 @@
 openGlLogging: true
 
 processingPipeline:
-  - shader: postProcessing
-    frameBuffer: default
+  - frameBuffer: default
     scene: postProcessing
-  - shader: phong
-    frameBuffer: offScreen
+  - frameBuffer: offScreen
     scene: main
 
 shaders:
@@ -80,6 +78,7 @@ scenes:
       kernelMultiplier:
         numerator: 1
         denominator: 16
+      shaderName: postProcessing
   main:
     type: sceneGraph
     config:
@@ -133,10 +132,12 @@ scenes:
             type: Node.ModelNode
             config:
               file: Models/arena.obj
+              shader: phong
           fern:
             type: Node.ModelNode
             config:
               file: Models/fern/fern.fbx
+              shader: phong
             transformation:
               - scale: 0.01
           construction_light:
@@ -152,6 +153,7 @@ scenes:
                   - Models/construction_light/Specular.png
                 emissive:
                   - Models/construction_light/Glow.png
+              shader: phong
             transformation:
               - translation: [0, 0, -5]
               - scale: 0.01
@@ -192,6 +194,7 @@ scenes:
                 diffuse:
                   - Models/blending_transparent_window.png
               isTransparent: true
+              shader: phong
             transformation:
               - translation: [0, 0, 5]
               - scale: 0.01

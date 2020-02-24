@@ -6,8 +6,5 @@ type IShaderProgram interface {
 
 	Destroy()
 
-	BeginDraw() error
-	EndDraw()
-
 	BindObject(i interface{}) error
 }

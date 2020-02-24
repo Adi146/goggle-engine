@@ -5,6 +5,8 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	sceneCore "github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
 var (
@@ -37,6 +39,7 @@ type Scene struct {
 	quad *Model.Mesh
 
 	Kernel *Kernel `yaml:",inline"`
+	Shader Shader.IShaderProgram
 }
 
 func (scene *Scene) Init() error {
@@ -53,10 +56,12 @@ func (scene *Scene) Tick(timeDelta float32) {
 }
 
 func (scene *Scene) Draw() {
-	if shader := scene.GetActiveShaderProgram(); shader != nil {
-		if scene.Kernel != nil {
-			shader.BindObject(scene.Kernel)
-		}
-		scene.quad.Draw()
-	}
+	scene.Shader.Bind()
+	scene.Shader.BindObject(scene.Kernel)
+	scene.quad.Draw()
+}
+
+func (scene *Scene) AddResult(result *Texture.Texture) {
+	scene.Shader.Bind()
+	scene.Shader.BindObject(result)
 }

@@ -1,17 +1,15 @@
 package Scene
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Texture"
 	"sort"
 
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 type SceneBase struct {
-	activeShaderProgram Shader.IShaderProgram
-
 	keyboardInput Window.IKeyboardInput
 	mouseInput    Window.IMouseInput
 
@@ -23,14 +21,6 @@ type SceneBase struct {
 
 func (scene *SceneBase) Init() error {
 	return nil
-}
-
-func (scene *SceneBase) SetActiveShaderProgram(shaderProgram Shader.IShaderProgram) {
-	scene.activeShaderProgram = shaderProgram
-}
-
-func (scene *SceneBase) GetActiveShaderProgram() Shader.IShaderProgram {
-	return scene.activeShaderProgram
 }
 
 func (scene *SceneBase) GetKeyboardInput() Window.IKeyboardInput {
@@ -59,11 +49,14 @@ func (scene *SceneBase) Draw() error {
 	return err.Err()
 }
 
+func (scene *SceneBase) AddResult(texture *Texture.Texture) {
+}
+
 func (scene *SceneBase) drawPreRenderObjects() error {
 	var err Error.ErrorCollection
 
 	for _, drawable := range scene.PreRenderObjects {
-		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
+		err.Push(drawable.Draw())
 	}
 	scene.PreRenderObjects = []IDrawable{}
 
@@ -74,7 +67,7 @@ func (scene *SceneBase) drawOpaqueObjects() error {
 	var err Error.ErrorCollection
 
 	for _, drawable := range scene.OpaqueObjects {
-		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
+		err.Push(drawable.Draw())
 	}
 	scene.OpaqueObjects = []IDrawable{}
 
@@ -93,7 +86,7 @@ func (scene *SceneBase) drawTransparentObjects() error {
 	}
 	sort.Sort(byDistance(transparentDrawables))
 	for _, drawable := range transparentDrawables {
-		err.Push(drawable.Draw(scene.GetActiveShaderProgram()))
+		err.Push(drawable.Draw())
 	}
 
 	scene.TransparentObjects = []IDrawable{}

@@ -99,13 +99,6 @@ func (program *ShaderProgramCore) Unbind() {
 	program.isBound = false
 }
 
-func (program *ShaderProgramCore) BeginDraw() error {
-	return nil
-}
-
-func (program *ShaderProgramCore) EndDraw() {
-}
-
 func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress string) error {
 	switch v := i.(type) {
 	case UniformBuffer.IUniformBuffer:

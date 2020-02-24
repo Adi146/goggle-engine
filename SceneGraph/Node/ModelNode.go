@@ -1,6 +1,7 @@
 package Node
 
 import (
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/AssetImporter"
@@ -30,6 +31,7 @@ type ModelNodeConfig struct {
 	File          string              `yaml:"file"`
 	Textures      map[string][]string `yaml:"textures"`
 	IsTransparent bool                `yaml:"isTransparent"`
+	Shader string `yaml:"shader"`
 }
 
 func (config *ModelNodeConfig) Create() (Scene.INode, error) {
@@ -43,10 +45,15 @@ func (config *ModelNodeConfig) Create() (Scene.INode, error) {
 		Config: config,
 	}
 
+	shader, err := ShaderFactory.Get(config.Shader)
+	if err != nil {
+		return nil, err
+	}
+
 	var importErrors Error.ErrorCollection
 	var importWarnings Error.ErrorCollection
 
-	model, result := AssetImporter.ImportModel(config.File)
+	model, result := AssetImporter.ImportModel(config.File, shader)
 	importErrors.Push(&result.Errors)
 	importWarnings.Push(&result.Warnings)
 	if result.Success() {

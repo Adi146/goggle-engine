@@ -7,7 +7,7 @@ import (
 
 type SceneGraphConfig struct {
 	Scene.Scene
-	Root NodeFactory.NodeConfig `yaml:"root"`
+	Root NodeFactory.FactoryEntry `yaml:"root"`
 }
 
 func (config *SceneGraphConfig) Init() error {

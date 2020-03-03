@@ -21,12 +21,12 @@ func Get(key string, yaml yaml.Node) (*Matrix.Matrix4x4, error) {
 		return nil, fmt.Errorf("matrix type %s not in factory", key)
 	}
 
-	matrixConfig := reflect.New(matrixType).Interface().(IYamlMatrixConfig)
+	matrixConfig := reflect.New(matrixType).Interface().(IMatrixFactoryEntry)
 	yaml.Decode(matrixConfig)
 
 	return matrixConfig.Decode(), nil
 }
 
-type IYamlMatrixConfig interface {
+type IMatrixFactoryEntry interface {
 	Decode() *Matrix.Matrix4x4
 }

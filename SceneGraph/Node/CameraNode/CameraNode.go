@@ -22,10 +22,10 @@ func init() {
 
 type CameraNodeConfig struct {
 	Scene.NodeConfig
-	FrontVector      Vector.Vector3             `yaml:"front"`
-	UpVector         Vector.Vector3             `yaml:"up"`
-	ProjectionMatrix MatrixFactory.MatrixConfig `yaml:"projection"`
-	UBO              string                     `yaml:"uniformBuffer"`
+	FrontVector      Vector.Vector3       `yaml:"front"`
+	UpVector         Vector.Vector3       `yaml:"up"`
+	ProjectionMatrix MatrixFactory.Config `yaml:"projection"`
+	UBO              string               `yaml:"uniformBuffer"`
 }
 
 func (config *CameraNodeConfig) Create() (Scene.INode, error) {

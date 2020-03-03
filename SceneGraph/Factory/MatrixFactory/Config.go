@@ -5,13 +5,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type MatrixConfig struct {
+type Config struct {
 	Matrix.Matrix4x4
 }
 
 type tmpConfig map[string]yaml.Node
 
-func (config *MatrixConfig) UnmarshalYAML(value *yaml.Node) error {
+func (config *Config) UnmarshalYAML(value *yaml.Node) error {
 	var tmpConfig tmpConfig
 	value.Decode(&tmpConfig)
 

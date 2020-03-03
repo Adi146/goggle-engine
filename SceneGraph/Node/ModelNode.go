@@ -28,10 +28,10 @@ func init() {
 
 type ModelNodeConfig struct {
 	Scene.NodeConfig
-	File          string              `yaml:"file"`
-	Textures      map[string][]string `yaml:"textures"`
-	IsTransparent bool                `yaml:"isTransparent"`
-	Shader        string              `yaml:"shader"`
+	File          string               `yaml:"file"`
+	Textures      map[string][]string  `yaml:"textures"`
+	IsTransparent bool                 `yaml:"isTransparent"`
+	Shader        ShaderFactory.Config `yaml:"shader"`
 }
 
 func (config *ModelNodeConfig) Create() (Scene.INode, error) {
@@ -45,15 +45,10 @@ func (config *ModelNodeConfig) Create() (Scene.INode, error) {
 		Config: config,
 	}
 
-	shader, err := ShaderFactory.Get(config.Shader)
-	if err != nil {
-		return nil, err
-	}
-
 	var importErrors Error.ErrorCollection
 	var importWarnings Error.ErrorCollection
 
-	model, result := AssetImporter.ImportModel(config.File, shader)
+	model, result := AssetImporter.ImportModel(config.File, config.Shader.IShaderProgram)
 	importErrors.Push(&result.Errors)
 	importWarnings.Push(&result.Warnings)
 	if result.Success() {

@@ -20,7 +20,7 @@ import (
 
 type config struct {
 	ScenesConfig                              `yaml:",inline"`
-	ShaderFactory.ShadersConfig               `yaml:",inline"`
+	ShaderFactory.FactoryConfig               `yaml:",inline"`
 	FrameBuffersConfig                        `yaml:",inline"`
 	UniformBufferFactory.UniformBuffersConfig `yaml:",inline"`
 
@@ -37,7 +37,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 		ScenesConfig: ScenesConfig{
 			DecodedScenes: map[string]Scene.IScene{},
 		},
-		ShadersConfig: ShaderFactory.ShadersConfig{
+		FactoryConfig: ShaderFactory.FactoryConfig{
 			DecodedShaders: map[string]Shader.IShaderProgram{},
 		},
 		FrameBuffersConfig: FrameBuffersConfig{
@@ -58,7 +58,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	}
 
 	UniformBufferFactory.SetConfig(config.UniformBuffersConfig)
-	ShaderFactory.SetConfig(config.ShadersConfig)
+	ShaderFactory.SetConfig(config.FactoryConfig)
 
 	pipelineSteps, err := config.UnmarshalProcessingPipeline()
 	if err != nil {

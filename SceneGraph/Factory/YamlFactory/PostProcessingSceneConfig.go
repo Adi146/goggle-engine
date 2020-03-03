@@ -7,16 +7,11 @@ import (
 
 type PostProcessingSceneConfig struct {
 	PostProcessing.Scene `yaml:",inline"`
-	ShaderName           string `yaml:"shaderName"`
+	ShaderConfig         ShaderFactory.Config `yaml:"shaderName"`
 }
 
 func (config *PostProcessingSceneConfig) Init() error {
-	shader, err := ShaderFactory.Get(config.ShaderName)
-	if err != nil {
-		return err
-	}
-
-	config.Scene.Shader = shader
+	config.Scene.Shader = config.ShaderConfig
 
 	return config.Scene.Init()
 }

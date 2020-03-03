@@ -1,19 +1,19 @@
 package Control
 
 import (
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Angle"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
 const WASDControlFactoryName = "UI.Control.WASDControl"
 
 func init() {
-	YamlFactory.NodeFactory[WASDControlFactoryName] = reflect.TypeOf((*WASDControlConfig)(nil)).Elem()
+	NodeFactory.AddType(WASDControlFactoryName, reflect.TypeOf((*WASDControlConfig)(nil)).Elem())
 }
 
 type WASDControlConfig struct {

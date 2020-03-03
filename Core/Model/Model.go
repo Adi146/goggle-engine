@@ -15,7 +15,7 @@ type MeshesWithMaterial struct {
 type Model struct {
 	Meshes      []MeshesWithMaterial
 	ModelMatrix *Matrix.Matrix4x4
-	Shader Shader.IShaderProgram
+	Shader      Shader.IShaderProgram
 }
 
 func (model *Model) Draw() error {

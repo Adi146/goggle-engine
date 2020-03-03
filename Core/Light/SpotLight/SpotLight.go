@@ -5,8 +5,8 @@ import (
 )
 
 type SpotLight struct {
-	Light.LightBase           `yaml:",inline"`
-	Light.PositionalLightBase `yaml:",inline"`
+	Light.LightBase            `yaml:",inline"`
+	Light.PositionalLightBase  `yaml:",inline"`
 	Light.DirectionalLightBase `yaml:",inline"`
 
 	InnerCone float32 `yaml:"innerCone,flow"`

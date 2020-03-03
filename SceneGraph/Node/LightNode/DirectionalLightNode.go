@@ -1,12 +1,12 @@
 package LightNode
 
 import (
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
@@ -14,7 +14,7 @@ const DirectionalLightNodeFactoryName = "Node.LightNode.DirectionalLightNode"
 const DirectionalLightUBOFactoryName = "directionalLight"
 
 func init() {
-	YamlFactory.NodeFactory[DirectionalLightNodeFactoryName] = reflect.TypeOf((*DirectionalLightNodeConfig)(nil)).Elem()
+	NodeFactory.AddType(DirectionalLightNodeFactoryName, reflect.TypeOf((*DirectionalLightNodeConfig)(nil)).Elem())
 	UniformBufferFactory.AddType(DirectionalLightUBOFactoryName, reflect.TypeOf((*DirectionalLight.UniformBuffer)(nil)).Elem())
 }
 

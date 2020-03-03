@@ -60,7 +60,7 @@ func ImportModel(filename string, shader Shader.IShaderProgram) (*Model.Model, I
 	return &Model.Model{
 		Meshes:      meshes,
 		ModelMatrix: Matrix.Identity(),
-		Shader: shader,
+		Shader:      shader,
 	}, result
 }
 

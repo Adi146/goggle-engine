@@ -2,10 +2,10 @@ package LightNode
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Light/PointLight"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"reflect"
 
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
@@ -13,7 +13,7 @@ const PointLightNodeFactoryName = "Node.LightNode.PointLightNode"
 const PointLightUBOFactoryName = "pointLight"
 
 func init() {
-	YamlFactory.NodeFactory[PointLightNodeFactoryName] = reflect.TypeOf((*PointLightNodeConfig)(nil)).Elem()
+	NodeFactory.AddType(PointLightNodeFactoryName, reflect.TypeOf((*PointLightNodeConfig)(nil)).Elem())
 	UniformBufferFactory.AddType(PointLightUBOFactoryName, reflect.TypeOf((*PointLight.UniformBuffer)(nil)).Elem())
 }
 

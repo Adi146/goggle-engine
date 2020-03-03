@@ -1,13 +1,13 @@
 package Node
 
 import (
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/AssetImporter"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 	"github.com/Adi146/goggle-engine/Utils/Log"
@@ -23,7 +23,7 @@ var textureTypeMap = map[string]Texture.TextureType{
 }
 
 func init() {
-	YamlFactory.NodeFactory[ModelNodeFactoryName] = reflect.TypeOf((*ModelNodeConfig)(nil)).Elem()
+	NodeFactory.AddType(ModelNodeFactoryName, reflect.TypeOf((*ModelNodeConfig)(nil)).Elem())
 }
 
 type ModelNodeConfig struct {
@@ -31,7 +31,7 @@ type ModelNodeConfig struct {
 	File          string              `yaml:"file"`
 	Textures      map[string][]string `yaml:"textures"`
 	IsTransparent bool                `yaml:"isTransparent"`
-	Shader string `yaml:"shader"`
+	Shader        string              `yaml:"shader"`
 }
 
 func (config *ModelNodeConfig) Create() (Scene.INode, error) {

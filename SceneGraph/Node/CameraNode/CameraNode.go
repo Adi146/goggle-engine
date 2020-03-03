@@ -1,14 +1,14 @@
 package CameraNode
 
 import (
-	"fmt"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/MatrixFactory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
@@ -16,17 +16,16 @@ const CameraNodeFactoryName = "Node.Camera"
 const CameraUBOFactoryName = "camera"
 
 func init() {
-	YamlFactory.NodeFactory[CameraNodeFactoryName] = reflect.TypeOf((*CameraNodeConfig)(nil)).Elem()
+	NodeFactory.AddType(CameraNodeFactoryName, reflect.TypeOf((*CameraNodeConfig)(nil)).Elem())
 	UniformBufferFactory.AddType(CameraUBOFactoryName, reflect.TypeOf((*Camera.UniformBuffer)(nil)).Elem())
 }
 
 type CameraNodeConfig struct {
 	Scene.NodeConfig
-	FrontVector             Vector.Vector3                 `yaml:"front"`
-	UpVector                Vector.Vector3                 `yaml:"up"`
-	PerspectiveMatrixConfig *YamlFactory.PerspectiveConfig `yaml:"perspective"`
-	OrthogonalMatrixConfig  *YamlFactory.OrthogonalConfig  `yaml:"orthogonal"`
-	UBO                     string                         `yaml:"uniformBuffer"`
+	FrontVector      Vector.Vector3             `yaml:"front"`
+	UpVector         Vector.Vector3             `yaml:"up"`
+	ProjectionMatrix MatrixFactory.MatrixConfig `yaml:"projection"`
+	UBO              string                     `yaml:"uniformBuffer"`
 }
 
 func (config *CameraNodeConfig) Create() (Scene.INode, error) {
@@ -42,16 +41,9 @@ func (config *CameraNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
-	var cameraBase *Camera.Camera
+	projectionMatrix := config.ProjectionMatrix
 
-	if config.PerspectiveMatrixConfig != nil {
-		cameraBase = Camera.NewCamera(*config.PerspectiveMatrixConfig.Decode())
-	} else if config.OrthogonalMatrixConfig != nil {
-		cameraBase = Camera.NewCamera(*config.OrthogonalMatrixConfig.Decode())
-	} else {
-		return nil, fmt.Errorf("no projection matrix specified")
-	}
-
+	cameraBase := Camera.NewCamera(projectionMatrix.Matrix4x4)
 	camera := ubo.(Camera.ICamera)
 	camera.Set(*cameraBase)
 

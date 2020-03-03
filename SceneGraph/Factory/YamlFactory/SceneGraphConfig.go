@@ -1,12 +1,13 @@
 package YamlFactory
 
 import (
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
 type SceneGraphConfig struct {
 	Scene.Scene
-	Root NodeConfig `yaml:"root"`
+	Root NodeFactory.NodeConfig `yaml:"root"`
 }
 
 func (config *SceneGraphConfig) Init() error {

@@ -7,7 +7,7 @@ import (
 
 type PostProcessingSceneConfig struct {
 	PostProcessing.Scene `yaml:",inline"`
-	ShaderName string `yaml:"shaderName"`
+	ShaderName           string `yaml:"shaderName"`
 }
 
 func (config *PostProcessingSceneConfig) Init() error {

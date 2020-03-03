@@ -5,7 +5,7 @@ import (
 )
 
 type DirectionalLight struct {
-	Light.LightBase `yaml:",inline"`
+	Light.LightBase            `yaml:",inline"`
 	Light.DirectionalLightBase `yaml:",inline"`
 }
 

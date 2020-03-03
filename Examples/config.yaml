@@ -96,11 +96,12 @@ scenes:
               camera:
                 type: Node.Camera
                 config:
-                  perspective:
-                    fovy: 90
-                    aspect: 1
-                    near: 0.1
-                    far: 100
+                  projection:
+                    perspective:
+                      fovy: 90
+                      aspect: 1
+                      near: 0.1
+                      far: 100
                   uniformBuffer: camera
                 transformation:
                   - rotation:

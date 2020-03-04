@@ -1,6 +1,7 @@
 package ShaderFactory
 
 import (
+	"fmt"
 	"github.com/Adi146/goggle-engine/Core/PostProcessing"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
@@ -19,7 +20,12 @@ func AddType(key string, constructor func([]string, []string) (Shader.IShaderPro
 }
 
 func Get(key string) (Shader.IShaderProgram, error) {
-	return globalConfig.Get(key)
+	shader, ok := globalConfig.Shaders[key]
+	if !ok {
+		return nil, fmt.Errorf("shader with name %s is not configured", key)
+	}
+
+	return shader.IShaderProgram, nil
 }
 
 func SetConfig(config FactoryConfig) {

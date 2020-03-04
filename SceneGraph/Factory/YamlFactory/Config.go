@@ -1,15 +1,12 @@
 package YamlFactory
 
 import (
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/SceneFactory"
 	"io/ioutil"
 	"os"
 
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-
-	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/ProcessingPipeline"
-	"github.com/Adi146/goggle-engine/Core/Scene"
-	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Utils/Log"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
@@ -19,11 +16,10 @@ import (
 )
 
 type config struct {
-	ScenesConfig                              `yaml:",inline"`
-	ShaderFactory.FactoryConfig               `yaml:",inline"`
-	FrameBuffersConfig                        `yaml:",inline"`
-	UniformBufferFactory.UniformBuffersConfig `yaml:",inline"`
+	config2 `yaml:",inline"`
+}
 
+type config2 struct {
 	OpenGlLogging bool `yaml:"openGlLogging"`
 
 	ProcessingPipelineConfig []struct {
@@ -32,21 +28,40 @@ type config struct {
 	} `yaml:"processingPipeline"`
 }
 
-func ReadConfig(file *os.File) (*Factory.Config, error) {
-	config := config{
-		ScenesConfig: ScenesConfig{
-			DecodedScenes: map[string]Scene.IScene{},
-		},
-		FactoryConfig: ShaderFactory.FactoryConfig{
-			DecodedShaders: map[string]Shader.IShaderProgram{},
-		},
-		FrameBuffersConfig: FrameBuffersConfig{
-			DecodedFrameBuffers: map[string]FrameBuffer.IFrameBuffer{},
-		},
-		UniformBuffersConfig: UniformBufferFactory.UniformBuffersConfig{
-			DecodedUniformBuffers: map[string]UniformBuffer.IUniformBuffer{},
-		},
+func (config *config) UnmarshalYAML(value *yaml.Node) error {
+	var frameBufferFactory FrameBufferFactory.FactoryConfig
+	if err := value.Decode(&frameBufferFactory); err != nil {
+		return err
 	}
+	FrameBufferFactory.SetConfig(frameBufferFactory)
+
+	var uniformBufferFactory UniformBufferFactory.FactoryConfig
+	if err := value.Decode(&uniformBufferFactory); err != nil {
+		return err
+	}
+	UniformBufferFactory.SetConfig(uniformBufferFactory)
+
+	var shaderFactory ShaderFactory.FactoryConfig
+	if err := value.Decode(&shaderFactory); err != nil {
+		return err
+	}
+	ShaderFactory.SetConfig(shaderFactory)
+
+	var sceneFactory SceneFactory.FactoryConfig
+	if err := value.Decode(&sceneFactory); err != nil {
+		return err
+	}
+	SceneFactory.SetConfig(sceneFactory)
+
+	if err := value.Decode(&config.config2); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ReadConfig(file *os.File) (*Factory.Config, error) {
+	var config config
 
 	bytes, err := ioutil.ReadAll(file)
 	if err != nil {
@@ -57,14 +72,11 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 		return nil, err
 	}
 
-	UniformBufferFactory.SetConfig(config.UniformBuffersConfig)
-	ShaderFactory.SetConfig(config.FactoryConfig)
-
 	pipelineSteps, err := config.UnmarshalProcessingPipeline()
 	if err != nil {
 		return nil, err
 	}
-	window, err := config.FrameBuffersConfig.Get("default")
+	window, err := FrameBufferFactory.Get("default")
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +88,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	return &Factory.Config{
 		Pipeline: ProcessingPipeline.ProcessingPipeline{
 			Steps:  pipelineSteps,
-			Scenes: config.GetScenes(),
+			Scenes: SceneFactory.GetAll(),
 			Window: window.(Window.IWindow),
 		},
 	}, nil
@@ -86,11 +98,11 @@ func (config *config) UnmarshalProcessingPipeline() ([]ProcessingPipeline.Proces
 	var Pipeline []ProcessingPipeline.ProcessingPipelineStep
 
 	for _, stepConfig := range config.ProcessingPipelineConfig {
-		frameBuffer, err := config.FrameBuffersConfig.Get(stepConfig.FrameBuffer)
+		frameBuffer, err := FrameBufferFactory.Get(stepConfig.FrameBuffer)
 		if err != nil {
 			return nil, err
 		}
-		scene, err := config.ScenesConfig.Get(stepConfig.Scene)
+		scene, err := SceneFactory.Get(stepConfig.Scene)
 		if err != nil {
 			return nil, err
 		}

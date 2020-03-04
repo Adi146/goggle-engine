@@ -20,7 +20,7 @@ func init() {
 type SpotLightNodeConfig struct {
 	Scene.NodeConfig
 	SpotLight.SpotLight `yaml:"spotLight"`
-	UBO                 string `yaml:"uniformBuffer"`
+	UboConfig           UniformBufferFactory.Config `yaml:"uniformBuffer"`
 }
 
 func (config *SpotLightNodeConfig) Create() (Scene.INode, error) {
@@ -29,12 +29,7 @@ func (config *SpotLightNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
-	ubo, err := UniformBufferFactory.Get(config.UBO)
-	if err != nil {
-		return nil, err
-	}
-
-	lightUbo := ubo.(SpotLight.IUniformBuffer)
+	lightUbo := config.UboConfig.IUniformBuffer.(SpotLight.IUniformBuffer)
 	light, err := lightUbo.GetNewElement()
 	if err != nil {
 		return nil, err

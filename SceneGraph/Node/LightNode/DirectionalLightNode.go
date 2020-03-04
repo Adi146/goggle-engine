@@ -21,7 +21,7 @@ func init() {
 type DirectionalLightNodeConfig struct {
 	Scene.NodeConfig
 	DirectionalLight.DirectionalLight `yaml:"directionalLight"`
-	UBO                               string `yaml:"uniformBuffer"`
+	UboConfig                         UniformBufferFactory.Config `yaml:"uniformBuffer"`
 }
 
 func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
@@ -32,12 +32,7 @@ func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
-	ubo, err := UniformBufferFactory.Get(config.UBO)
-	if err != nil {
-		return nil, err
-	}
-
-	light := ubo.(DirectionalLight.IDirectionalLight)
+	light := config.UboConfig.IUniformBuffer.(DirectionalLight.IDirectionalLight)
 	light.Set(config.DirectionalLight)
 
 	node := &DirectionalLightNode{

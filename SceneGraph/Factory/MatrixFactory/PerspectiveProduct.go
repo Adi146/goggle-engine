@@ -11,21 +11,21 @@ const (
 )
 
 func init() {
-	AddType(PerspectiveFactoryName, reflect.TypeOf((*PerspectiveEntry)(nil)).Elem())
+	AddType(PerspectiveFactoryName, reflect.TypeOf((*PerspectiveProduct)(nil)).Elem())
 }
 
-type PerspectiveEntry struct {
+type PerspectiveProduct struct {
 	Fovy   float32 `yaml:"fovy"`
 	Aspect float32 `yaml:"aspect"`
 	Near   float32 `yaml:"near"`
 	Far    float32 `yaml:"far"`
 }
 
-func (entry *PerspectiveEntry) Decode() *Matrix.Matrix4x4 {
+func (product *PerspectiveProduct) Decode() *Matrix.Matrix4x4 {
 	return Matrix.Perspective(
-		Angle.Radians(entry.Fovy)/2,
-		entry.Aspect,
-		entry.Near,
-		entry.Far,
+		Angle.Radians(product.Fovy)/2,
+		product.Aspect,
+		product.Near,
+		product.Far,
 	)
 }

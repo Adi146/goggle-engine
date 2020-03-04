@@ -12,14 +12,14 @@ const (
 )
 
 func init() {
-	AddType(RotationFactoryName, reflect.TypeOf((*RotationEntry)(nil)).Elem())
+	AddType(RotationFactoryName, reflect.TypeOf((*RotationProduct)(nil)).Elem())
 }
 
-type RotationEntry struct {
+type RotationProduct struct {
 	Vector *Vector.Vector3 `yaml:"axis"`
 	Angle  float32         `yaml:"angle"`
 }
 
-func (entry *RotationEntry) Decode() *Matrix.Matrix4x4 {
-	return Matrix.Rotate(Angle.Radians(entry.Angle), entry.Vector)
+func (product *RotationProduct) Decode() *Matrix.Matrix4x4 {
+	return Matrix.Rotate(Angle.Radians(product.Angle), product.Vector)
 }

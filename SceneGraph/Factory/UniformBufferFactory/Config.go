@@ -1,12 +1,12 @@
-package ShaderFactory
+package UniformBufferFactory
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	Shader.IShaderProgram
+	UniformBuffer.IUniformBuffer
 }
 
 func (config *Config) UnmarshalYAML(value *yaml.Node) error {
@@ -18,6 +18,6 @@ func (config *Config) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	config.IShaderProgram = ubo
+	config.IUniformBuffer = ubo
 	return nil
 }

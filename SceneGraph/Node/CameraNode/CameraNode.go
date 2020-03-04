@@ -22,10 +22,10 @@ func init() {
 
 type CameraNodeConfig struct {
 	Scene.NodeConfig
-	FrontVector      Vector.Vector3       `yaml:"front"`
-	UpVector         Vector.Vector3       `yaml:"up"`
-	ProjectionMatrix MatrixFactory.Config `yaml:"projection"`
-	UBO              string               `yaml:"uniformBuffer"`
+	FrontVector      Vector.Vector3              `yaml:"front"`
+	UpVector         Vector.Vector3              `yaml:"up"`
+	ProjectionMatrix MatrixFactory.Config        `yaml:"projection"`
+	UboConfig        UniformBufferFactory.Config `yaml:"uniformBuffer"`
 }
 
 func (config *CameraNodeConfig) Create() (Scene.INode, error) {
@@ -36,15 +36,10 @@ func (config *CameraNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
-	ubo, err := UniformBufferFactory.Get(config.UBO)
-	if err != nil {
-		return nil, err
-	}
-
 	projectionMatrix := config.ProjectionMatrix
 
 	cameraBase := Camera.NewCamera(projectionMatrix.Matrix4x4)
-	camera := ubo.(Camera.ICamera)
+	camera := config.UboConfig.IUniformBuffer.(Camera.ICamera)
 	camera.Set(*cameraBase)
 
 	node := &CameraNode{

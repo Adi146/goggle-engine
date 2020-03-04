@@ -10,10 +10,10 @@ const (
 )
 
 func init() {
-	AddType(OrthogonalFactoryName, reflect.TypeOf((*OrthogonalEntry)(nil)).Elem())
+	AddType(OrthogonalFactoryName, reflect.TypeOf((*OrthogonalProduct)(nil)).Elem())
 }
 
-type OrthogonalEntry struct {
+type OrthogonalProduct struct {
 	Left   float32 `yaml:"left"`
 	Right  float32 `yaml:"right"`
 	Bottom float32 `yaml:"bottom"`
@@ -22,13 +22,13 @@ type OrthogonalEntry struct {
 	Far    float32 `yaml:"far"`
 }
 
-func (entry *OrthogonalEntry) Decode() *Matrix.Matrix4x4 {
+func (product *OrthogonalProduct) Decode() *Matrix.Matrix4x4 {
 	return Matrix.Orthogonal(
-		entry.Left,
-		entry.Right,
-		entry.Bottom,
-		entry.Top,
-		entry.Near,
-		entry.Far,
+		product.Left,
+		product.Right,
+		product.Bottom,
+		product.Top,
+		product.Near,
+		product.Far,
 	)
 }

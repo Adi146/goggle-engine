@@ -26,6 +26,14 @@ shaders:
       - ../Core/PostProcessing/postProcessing.vert
     fragmentShaders:
       - ../Core/PostProcessing/none.frag
+  skybox:
+    type: skybox
+    vertexShaders:
+      - ../Core/Skybox/skybox.vert
+    fragmentShaders:
+      - ../Core/Skybox/skybox.frag
+    uniformBuffers:
+      - camera
 
 frameBuffers:
   default:
@@ -205,3 +213,14 @@ scenes:
             transformation:
               - translation: [0, 0, 3]
               - scale: 0.01
+          skybox:
+            type: Node.Skybox
+            config:
+              shader: skybox
+              textures:
+                back: Models/skybox/snowalps_lf.png
+                front: Models/skybox/snowalps_rt.png
+                top: Models/skybox/snowalps_up.png
+                bottom: Models/skybox/snowalps_dn.png
+                left: Models/skybox/snowalps_bk.png
+                right: Models/skybox/snowalps_ft.png

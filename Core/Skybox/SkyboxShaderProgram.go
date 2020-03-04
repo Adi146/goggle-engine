@@ -11,7 +11,7 @@ import (
 const (
 	skybox_uniformAddress = "u_skybox"
 
-	cameraUBO_uniformAddress = "Camera"
+	cameraUBO_uniformAddress = "camera"
 )
 
 type SkyboxShaderProgram struct {

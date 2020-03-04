@@ -23,7 +23,7 @@ func NewCubeMapFromFile(images []*image.RGBA) (*CubeMap, error) {
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
 
 	for i, img := range images {
-		gl.TexImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X+uint32(i), 0, gl.RGB, int32(img.Bounds().Dx()), int32(img.Bounds().Dy()), 0, gl.RGB, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+		gl.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+uint32(i), 0, gl.RGBA8, int32(img.Bounds().Dx()), int32(img.Bounds().Dy()), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
 	}
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 

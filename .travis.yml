@@ -1,7 +1,24 @@
 dist: bionic
+services:
+  - xvfb
+addons:
+  apt:
+    packages:
+      - libsdl2-dev
+      - libassimp-dev
+      - mesa-utils
+      - linux-generic
+      - xserver-xorg-core
+      - xserver-xorg
+      - xserver-xorg-video-all
+      - xserver-xorg-input-all
+      - libwayland-egl1-mesa
 language: go
 before_install:
-  - sudo apt-get update
-  - sudo apt-get -y install libsdl2-dev libassimp-dev
+  - /sbin/start-stop-daemon --start --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 800x600x24 -ac +extension GLX;
+  - export SDL_VIDEODRIVER=x11;
+  - export DISPLAY=:99.0;
+  - sleep 3
 install:
   - go get ./...
+script: go test ./...

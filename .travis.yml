@@ -14,8 +14,6 @@ addons:
       - xserver-xorg-video-all
       - xserver-xorg-input-all
       - libwayland-egl1-mesa
-      - libgl1-mesa-dev
-      - mesa-common-dev
 language: go
 before_install:
   - /sbin/start-stop-daemon --start --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 800x600x24 -ac +extension GLX;

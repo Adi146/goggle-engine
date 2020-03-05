@@ -9,7 +9,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/v3.3-core/gl"
 )
 
 type ShaderProgramCore struct {

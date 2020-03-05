@@ -5,7 +5,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/veandco/go-sdl2/sdl"
 
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/v3.3-core/gl"
 )
 
 var (
@@ -51,8 +51,8 @@ func (window *SDLWindow) Init() error {
 	sdl.GLSetAttribute(sdl.GL_ALPHA_SIZE, 8)
 	sdl.GLSetAttribute(sdl.GL_BUFFER_SIZE, 32)
 	sdl.GLSetAttribute(sdl.GL_DOUBLEBUFFER, 1)
-	sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4)
-	sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 1)
+	sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 3)
+	sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 3)
 
 	sdl.SetRelativeMouseMode(true)
 

@@ -17,7 +17,7 @@ var (
 	}
 )
 
-func TestCompile(t *testing.T) {
+func TestPhongCompile(t *testing.T) {
 	window, _ := TestUtils.CreateTestWindow(t)
 	defer window.Destroy()
 

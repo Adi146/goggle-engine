@@ -19,7 +19,7 @@ func TestSkyboxCompile(t *testing.T) {
 	window, _ := TestUtils.CreateTestWindow(t)
 	defer window.Destroy()
 
-	shader, err := Skybox.NewSkyboxShaderProgram(vertexShaders, fragmentShaders)
+	shader, err := Skybox.NewShaderProgram(vertexShaders, fragmentShaders)
 	if shader == nil || err != nil {
 		t.Errorf("Error while compiling skybox shader %s", err.Error())
 	}

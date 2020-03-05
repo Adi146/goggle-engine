@@ -21,7 +21,7 @@ func TestPhongCompile(t *testing.T) {
 	window, _ := TestUtils.CreateTestWindow(t)
 	defer window.Destroy()
 
-	shader, err := PhongShader.NewPhongShaderProgram(vertexShaders, fragmentShaders)
+	shader, err := PhongShader.NewShaderProgram(vertexShaders, fragmentShaders)
 	if shader == nil || err != nil {
 		t.Errorf("Error while compiling phong shader %s", err.Error())
 	}

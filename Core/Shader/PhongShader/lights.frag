@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 #define MAX_POINT_LIGHTS 64
 #define MAX_SPOT_LIGHTS 64
 

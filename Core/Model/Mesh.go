@@ -2,7 +2,7 @@ package Model
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Buffer"
-	"github.com/go-gl/gl/v3.3-core/gl"
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type Mesh struct {

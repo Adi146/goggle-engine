@@ -10,6 +10,7 @@ before_install:
   - export SDL_VIDEODRIVER=x11;
   - export DISPLAY=:99.0;
   - export MESA_GL_VERSION_OVERRIDE=4.1
+  - export MESA_GLSL_VERSION_OVERRIDE=410
   - sleep 3
 install:
   - go get ./...

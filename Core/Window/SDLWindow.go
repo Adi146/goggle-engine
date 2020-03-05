@@ -51,6 +51,8 @@ func (window *SDLWindow) Init() error {
 	sdl.GLSetAttribute(sdl.GL_ALPHA_SIZE, 8)
 	sdl.GLSetAttribute(sdl.GL_BUFFER_SIZE, 32)
 	sdl.GLSetAttribute(sdl.GL_DOUBLEBUFFER, 1)
+	sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4)
+	sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 1)
 
 	sdl.SetRelativeMouseMode(true)
 

@@ -33,8 +33,8 @@ func TestPostprocessingCompile(t *testing.T) {
 	for _, fragmentShader := range fragmentShaders {
 		shader, err := PostProcessing.NewShaderProgram(vertexShaders, fragmentShader)
 		if shader == nil || err != nil {
-			t.Errorf("Error while compiling postprocessing shader %s", err.Error())
+			t.Errorf("Error while compiling postprocessing shader %s [vertexShaders: %s, fragmentShaders: %s]", err.Error(), vertexShaders, fragmentShaders)
 		}
-		defer shader.Destroy()
+		shader.Destroy()
 	}
 }

@@ -51,26 +51,26 @@ var (
 	}
 )
 
-type PhongShaderProgram struct {
+type ShaderProgram struct {
 	*Shader.ShaderProgramCore
 }
 
-func NewPhongShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*PhongShaderProgram, error) {
+func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgram, error) {
 	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles)
 	if err != nil {
 		return nil, err
 	}
 
-	return &PhongShaderProgram{
+	return &ShaderProgram{
 		ShaderProgramCore: shaderCore,
 	}, nil
 }
 
-func NewPhongIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (Shader.IShaderProgram, error) {
-	return NewPhongShaderProgram(vertexShaderFiles, fragmentShaderFiles)
+func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (Shader.IShaderProgram, error) {
+	return NewShaderProgram(vertexShaderFiles, fragmentShaderFiles)
 }
 
-func (program *PhongShaderProgram) BindObject(i interface{}) error {
+func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *Model.Material:
 		return program.bindMaterial(v)
@@ -89,7 +89,7 @@ func (program *PhongShaderProgram) BindObject(i interface{}) error {
 	}
 }
 
-func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error {
+func (program *ShaderProgram) bindMaterial(material *Model.Material) error {
 	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(&material.DiffuseBaseColor, material_diffuseBase_uniformAddress))
@@ -109,6 +109,6 @@ func (program *PhongShaderProgram) bindMaterial(material *Model.Material) error 
 	return err.Err()
 }
 
-func (program *PhongShaderProgram) bindModel(model *Model.Model) error {
+func (program *ShaderProgram) bindModel(model *Model.Model) error {
 	return program.BindUniform(model.ModelMatrix, modelMatrix_uniformAddress)
 }

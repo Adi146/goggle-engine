@@ -9,7 +9,7 @@ import (
 
 var (
 	typeFactory = map[string]func([]string, []string) (Shader.IShaderProgram, error){
-		"phong":          PhongShader.NewPhongIShaderProgram,
+		"phong":          PhongShader.NewIShaderProgram,
 		"postProcessing": PostProcessing.NewIShaderProgram,
 	}
 	globalConfig FactoryConfig

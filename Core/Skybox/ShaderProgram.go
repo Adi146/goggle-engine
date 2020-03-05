@@ -14,26 +14,26 @@ const (
 	cameraUBO_uniformAddress = "camera"
 )
 
-type SkyboxShaderProgram struct {
+type ShaderProgram struct {
 	*Shader.ShaderProgramCore
 }
 
-func NewSkyboxShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*SkyboxShaderProgram, error) {
+func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgram, error) {
 	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles)
 	if err != nil {
 		return nil, err
 	}
 
-	return &SkyboxShaderProgram{
+	return &ShaderProgram{
 		ShaderProgramCore: shaderCore,
 	}, nil
 }
 
-func NewSkyboxIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (Shader.IShaderProgram, error) {
-	return NewSkyboxShaderProgram(vertexShaderFiles, fragmentShaderFiles)
+func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (Shader.IShaderProgram, error) {
+	return NewShaderProgram(vertexShaderFiles, fragmentShaderFiles)
 }
 
-func (program *SkyboxShaderProgram) BindObject(i interface{}) error {
+func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *Texture.CubeMap:
 		return program.bindSkybox(v)
@@ -44,6 +44,6 @@ func (program *SkyboxShaderProgram) BindObject(i interface{}) error {
 	}
 }
 
-func (program *SkyboxShaderProgram) bindSkybox(skybox *Texture.CubeMap) error {
+func (program *ShaderProgram) bindSkybox(skybox *Texture.CubeMap) error {
 	return program.BindTexture(0, skybox, skybox_uniformAddress)
 }

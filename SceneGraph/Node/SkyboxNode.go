@@ -14,7 +14,7 @@ const SkyboxShaderFactoryName = "skybox"
 
 func init() {
 	NodeFactory.AddType(SkyboxNodeFactoryName, reflect.TypeOf((*SkyboxNodeConfig)(nil)).Elem())
-	ShaderFactory.AddType(SkyboxShaderFactoryName, Skybox.NewSkyboxIShaderProgram)
+	ShaderFactory.AddType(SkyboxShaderFactoryName, Skybox.NewIShaderProgram)
 }
 
 type SkyboxNodeConfig struct {

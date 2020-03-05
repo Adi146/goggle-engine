@@ -1,5 +1,7 @@
 # goggle-engine
 
+[![Build Status](https://travis-ci.com/Adi146/goggle-engine.svg?branch=master)](https://travis-ci.com/Adi146/goggle-engine)
+
 GogGLE-Engine is a small OpenGL 3D scene graph written in GO. 
 It can be used to create cross-platform GO applications which features interactive 3D representations.
 

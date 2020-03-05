@@ -22,7 +22,7 @@ func Degree(radians float32) float32 {
 }
 
 func ExtractFromMatrix(m *Matrix.Matrix4x4) []EulerAngles {
-	if m[2][0] != 1 || m[2][0] != -1 {
+	if m[2][0] != 1 && m[2][0] != -1 {
 		yaw1 := -GeometryMath.ASin(m[2][0])
 		yaw2 := math.Pi - yaw1
 		pitch1 := GeometryMath.ATan2(m[2][1]/GeometryMath.Cos(yaw1), m[2][2]/GeometryMath.Cos(yaw1))

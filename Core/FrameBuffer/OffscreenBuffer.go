@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/go-gl/gl/all-core/gl"
+	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type OffScreenBuffer struct {

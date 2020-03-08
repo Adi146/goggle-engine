@@ -5,6 +5,6 @@ import (
 )
 
 type IDrawable interface {
-	Draw() error
+	Draw(step *ProcessingPipelineStep) error
 	GetPosition() *Vector.Vector3
 }

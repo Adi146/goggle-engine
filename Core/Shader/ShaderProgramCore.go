@@ -16,7 +16,6 @@ type ShaderProgramCore struct {
 	programId       uint32
 	vertexShaders   []*Shader
 	fragmentShaders []*Shader
-	isBound         bool
 }
 
 func NewShaderProgramFromFiles(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgramCore, error) {
@@ -51,7 +50,6 @@ func NewShaderProgram(vertexShaders []*Shader, fragmentShaders []*Shader) (*Shad
 		programId:       gl.CreateProgram(),
 		vertexShaders:   vertexShaders,
 		fragmentShaders: fragmentShaders,
-		isBound:         false,
 	}
 
 	for _, vertexShader := range vertexShaders {
@@ -91,12 +89,10 @@ func (program *ShaderProgramCore) Destroy() {
 
 func (program *ShaderProgramCore) Bind() {
 	gl.UseProgram(program.programId)
-	program.isBound = true
 }
 
 func (program *ShaderProgramCore) Unbind() {
 	gl.UseProgram(0)
-	program.isBound = false
 }
 
 func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress string) error {
@@ -108,6 +104,11 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 		}
 		gl.UniformBlockBinding(program.programId, index, v.GetIndex())
 	default:
+		var currentProgram int32
+		if gl.GetIntegerv(gl.CURRENT_PROGRAM, &currentProgram); uint32(currentProgram) != program.programId {
+			return fmt.Errorf("shader is not bound")
+		}
+
 		location, err := program.getUniformLocation(uniformAddress)
 		if err != nil {
 			return err
@@ -134,24 +135,22 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 	return nil
 }
 
-func (program *ShaderProgramCore) BindTexture(textureSlot uint32, texture Texture.ITexture, uniformAddress string) error {
-	location, err := program.getUniformLocation(uniformAddress)
+func (program *ShaderProgramCore) BindTexture(texture Texture.ITexture, uniformAddress string, reserve bool) error {
+	unit, err := Texture.FindFreeUnit(texture)
 	if err != nil {
 		return err
 	}
 
-	gl.Uniform1i(location, int32(textureSlot))
-	gl.ActiveTexture(gl.TEXTURE0 + textureSlot)
-	texture.Bind()
+	err = program.BindUniform(int32(unit), uniformAddress)
+	if err != nil {
+		return err
+	}
 
+	Texture.BindTexture(texture, unit, reserve)
 	return nil
 }
 
 func (program *ShaderProgramCore) getUniformLocation(uniformAddress string) (int32, error) {
-	if !program.isBound {
-		return -1, fmt.Errorf("shader is not bound")
-	}
-
 	location := gl.GetUniformLocation(program.programId, gl.Str(uniformAddress+"\x00"))
 	if location == -1 {
 		return location, fmt.Errorf("uniform address %s not found", uniformAddress)

@@ -6,7 +6,6 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Model"
 	sceneCore "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
 var (
@@ -55,13 +54,8 @@ func (scene *Scene) Init() error {
 func (scene *Scene) Tick(timeDelta float32) {
 }
 
-func (scene *Scene) Draw() {
+func (scene *Scene) Draw(step *sceneCore.ProcessingPipelineStep) {
 	scene.Shader.Bind()
 	scene.Shader.BindObject(scene.Kernel)
 	scene.quad.Draw()
-}
-
-func (scene *Scene) AddResult(result *Texture.Texture) {
-	scene.Shader.Bind()
-	scene.Shader.BindObject(result)
 }

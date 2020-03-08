@@ -12,12 +12,15 @@ func CreateTestWindow(t *testing.T) (Window.SDLWindow, error) {
 			Width:     100,
 			Height:    100,
 			DepthTest: false,
-			Culling:   false,
+			Culling:   FrameBuffer.CullFunction{
+				Enabled:  false,
+				Function: 0,
+			},
 			Blend:     false,
 		},
 		Title: "test window",
-		Type: "window",
-		Sync: "normal",
+		Type:  "window",
+		Sync:  "normal",
 	}
 
 	err := window.Init()

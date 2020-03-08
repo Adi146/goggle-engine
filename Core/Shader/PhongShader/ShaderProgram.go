@@ -2,13 +2,13 @@ package PhongShader
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
 	"github.com/Adi146/goggle-engine/Core/Light/PointLight"
 	"github.com/Adi146/goggle-engine/Core/Light/SpotLight"
-
-	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/Shadow"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
@@ -28,7 +28,8 @@ const (
 	texture_numEmissive_uniformAddress = "u_material.numTextureEmissive"
 	texture_numNormals_uniformAddress  = "u_material.numTextureNormals"
 
-	modelMatrix_uniformAddress = "u_modelMatrix"
+	modelMatrix_uniformAddress       = "u_modelMatrix"
+	texture_shadowMap_uniformAddress = "u_shadowMap"
 
 	cameraUBO_uniformAddress           = "Camera"
 	directionalLightUBO_uniformAddress = "directionalLight"
@@ -76,6 +77,9 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.bindMaterial(v)
 	case *Model.Model:
 		return program.bindModel(v)
+	case *Shadow.ShadowMapBuffer:
+		program.Bind()
+		return program.BindTexture(&v.ShadowMap, texture_shadowMap_uniformAddress, true)
 	case *DirectionalLight.UniformBuffer:
 		return program.BindUniform(v, directionalLightUBO_uniformAddress)
 	case *PointLight.UniformBuffer:
@@ -85,7 +89,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	case *Camera.UniformBuffer:
 		return program.BindUniform(v, cameraUBO_uniformAddress)
 	default:
-		return fmt.Errorf("type %T not supported", v)
+		return fmt.Errorf("phong shader does not support type %T", v)
 	}
 }
 
@@ -98,8 +102,8 @@ func (program *ShaderProgram) bindMaterial(material *Model.Material) error {
 	err.Push(program.BindUniform(material.Shininess, material_shineness_uniformAddress))
 
 	textureIndexMap := make(map[Texture.TextureType]int)
-	for i, texture := range material.Textures {
-		err.Push(program.BindTexture(uint32(i), texture, fmt.Sprintf(textureUniformMap[texture.TextureType], textureIndexMap[texture.TextureType])))
+	for _, texture := range material.Textures {
+		err.Push(program.BindTexture(texture, fmt.Sprintf(textureUniformMap[texture.TextureType], textureIndexMap[texture.TextureType]), false))
 		textureIndexMap[texture.TextureType] += 1
 	}
 	for textureType, uniformAddress := range numTextureUniformMap {

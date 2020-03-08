@@ -9,4 +9,3 @@ func TestSDL(t *testing.T) {
 	window, _ := TestUtils.CreateTestWindow(t)
 	defer window.Destroy()
 }
-

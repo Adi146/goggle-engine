@@ -8,6 +8,8 @@ import (
 type Scene struct {
 	coreScene.SceneBase
 	Root INode
+
+	CurrentStep *coreScene.ProcessingPipelineStep
 }
 
 func (scene *Scene) Init() error {
@@ -20,10 +22,12 @@ func (scene *Scene) Tick(timeDelta float32) {
 	}
 }
 
-func (scene *Scene) Draw() {
+func (scene *Scene) Draw(step *coreScene.ProcessingPipelineStep) {
+	scene.CurrentStep = step
+
 	if scene.Root != nil {
 		Log.Error(scene.Root.Draw(), "render error")
-		Log.Error(scene.SceneBase.Draw(), "render error")
+		Log.Error(scene.SceneBase.Draw(step), "render error")
 	}
 }
 

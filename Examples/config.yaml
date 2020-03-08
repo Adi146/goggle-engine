@@ -5,6 +5,9 @@ processingPipeline:
     scene: postProcessing
   - frameBuffer: offScreen
     scene: main
+  - frameBuffer: shadowMap
+    scene: main
+    enforcedShader: shadowMap
 
 shaders:
   phong:
@@ -15,17 +18,22 @@ shaders:
       - ../Core/Shader/PhongShader/phong.frag
       - ../Core/Shader/PhongShader/material.frag
       - ../Core/Shader/PhongShader/lights.frag
+      - ../Core/Shadow/shadow.frag
     uniformBuffers:
       - camera
       - directionalLight
       - pointLight
       - spotLight
+    frameBuffers:
+      - shadowMap
   postProcessing:
     type: postProcessing
     vertexShaders:
       - ../Core/PostProcessing/postProcessing.vert
     fragmentShaders:
       - ../Core/PostProcessing/none.frag
+    frameBuffers:
+      - offScreen
   skybox:
     type: skybox
     vertexShaders:
@@ -34,6 +42,14 @@ shaders:
       - ../Core/Skybox/skybox.frag
     uniformBuffers:
       - camera
+  shadowMap:
+    type: shadowMapShader
+    vertexShaders:
+      - ../Core/Shadow/shadowMap.vert
+    fragmentShaders:
+      - ../Core/Shadow/shadowMap.frag
+    uniformBuffers:
+      - directionalLight
 
 frameBuffers:
   default:
@@ -42,16 +58,27 @@ frameBuffers:
       title: YamlConfig Example
       type: window
       sync: adaptive
-      width: 800
-      height: 800
-  offScreen:
-    type: offScreen
-    config:
-      width: 800
-      height: 800
+      width: 1920
+      height: 1080
       depthTest: true
       culling: true
       blend: true
+  offScreen:
+    type: offScreen
+    config:
+      width: 1920
+      height: 1080
+      depthTest: true
+      culling: true
+      blend: true
+  shadowMap:
+    type: shadowMapBuffer
+    config:
+      width: 4096
+      height: 4096
+      depthTest: true
+      culling: front
+      blend: false
 
 uniformBuffers:
   camera:
@@ -107,7 +134,7 @@ scenes:
                   projection:
                     perspective:
                       fovy: 90
-                      aspect: 1
+                      aspect: 0.5625
                       near: 0.1
                       far: 100
                   uniformBuffer: camera
@@ -121,22 +148,36 @@ scenes:
                   spotLight:
                     innerCone: 0.80
                     outerCone: 0.95
-                    ambient: [0, 0.2, 0]
+                    ambient: [0, 0.1, 0]
                     diffuse: [0, 1, 0]
                     specular: [0, 1, 0]
                     linear: 0.027
                     quadratic: 0.0028
                     direction: [0, 0, 1]
                   uniformBuffer: spotLight
-          sunLight:
-            type: Node.LightNode.DirectionalLightNode
+          sun:
+            type: SceneGraph.Rotor
             config:
-              directionalLight:
-                direction: [-1, -1, -1]
-                ambient: [0.32, 0.32, 0.32]
-                diffuse: [0.8, 0.8, 0.8]
-                specular: [0.8, 0.8, 0.8]
-              uniformBuffer: directionalLight
+              speed: 0.05
+            children:
+              sunLight:
+                type: Node.LightNode.DirectionalLightNode
+                config:
+                  directionalLight:
+                    direction: [-1, -1, -1]
+                    ambient: [0.32, 0.32, 0.32]
+                    diffuse: [0.8, 0.8, 0.8]
+                    specular: [0.8, 0.8, 0.8]
+                  uniformBuffer: directionalLight
+                  shadowMap:
+                    projection:
+                      orthogonal:
+                        left: -30
+                        right: 30
+                        bottom: -30
+                        top: 30
+                        near: -25
+                        far: 25
           arena:
             type: Node.ModelNode
             config:
@@ -164,7 +205,7 @@ scenes:
                   - Models/construction_light/Glow.png
               shader: phong
             transformation:
-              - translation: [0, 0, -5]
+              - translation: [5, 0, -5]
               - scale: 0.01
           lightRotator:
             type: SceneGraph.Rotor

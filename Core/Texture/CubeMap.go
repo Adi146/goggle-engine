@@ -30,7 +30,8 @@ func NewCubeMapFromFile(images []*image.RGBA) (*CubeMap, error) {
 	return &texture, nil
 }
 
-func (tex *CubeMap) Bind() {
+func (tex *CubeMap) Bind(unit uint32) {
+	gl.ActiveTexture(gl.TEXTURE0 + unit)
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, tex.TextureID)
 }
 

@@ -1,21 +1,22 @@
-package ProcessingPipeline
+package Scene
 
 import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/Window"
 )
 
 type ProcessingPipeline struct {
 	Steps  []ProcessingPipelineStep
-	Scenes []Scene.IScene
+	Scenes []IScene
 	Window Window.IWindow
 }
 
 type ProcessingPipelineStep struct {
-	FrameBuffer FrameBuffer.IFrameBuffer
-	Scene       Scene.IScene
+	FrameBuffer    FrameBuffer.IFrameBuffer
+	Scene          IScene
+	EnforcedShader Shader.IShaderProgram
 }
 
 func (pipeline ProcessingPipeline) Run() {
@@ -26,25 +27,28 @@ func (pipeline ProcessingPipeline) Run() {
 
 	for !pipeline.Window.ShouldClose() {
 		pipeline.Window.PollEvents()
+		Texture.Clear()
 
 		timeDelta, _ := pipeline.Window.GetTimeDeltaAndFPS()
 		for _, scene := range pipeline.Scenes {
 			scene.Tick(timeDelta)
 		}
 
-		var results []*Texture.Texture
 		for i := range pipeline.Steps {
 			step := pipeline.Steps[len(pipeline.Steps)-1-i]
 			step.FrameBuffer.Bind()
 
-			for _, result := range results {
-				step.Scene.AddResult(result)
-			}
-
 			step.FrameBuffer.Clear()
-			step.Scene.Draw()
+			step.Scene.Draw(&step)
 
-			results = step.FrameBuffer.GetTextures()
+			for _, texture := range step.FrameBuffer.GetTextures() {
+				textureUnit, err := Texture.FindFreeUnit(texture)
+				if err != nil {
+					panic(err)
+				}
+
+				Texture.BindTexture(texture, textureUnit, true)
+			}
 		}
 		pipeline.Window.SwapWindow()
 	}

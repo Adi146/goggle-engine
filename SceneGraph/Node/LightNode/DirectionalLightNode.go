@@ -1,7 +1,12 @@
 package LightNode
 
 import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
+	"github.com/Adi146/goggle-engine/Core/Shadow"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/MatrixFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
@@ -12,16 +17,23 @@ import (
 
 const DirectionalLightNodeFactoryName = "Node.LightNode.DirectionalLightNode"
 const DirectionalLightUBOFactoryName = "directionalLight"
+const ShadowMapShaderFactoryName = "shadowMapShader"
+const ShadowMapFramebufferName = "shadowMapBuffer"
 
 func init() {
 	NodeFactory.AddType(DirectionalLightNodeFactoryName, reflect.TypeOf((*DirectionalLightNodeConfig)(nil)).Elem())
 	UniformBufferFactory.AddType(DirectionalLightUBOFactoryName, reflect.TypeOf((*DirectionalLight.UniformBuffer)(nil)).Elem())
+	ShaderFactory.AddType(ShadowMapShaderFactoryName, Shadow.NewIShaderProgram)
+	FrameBufferFactory.AddType(ShadowMapFramebufferName, reflect.TypeOf((*Shadow.ShadowMapBuffer)(nil)).Elem())
 }
 
 type DirectionalLightNodeConfig struct {
 	Scene.NodeConfig
 	DirectionalLight.DirectionalLight `yaml:"directionalLight"`
 	UboConfig                         UniformBufferFactory.Config `yaml:"uniformBuffer"`
+	ShadowMap                         struct {
+		ProjectionMatrix MatrixFactory.Config `yaml:"projection"`
+	} `yaml:"shadowMap"`
 }
 
 func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
@@ -33,6 +45,7 @@ func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
 	}
 
 	light := config.UboConfig.IUniformBuffer.(DirectionalLight.IDirectionalLight)
+	config.DirectionalLight.ProjectionMatrix = config.ShadowMap.ProjectionMatrix.Matrix4x4
 	light.Set(config.DirectionalLight)
 
 	node := &DirectionalLightNode{
@@ -59,7 +72,10 @@ type DirectionalLightNode struct {
 func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.SetDirection(*node.GetGlobalTransformation().MulVector(&node.Config.Direction).Normalize())
+	newDirection := *node.GetGlobalTransformation().MulVector(&node.Config.Direction).Normalize()
+
+	node.SetDirection(newDirection)
+	node.SetViewMatrix(*Matrix.LookAt(newDirection.Invert(), &Vector.Vector3{0, 0, 0}, &Vector.Vector3{0, 1, 0}))
 
 	return err
 }

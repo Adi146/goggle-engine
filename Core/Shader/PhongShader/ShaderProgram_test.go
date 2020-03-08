@@ -7,13 +7,14 @@ import (
 )
 
 var (
-	vertexShaders = []string {
+	vertexShaders = []string{
 		"phong.vert",
 	}
-	fragmentShaders = []string {
+	fragmentShaders = []string{
 		"phong.frag",
 		"material.frag",
 		"lights.frag",
+		"../../Shadow/shadow.frag",
 	}
 )
 

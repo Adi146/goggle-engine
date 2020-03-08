@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	vertexShaders = []string {
+	vertexShaders = []string{
 		"skybox.vert",
 	}
-	fragmentShaders = []string {
+	fragmentShaders = []string{
 		"skybox.frag",
 	}
 )

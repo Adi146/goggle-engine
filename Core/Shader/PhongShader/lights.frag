@@ -16,6 +16,9 @@ struct DirectionalLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    mat4 lightProjectionMatrix;
+    mat4 lightViewMatrix;
 };
 
 struct PointLight{
@@ -63,6 +66,8 @@ layout (std140) uniform spotLight {
     uniform SpotLight u_spotLights[MAX_SPOT_LIGHTS];
 };
 
+float calculateShadow();
+
 vec3 calculateDirectionalLight(in vec3 viewVector, in vec3 normalVector, in MaterialColor color, in float shininess) {
     vec3 lightDirection = vec3(vec4(u_directionalLight.direction, 1.0f) * transpose(inverse(u_viewMatrix)));
 
@@ -73,7 +78,9 @@ vec3 calculateDirectionalLight(in vec3 viewVector, in vec3 normalVector, in Mate
     vec3 diffuseColor = u_directionalLight.diffuse.rgb * max(dot(normalVector, lightVector), 0.0f) * color.diffuse.rgb;
     vec3 specularColor = u_directionalLight.specular * pow(max(dot(reflectionVector, viewVector), 0.00001f), shininess) * color.specular;
 
-    return (ambientColor + diffuseColor + specularColor);
+    float shadow = calculateShadow();
+
+    return (ambientColor + ((1.0 - shadow) * diffuseColor + specularColor));
 }
 
 vec3 calculatePointLight(in vec3 viewVector, in vec3 normalVector, in MaterialColor color, in float shininess) {

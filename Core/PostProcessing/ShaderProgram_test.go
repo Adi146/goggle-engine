@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	vertexShaders = []string {
+	vertexShaders = []string{
 		"postProcessing.vert",
 	}
-	fragmentShaders = [][]string {
+	fragmentShaders = [][]string{
 		{
 			"none.frag",
 		},

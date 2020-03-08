@@ -1,12 +1,12 @@
 package YamlFactory
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/SceneFactory"
 	"io/ioutil"
 	"os"
 
-	"github.com/Adi146/goggle-engine/Core/ProcessingPipeline"
 	"github.com/Adi146/goggle-engine/Core/Utils/Log"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
@@ -23,8 +23,9 @@ type config2 struct {
 	OpenGlLogging bool `yaml:"openGlLogging"`
 
 	ProcessingPipelineConfig []struct {
-		FrameBuffer string `yaml:"frameBuffer"`
-		Scene       string `yaml:"scene"`
+		FrameBuffer    string               `yaml:"frameBuffer"`
+		Scene          string               `yaml:"scene"`
+		EnforcedShader ShaderFactory.Config `yaml:"enforcedShader"`
 	} `yaml:"processingPipeline"`
 }
 
@@ -86,7 +87,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	}
 
 	return &Factory.Config{
-		Pipeline: ProcessingPipeline.ProcessingPipeline{
+		Pipeline: Scene.ProcessingPipeline{
 			Steps:  pipelineSteps,
 			Scenes: SceneFactory.GetAll(),
 			Window: window.(Window.IWindow),
@@ -94,8 +95,8 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	}, nil
 }
 
-func (config *config) UnmarshalProcessingPipeline() ([]ProcessingPipeline.ProcessingPipelineStep, error) {
-	var Pipeline []ProcessingPipeline.ProcessingPipelineStep
+func (config *config) UnmarshalProcessingPipeline() ([]Scene.ProcessingPipelineStep, error) {
+	var Pipeline []Scene.ProcessingPipelineStep
 
 	for _, stepConfig := range config.ProcessingPipelineConfig {
 		frameBuffer, err := FrameBufferFactory.Get(stepConfig.FrameBuffer)
@@ -109,9 +110,10 @@ func (config *config) UnmarshalProcessingPipeline() ([]ProcessingPipeline.Proces
 
 		Pipeline = append(
 			Pipeline,
-			ProcessingPipeline.ProcessingPipelineStep{
-				Scene:       scene,
-				FrameBuffer: frameBuffer,
+			Scene.ProcessingPipelineStep{
+				Scene:          scene,
+				FrameBuffer:    frameBuffer,
+				EnforcedShader: stepConfig.EnforcedShader.IShaderProgram,
 			},
 		)
 	}

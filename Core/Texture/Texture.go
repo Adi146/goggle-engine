@@ -40,7 +40,8 @@ func NewTextureFromFile(img *image.RGBA, textureType TextureType) (*Texture, err
 	return &texture, nil
 }
 
-func (tex *Texture) Bind() {
+func (tex *Texture) Bind(unit uint32) {
+	gl.ActiveTexture(gl.TEXTURE0 + unit)
 	gl.BindTexture(gl.TEXTURE_2D, tex.TextureID)
 }
 

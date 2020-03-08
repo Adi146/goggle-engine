@@ -20,7 +20,7 @@ func init() {
 type SkyboxNodeConfig struct {
 	Scene.NodeConfig
 
-	Shader ShaderFactory.Config `yaml:"shader"`
+	Shader   ShaderFactory.Config              `yaml:"shader"`
 	Textures AssetImporter.CubeMapImportHelper `yaml:"textures"`
 }
 
@@ -31,7 +31,7 @@ func (config *SkyboxNodeConfig) Create() (Scene.INode, error) {
 	}
 
 	node := &SkyboxNode{
-		INode :nodeBase,
+		INode:  nodeBase,
 		Config: config,
 	}
 

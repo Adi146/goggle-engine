@@ -15,6 +15,10 @@ var (
 	globalConfig FactoryConfig
 )
 
+func AddType(key string, frameBufferType reflect.Type) {
+	typeFactory[key] = frameBufferType
+}
+
 func Get(key string) (FrameBuffer.IFrameBuffer, error) {
 	fbo, ok := globalConfig.FrameBuffers[key]
 	if !ok {

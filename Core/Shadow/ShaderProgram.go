@@ -1,17 +1,17 @@
-package Skybox
+package Shadow
 
 import (
 	"fmt"
-
-	"github.com/Adi146/goggle-engine/Core/Camera"
+	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
+	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
 const (
-	skybox_uniformAddress = "u_skybox"
+	modelMatrix_uniformAddress = "u_modelMatrix"
 
-	cameraUBO_uniformAddress = "camera"
+	directionalLightUBO_uniformAddress = "directionalLight"
 )
 
 type ShaderProgram struct {
@@ -35,10 +35,12 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string)
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
-	case *Texture.CubeMap:
-		return program.BindTexture(v, skybox_uniformAddress, false)
-	case *Camera.UniformBuffer:
-		return program.BindUniform(v, cameraUBO_uniformAddress)
+	case *Model.Model:
+		return program.BindUniform(v.ModelMatrix, modelMatrix_uniformAddress)
+	case *DirectionalLight.UniformBuffer:
+		return program.BindUniform(v, directionalLightUBO_uniformAddress)
+	case *Model.Material, *Texture.CubeMap:
+		return nil
 	default:
 		return fmt.Errorf("type %T not supported", v)
 	}

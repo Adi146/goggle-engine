@@ -1,7 +1,6 @@
 package Scene
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Texture"
 	"sort"
 
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
@@ -39,42 +38,39 @@ func (scene *SceneBase) SetMouseInput(input Window.IMouseInput) {
 	scene.mouseInput = input
 }
 
-func (scene *SceneBase) Draw() error {
+func (scene *SceneBase) Draw(step *ProcessingPipelineStep) error {
 	var err Error.ErrorCollection
 
-	err.Push(scene.drawPreRenderObjects())
-	err.Push(scene.drawOpaqueObjects())
-	err.Push(scene.drawTransparentObjects())
+	err.Push(scene.drawPreRenderObjects(step))
+	err.Push(scene.drawOpaqueObjects(step))
+	err.Push(scene.drawTransparentObjects(step))
 
 	return err.Err()
 }
 
-func (scene *SceneBase) AddResult(texture *Texture.Texture) {
-}
-
-func (scene *SceneBase) drawPreRenderObjects() error {
+func (scene *SceneBase) drawPreRenderObjects(step *ProcessingPipelineStep) error {
 	var err Error.ErrorCollection
 
 	for _, drawable := range scene.PreRenderObjects {
-		err.Push(drawable.Draw())
+		err.Push(drawable.Draw(step))
 	}
 	scene.PreRenderObjects = []IDrawable{}
 
 	return err.Err()
 }
 
-func (scene *SceneBase) drawOpaqueObjects() error {
+func (scene *SceneBase) drawOpaqueObjects(step *ProcessingPipelineStep) error {
 	var err Error.ErrorCollection
 
 	for _, drawable := range scene.OpaqueObjects {
-		err.Push(drawable.Draw())
+		err.Push(drawable.Draw(step))
 	}
 	scene.OpaqueObjects = []IDrawable{}
 
 	return err.Err()
 }
 
-func (scene *SceneBase) drawTransparentObjects() error {
+func (scene *SceneBase) drawTransparentObjects(step *ProcessingPipelineStep) error {
 	var err Error.ErrorCollection
 
 	transparentDrawables := make([]transparentObject, len(scene.TransparentObjects))
@@ -86,7 +82,7 @@ func (scene *SceneBase) drawTransparentObjects() error {
 	}
 	sort.Sort(byDistance(transparentDrawables))
 	for _, drawable := range transparentDrawables {
-		err.Push(drawable.Draw())
+		err.Push(drawable.Draw(step))
 	}
 
 	scene.TransparentObjects = []IDrawable{}

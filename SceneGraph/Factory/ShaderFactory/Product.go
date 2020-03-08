@@ -3,6 +3,7 @@ package ShaderFactory
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"gopkg.in/yaml.v3"
 )
@@ -16,6 +17,7 @@ type tmpProduct struct {
 	VertexShaders   []string                      `yaml:"vertexShaders"`
 	FragmentShaders []string                      `yaml:"fragmentShaders"`
 	UniformBuffers  []UniformBufferFactory.Config `yaml:"uniformBuffers"`
+	FrameBuffers    []FrameBufferFactory.Config   `yaml:"frameBuffers"`
 }
 
 func (product *Product) UnmarshalYAML(value *yaml.Node) error {
@@ -36,6 +38,12 @@ func (product *Product) UnmarshalYAML(value *yaml.Node) error {
 
 	for _, uboConfig := range tmpProduct.UniformBuffers {
 		if err := shader.BindObject(uboConfig.IUniformBuffer); err != nil {
+			return err
+		}
+	}
+
+	for _, fboConfig := range tmpProduct.FrameBuffers {
+		if err := shader.BindObject(fboConfig.IFrameBuffer); err != nil {
 			return err
 		}
 	}

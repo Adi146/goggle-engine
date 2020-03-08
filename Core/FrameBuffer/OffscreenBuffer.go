@@ -32,8 +32,8 @@ func (buff *OffScreenBuffer) Init() error {
 	gl.RenderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, buff.Width, buff.Height)
 	gl.BindRenderbuffer(gl.RENDERBUFFER, 0)
 
-	gl.GenFramebuffers(1, &buff.fbo)
-	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.fbo)
+	gl.GenFramebuffers(1, &buff.FBO)
+	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.FBO)
 	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, buff.ColorTexture.TextureID, 0)
 	gl.FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, buff.rbo)
 
@@ -47,7 +47,7 @@ func (buff *OffScreenBuffer) Init() error {
 }
 
 func (buff *OffScreenBuffer) Destroy() {
-	gl.DeleteFramebuffers(1, &buff.fbo)
+	gl.DeleteFramebuffers(1, &buff.FBO)
 	gl.DeleteRenderbuffers(1, &buff.rbo)
 	//buff.ColorTexture.Destroy()
 }

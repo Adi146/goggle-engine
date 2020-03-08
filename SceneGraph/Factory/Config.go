@@ -1,9 +1,9 @@
 package Factory
 
 import (
-	"github.com/Adi146/goggle-engine/Core/ProcessingPipeline"
+	"github.com/Adi146/goggle-engine/Core/Scene"
 )
 
 type Config struct {
-	Pipeline ProcessingPipeline.ProcessingPipeline
+	Pipeline Scene.ProcessingPipeline
 }

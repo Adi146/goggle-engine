@@ -2,9 +2,10 @@ package PostProcessing
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
+	"github.com/Adi146/goggle-engine/Core/Shadow"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
@@ -36,17 +37,17 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string)
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
-	case *Texture.Texture:
-		return program.bindTexture(v)
+	case *FrameBuffer.OffScreenBuffer:
+		program.Bind()
+		return program.BindTexture(&v.ColorTexture, screenTexture_uniformAddress, true)
+	case *Shadow.ShadowMapBuffer:
+		program.Bind()
+		return program.BindTexture(&v.ShadowMap, screenTexture_uniformAddress, true)
 	case *Kernel:
 		return program.bindKernel(v)
 	default:
-		return fmt.Errorf("type %T not supported", v)
+		return fmt.Errorf("post processing shader dows not support type %T", v)
 	}
-}
-
-func (program *ShaderProgram) bindTexture(texture *Texture.Texture) error {
-	return program.BindTexture(0, texture, screenTexture_uniformAddress)
 }
 
 func (program *ShaderProgram) bindKernel(kernel *Kernel) error {

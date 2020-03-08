@@ -1,6 +1,6 @@
 #version 410 core
 
-#define MAX_TEXTURES 8
+#define MAX_TEXTURES 4
 
 in vec3 v_normal;
 in vec2 v_uv;

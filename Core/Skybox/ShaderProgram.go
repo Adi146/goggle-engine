@@ -35,7 +35,7 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string)
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
-	case *Texture.CubeMap:
+	case *Texture.Texture:
 		return program.BindTexture(v, skybox_uniformAddress, false)
 	case *Camera.UniformBuffer:
 		return program.BindUniform(v, cameraUBO_uniformAddress)

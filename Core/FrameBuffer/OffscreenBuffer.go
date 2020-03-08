@@ -15,6 +15,8 @@ type OffScreenBuffer struct {
 }
 
 func (buff *OffScreenBuffer) Init() error {
+	buff.ColorTexture.TextureTarget = Texture.Texture2D
+
 	var err error
 	if err = gl.Init(); err != nil {
 		return err

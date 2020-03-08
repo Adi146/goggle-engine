@@ -6,12 +6,16 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-type CubeMap struct {
-	TextureID uint32
-}
+const (
+	SkyboxTexture TextureType = "skybox"
 
-func NewCubeMapFromFile(images []*image.RGBA) (*CubeMap, error) {
-	texture := CubeMap{}
+	CubeMap TextureTarget = gl.TEXTURE_CUBE_MAP
+)
+
+func NewCubeMapFromFile(images []*image.RGBA, textureType TextureType) (*Texture, error) {
+	texture := Texture{
+		TextureTarget: CubeMap,
+	}
 
 	gl.GenTextures(1, &texture.TextureID)
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, texture.TextureID)
@@ -28,13 +32,4 @@ func NewCubeMapFromFile(images []*image.RGBA) (*CubeMap, error) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 
 	return &texture, nil
-}
-
-func (tex *CubeMap) Bind(unit uint32) {
-	gl.ActiveTexture(gl.TEXTURE0 + unit)
-	gl.BindTexture(gl.TEXTURE_CUBE_MAP, tex.TextureID)
-}
-
-func (tex *CubeMap) Unbind() {
-	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 }

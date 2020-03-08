@@ -19,6 +19,7 @@ type ShadowMapBuffer struct {
 
 func (buff *ShadowMapBuffer) Init() error {
 	buff.ShadowMap.TextureType = ShadowMap
+	buff.ShadowMap.TextureTarget = Texture.Texture2D
 
 	var err error
 	if err = gl.Init(); err != nil {

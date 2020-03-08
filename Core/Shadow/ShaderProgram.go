@@ -39,7 +39,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.BindUniform(v.ModelMatrix, modelMatrix_uniformAddress)
 	case *DirectionalLight.UniformBuffer:
 		return program.BindUniform(v, directionalLightUBO_uniformAddress)
-	case *Model.Material, *Texture.CubeMap:
+	case *Model.Material, *Texture.Texture:
 		return nil
 	default:
 		return fmt.Errorf("type %T not supported", v)

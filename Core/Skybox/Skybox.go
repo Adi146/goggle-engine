@@ -45,11 +45,11 @@ var (
 
 type Skybox struct {
 	*Model.Mesh
-	*Texture.CubeMap
+	*Texture.Texture
 	Shader Shader.IShaderProgram
 }
 
-func NewSkybox(texture *Texture.CubeMap, shader Shader.IShaderProgram) (*Skybox, error) {
+func NewSkybox(texture *Texture.Texture, shader Shader.IShaderProgram) (*Skybox, error) {
 	mesh, err := Model.NewMesh(vertieces, Buffer.RegisterVertexBufferAttributes, indices)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func NewSkybox(texture *Texture.CubeMap, shader Shader.IShaderProgram) (*Skybox,
 
 	return &Skybox{
 		Mesh:    mesh,
-		CubeMap: texture,
+		Texture: texture,
 		Shader:  shader,
 	}, nil
 }
@@ -75,7 +75,7 @@ func (skybox *Skybox) Draw(step *Scene.ProcessingPipelineStep) error {
 	}
 
 	shader.Bind()
-	err := shader.BindObject(skybox.CubeMap)
+	err := shader.BindObject(skybox.Texture)
 	skybox.Mesh.Draw()
 	shader.Unbind()
 

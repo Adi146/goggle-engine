@@ -1,6 +1,7 @@
 package Window
 
 import (
+	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/veandco/go-sdl2/sdl"
@@ -120,6 +121,8 @@ func (window *SDLWindow) GetTimeDeltaAndFPS() (float32, uint32) {
 	timeDelta := (float32)(counterElapsed) / (float32)(window.performanceCounterFrequency)
 	fps := (uint32)((float32)(window.performanceCounterFrequency) / (float32)(counterElapsed))
 	window.lastCounter = endCounter
+
+	window.window.SetTitle(fmt.Sprintf(window.Title, fps))
 
 	return timeDelta, fps
 }

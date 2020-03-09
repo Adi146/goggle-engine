@@ -56,7 +56,7 @@ frameBuffers:
   default:
     type: sdlWindow
     config:
-      title: YamlConfig Example
+      title: "YamlConfig Example (FPS: %d)"
       type: window
       sync: adaptive
       width: 1920
@@ -124,10 +124,10 @@ scenes:
           cameraControl:
             type: UI.Control.WASDControl
             config:
-              keyboardSensitivity: 1
+              keyboardSensitivity: 100
               mouseSensitivity: 0.5
             transformation:
-              - translation: [0, 0, 5]
+              - translation: [0, 100, 1000]
             children:
               camera:
                 type: Node.Camera
@@ -137,7 +137,7 @@ scenes:
                       fovy: 90
                       aspect: 0.5625
                       near: 0.1
-                      far: 100
+                      far: 10000
                   uniformBuffer: camera
                 transformation:
                   - rotation:
@@ -152,8 +152,8 @@ scenes:
                     ambient: [0, 0.1, 0]
                     diffuse: [0, 1, 0]
                     specular: [0, 1, 0]
-                    linear: 0.027
-                    quadratic: 0.0028
+                    linear: 0.0014
+                    quadratic: 0.000007
                     direction: [0, 0, 1]
                   uniformBuffer: spotLight
           sun:
@@ -173,24 +173,25 @@ scenes:
                   shadowMap:
                     projection:
                       orthogonal:
-                        left: -30
-                        right: 30
-                        bottom: -30
-                        top: 30
-                        near: -25
-                        far: 25
+                        left: -3000
+                        right: 3000
+                        bottom: -3000
+                        top: 3000
+                        near: -3000
+                        far: 3000
           arena:
             type: Node.ModelNode
             config:
               file: Models/arena.obj
               shader: phong
+            transformation:
+              - translation: [0, -20, 0]
+              - scale: 100
           fern:
             type: Node.ModelNode
             config:
               file: Models/fern/fern.fbx
               shader: phong
-            transformation:
-              - scale: 0.01
           construction_light:
             type: Node.ModelNode
             config:
@@ -206,8 +207,7 @@ scenes:
                   - Models/construction_light/Glow.png
               shader: phong
             transformation:
-              - translation: [5, 0, -5]
-              - scale: 0.01
+              - translation: [500, 0, -500]
           lightRotator:
             type: SceneGraph.Rotor
             config:
@@ -220,11 +220,11 @@ scenes:
                     ambient: [0.0, 0.0, 0.2]
                     diffuse: [0.0, 0.0, 1.0]
                     specular: [0.0, 0.0, 1.0]
-                    linear: 0.027
-                    quadratic: 0.0028
+                    linear: 0.0014
+                    quadratic: 0.000007
                   uniformBuffer: pointLight
                 transformation:
-                  - translation: [0, 1, -3]
+                  - translation: [0, 100, -300]
               redLight:
                 type: Node.LightNode.PointLightNode
                 config:
@@ -232,11 +232,11 @@ scenes:
                     ambient: [0.2, 0.0, 0.0]
                     diffuse: [1.0, 0.0, 0.0]
                     specular: [1.0, 0.0, 0.0]
-                    linear: 0.027
-                    quadratic: 0.0028
+                    linear: 0.0014
+                    quadratic: 0.000007
                   uniformBuffer: pointLight
                 transformation:
-                  - translation: [0, 1, 3]
+                  - translation: [0, 100, 300]
           window1:
             type: Node.ModelNode
             config: &windowConfig
@@ -247,22 +247,20 @@ scenes:
               isTransparent: true
               shader: phong
             transformation:
-              - translation: [0, 0, 5]
-              - scale: 0.01
+              - translation: [0, 0, 500]
           window2:
             type: Node.ModelNode
             config: *windowConfig
             transformation:
-              - translation: [0, 0, 3]
-              - scale: 0.01
+              - translation: [0, 0, 300]
           skybox:
             type: Node.Skybox
             config:
               shader: skybox
               textures:
-                back: Models/skybox/snowalps_lf.png
-                front: Models/skybox/snowalps_rt.png
-                top: Models/skybox/snowalps_up.png
-                bottom: Models/skybox/snowalps_dn.png
-                left: Models/skybox/snowalps_bk.png
-                right: Models/skybox/snowalps_ft.png
+                back: Models/skybox/back.jpg
+                front: Models/skybox/front.jpg
+                top: Models/skybox/top.jpg
+                bottom: Models/skybox/bottom.jpg
+                left: Models/skybox/left.jpg
+                right: Models/skybox/right.jpg

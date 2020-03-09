@@ -3,10 +3,9 @@ package Shader
 import (
 	"C"
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"strings"
 
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -102,7 +101,7 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 		if err != nil {
 			return err
 		}
-		gl.UniformBlockBinding(program.programId, index, v.GetIndex())
+		gl.UniformBlockBinding(program.programId, index, v.GetBinding())
 	default:
 		var currentProgram int32
 		if gl.GetIntegerv(gl.CURRENT_PROGRAM, &currentProgram); uint32(currentProgram) != program.programId {
@@ -115,11 +114,11 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 		}
 
 		switch v := i.(type) {
-		case *Matrix.Matrix4x4:
+		case *GeometryMath.Matrix4x4:
 			gl.UniformMatrix4fv(location, 1, false, &v[0][0])
-		case *Vector.Vector3:
+		case *GeometryMath.Vector3:
 			gl.Uniform3fv(location, 1, &v[0])
-		case *Vector.Vector4:
+		case *GeometryMath.Vector4:
 			gl.Uniform4fv(location, 1, &v[0])
 		case float32:
 			gl.Uniform1f(location, v)

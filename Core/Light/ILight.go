@@ -1,14 +1,16 @@
 package Light
 
-import "github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+)
 
 type ILight interface {
-	GetAmbient() Vector.Vector3
-	SetAmbient(color Vector.Vector3)
+	GetAmbient() GeometryMath.Vector3
+	SetAmbient(color GeometryMath.Vector3)
 
-	GetDiffuse() Vector.Vector3
-	SetDiffuse(color Vector.Vector3)
+	GetDiffuse() GeometryMath.Vector3
+	SetDiffuse(color GeometryMath.Vector3)
 
-	GetSpecular() Vector.Vector3
-	SetSpecular(color Vector.Vector3)
+	GetSpecular() GeometryMath.Vector3
+	SetSpecular(color GeometryMath.Vector3)
 }

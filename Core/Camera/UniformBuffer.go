@@ -1,7 +1,7 @@
 package Camera
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	ubo "github.com/Adi146/goggle-engine/Core/UniformBuffer"
 )
 
@@ -26,12 +26,12 @@ func (buff *UniformBuffer) Set(camera Camera) {
 	buff.ForceUpdate()
 }
 
-func (buff *UniformBuffer) SetProjectionMatrix(matrix Matrix.Matrix4x4) {
+func (buff *UniformBuffer) SetProjectionMatrix(matrix GeometryMath.Matrix4x4) {
 	buff.Camera.SetProjectionMatrix(matrix)
 	buff.UpdateData(&matrix[0][0], projectionMatrix_offset, ubo.Std140_size_mat4)
 }
 
-func (buff *UniformBuffer) SetViewMatrix(matrix Matrix.Matrix4x4) {
+func (buff *UniformBuffer) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
 	buff.Camera.SetViewMatrix(matrix)
 	buff.UpdateData(&matrix[0][0], viewMatrix_offset, ubo.Std140_size_mat4)
 }

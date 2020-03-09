@@ -1,9 +1,9 @@
 package Scene
 
 import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"sort"
 
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
@@ -12,7 +12,7 @@ type SceneBase struct {
 	keyboardInput Window.IKeyboardInput
 	mouseInput    Window.IMouseInput
 
-	CameraPosition     *Vector.Vector3
+	CameraPosition     *GeometryMath.Vector3
 	PreRenderObjects   []IDrawable
 	OpaqueObjects      []IDrawable
 	TransparentObjects []IDrawable

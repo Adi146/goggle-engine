@@ -1,17 +1,17 @@
 package Buffer
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"unsafe"
 )
 
 type Vertex struct {
-	Position Vector.Vector3
-	Normal   Vector.Vector3
+	Position GeometryMath.Vector3
+	Normal   GeometryMath.Vector3
 
-	UV      Vector.Vector2
-	Tangent Vector.Vector3
+	UV      GeometryMath.Vector2
+	Tangent GeometryMath.Vector3
 }
 
 func RegisterVertexBufferAttributes() {

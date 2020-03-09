@@ -1,8 +1,7 @@
 package DirectionalLight
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	ubo "github.com/Adi146/goggle-engine/Core/UniformBuffer"
 )
 
@@ -40,32 +39,32 @@ func (buff *UniformBuffer) Set(light DirectionalLight) {
 	buff.ForceUpdate()
 }
 
-func (buff *UniformBuffer) SetDirection(direction Vector.Vector3) {
+func (buff *UniformBuffer) SetDirection(direction GeometryMath.Vector3) {
 	buff.DirectionalLight.SetDiffuse(direction)
 	buff.UpdateData(&direction[0], direction_offset, ubo.Std140_size_vec3)
 }
 
-func (buff *UniformBuffer) SetAmbient(color Vector.Vector3) {
+func (buff *UniformBuffer) SetAmbient(color GeometryMath.Vector3) {
 	buff.DirectionalLight.SetAmbient(color)
 	buff.UpdateData(&color[0], ambient_offset, ubo.Std140_size_vec3)
 }
 
-func (buff *UniformBuffer) SetDiffuse(color Vector.Vector3) {
+func (buff *UniformBuffer) SetDiffuse(color GeometryMath.Vector3) {
 	buff.DirectionalLight.SetDiffuse(color)
 	buff.UpdateData(&color[0], diffuse_offset, ubo.Std140_size_vec3)
 }
 
-func (buff *UniformBuffer) SetSpecular(color Vector.Vector3) {
+func (buff *UniformBuffer) SetSpecular(color GeometryMath.Vector3) {
 	buff.DirectionalLight.SetSpecular(color)
 	buff.UpdateData(&color[0], specular_offset, ubo.Std140_size_vec3)
 }
 
-func (buff *UniformBuffer) SetProjectionMatrix(matrix Matrix.Matrix4x4) {
+func (buff *UniformBuffer) SetProjectionMatrix(matrix GeometryMath.Matrix4x4) {
 	buff.DirectionalLight.SetProjectionMatrix(matrix)
 	buff.UpdateData(&matrix[0][0], projectionMatrix_offset, ubo.Std140_size_mat4)
 }
 
-func (buff *UniformBuffer) SetViewMatrix(matrix Matrix.Matrix4x4) {
+func (buff *UniformBuffer) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
 	buff.DirectionalLight.SetViewMatrix(matrix)
 	buff.UpdateData(&matrix[0][0], viewMatrix_offset, ubo.Std140_size_mat4)
 }

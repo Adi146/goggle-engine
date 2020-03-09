@@ -1,9 +1,4 @@
-package Matrix
-
-import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
-)
+package GeometryMath
 
 func Orthogonal(left float32, right float32, bottom float32, top float32, near float32, far float32) *Matrix4x4 {
 	rml := right - left
@@ -20,7 +15,7 @@ func Orthogonal(left float32, right float32, bottom float32, top float32, near f
 
 func Perspective(fovy float32, aspect float32, near float32, far float32) *Matrix4x4 {
 	fmn := far - near
-	f := 1 / (GeometryMath.Tan(fovy / 2))
+	f := 1 / (Tan(fovy / 2))
 
 	return &Matrix4x4{
 		{aspect * f, 0, 0, 0},
@@ -30,7 +25,7 @@ func Perspective(fovy float32, aspect float32, near float32, far float32) *Matri
 	}
 }
 
-func LookAt(eye *Vector.Vector3, center *Vector.Vector3, up *Vector.Vector3) *Matrix4x4 {
+func LookAt(eye *Vector3, center *Vector3, up *Vector3) *Matrix4x4 {
 	f := center.Sub(eye).Normalize()
 	s := f.Cross(up.Normalize()).Normalize()
 	u := s.Cross(f)

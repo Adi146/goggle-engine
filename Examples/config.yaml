@@ -85,19 +85,19 @@ uniformBuffers:
   camera:
     type: camera
     config:
-      index: 0
+      binding: 0
   directionalLight:
     type: directionalLight
     config:
-      index: 1
+      binding: 1
   pointLight:
     type: pointLight
     config:
-      index: 2
+      binding: 2
   spotLight:
     type: spotLight
     config:
-      index: 3
+      binding: 3
 
 scenes:
   postProcessing:

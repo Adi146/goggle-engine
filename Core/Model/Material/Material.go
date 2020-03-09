@@ -1,14 +1,14 @@
 package Material
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
 type Material struct {
-	DiffuseBaseColor  Vector.Vector4
-	SpecularBaseColor Vector.Vector3
-	EmissiveBaseColor Vector.Vector3
+	DiffuseBaseColor  GeometryMath.Vector4
+	SpecularBaseColor GeometryMath.Vector3
+	EmissiveBaseColor GeometryMath.Vector3
 
 	Shininess float32
 

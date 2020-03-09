@@ -1,7 +1,7 @@
 package PointLight
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	ubo "github.com/Adi146/goggle-engine/Core/UniformBuffer"
 )
 
@@ -30,22 +30,22 @@ func (elem *UniformBufferElement) Set(light PointLight) {
 	elem.ForceUpdate()
 }
 
-func (elem *UniformBufferElement) SetPosition(pos Vector.Vector3) {
+func (elem *UniformBufferElement) SetPosition(pos GeometryMath.Vector3) {
 	elem.PointLight.SetPosition(pos)
 	elem.ubo.UpdateData(&pos[0], elem.getOffset()+position_offset, ubo.Std140_size_vec3)
 }
 
-func (elem *UniformBufferElement) SetAmbient(color Vector.Vector3) {
+func (elem *UniformBufferElement) SetAmbient(color GeometryMath.Vector3) {
 	elem.PointLight.SetAmbient(color)
 	elem.ubo.UpdateData(&color[0], elem.getOffset()+ambient_offset, ubo.Std140_size_vec3)
 }
 
-func (elem *UniformBufferElement) SetDiffuse(color Vector.Vector3) {
+func (elem *UniformBufferElement) SetDiffuse(color GeometryMath.Vector3) {
 	elem.PointLight.SetDiffuse(color)
 	elem.ubo.UpdateData(&color[0], elem.getOffset()+diffuse_offset, ubo.Std140_size_vec3)
 }
 
-func (elem *UniformBufferElement) SetSpecular(color Vector.Vector3) {
+func (elem *UniformBufferElement) SetSpecular(color GeometryMath.Vector3) {
 	elem.PointLight.SetSpecular(color)
 	elem.ubo.UpdateData(&color[0], elem.getOffset()+specular_offset, ubo.Std140_size_vec3)
 }

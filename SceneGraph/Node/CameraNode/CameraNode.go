@@ -1,13 +1,11 @@
 package CameraNode
 
 import (
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/MatrixFactory"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/Camera"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
@@ -22,9 +20,9 @@ func init() {
 
 type CameraNodeConfig struct {
 	Scene.NodeConfig
-	FrontVector      Vector.Vector3              `yaml:"front"`
-	UpVector         Vector.Vector3              `yaml:"up"`
-	ProjectionMatrix MatrixFactory.Config        `yaml:"projection"`
+	FrontVector      GeometryMath.Vector3        `yaml:"front"`
+	UpVector         GeometryMath.Vector3        `yaml:"up"`
+	ProjectionMatrix GeometryMath.Matrix4x4      `yaml:"projection"`
 	UboConfig        UniformBufferFactory.Config `yaml:"uniformBuffer"`
 }
 
@@ -38,7 +36,7 @@ func (config *CameraNodeConfig) Create() (Scene.INode, error) {
 
 	projectionMatrix := config.ProjectionMatrix
 
-	cameraBase := Camera.NewCamera(projectionMatrix.Matrix4x4)
+	cameraBase := Camera.NewCamera(projectionMatrix)
 	camera := config.UboConfig.IUniformBuffer.(Camera.ICamera)
 	camera.Set(*cameraBase)
 
@@ -54,11 +52,11 @@ func (config *CameraNodeConfig) Create() (Scene.INode, error) {
 
 func (config *CameraNodeConfig) SetDefaults() {
 	if config.UpVector.Length() == 0 {
-		config.UpVector = Vector.Vector3{0, 1, 0}
+		config.UpVector = GeometryMath.Vector3{0, 1, 0}
 	}
 
 	if config.FrontVector.Length() == 0 {
-		config.FrontVector = Vector.Vector3{0, 0, 1}
+		config.FrontVector = GeometryMath.Vector3{0, 0, 1}
 	}
 }
 
@@ -76,7 +74,7 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	front := invTransGlobalTransformation.MulVector(&node.Config.FrontVector).Normalize()
 	up := invTransGlobalTransformation.MulVector(&node.Config.UpVector).Normalize()
 
-	node.ICamera.SetViewMatrix(*Matrix.LookAt(position, position.Add(front), up))
+	node.ICamera.SetViewMatrix(*GeometryMath.LookAt(position, position.Add(front), up))
 
 	return nil
 }

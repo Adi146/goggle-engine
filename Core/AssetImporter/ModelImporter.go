@@ -2,6 +2,7 @@ package AssetImporter
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"path"
@@ -9,8 +10,6 @@ import (
 
 	"github.com/Adi146/assimp"
 	"github.com/Adi146/goggle-engine/Core/Buffer"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 )
@@ -60,7 +59,7 @@ func ImportModel(filename string, shader Shader.IShaderProgram) (*Model.Model, I
 
 	return &Model.Model{
 		Meshes:      meshes,
-		ModelMatrix: Matrix.Identity(),
+		ModelMatrix: GeometryMath.Identity(),
 		Shader:      shader,
 	}, result
 }
@@ -95,9 +94,9 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Ma
 	}
 
 	return &Material.Material{
-		DiffuseBaseColor:  Vector.Vector4{assimpDiffuse.R(), assimpDiffuse.G(), assimpDiffuse.B(), assimpDiffuse.A()},
-		SpecularBaseColor: Vector.Vector3{assimpSpecular.R(), assimpSpecular.G(), assimpSpecular.B()},
-		EmissiveBaseColor: Vector.Vector3{assimpEmissive.R(), assimpEmissive.G(), assimpEmissive.B()},
+		DiffuseBaseColor:  GeometryMath.Vector4{assimpDiffuse.R(), assimpDiffuse.G(), assimpDiffuse.B(), assimpDiffuse.A()},
+		SpecularBaseColor: GeometryMath.Vector3{assimpSpecular.R(), assimpSpecular.G(), assimpSpecular.B()},
+		EmissiveBaseColor: GeometryMath.Vector3{assimpEmissive.R(), assimpEmissive.G(), assimpEmissive.B()},
 
 		Shininess: assimpShininess,
 
@@ -146,10 +145,10 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Model.Mesh, ImportResult) {
 
 	vertices := make([]Buffer.Vertex, assimpMesh.NumVertices())
 	for i := 0; i < assimpMesh.NumVertices(); i++ {
-		vertices[i].Position = Vector.Vector3{assimpVertices[i].X(), assimpVertices[i].Y(), assimpVertices[i].Z()}
-		vertices[i].Normal = Vector.Vector3{assimpNormals[i].X(), assimpNormals[i].Y(), assimpNormals[i].Z()}
-		vertices[i].UV = Vector.Vector2{assimpUVs[i].X(), assimpUVs[i].Y()}
-		vertices[i].Tangent = Vector.Vector3{assimpTangents[i].X(), assimpTangents[i].Y(), assimpTangents[i].Z()}
+		vertices[i].Position = GeometryMath.Vector3{assimpVertices[i].X(), assimpVertices[i].Y(), assimpVertices[i].Z()}
+		vertices[i].Normal = GeometryMath.Vector3{assimpNormals[i].X(), assimpNormals[i].Y(), assimpNormals[i].Z()}
+		vertices[i].UV = GeometryMath.Vector2{assimpUVs[i].X(), assimpUVs[i].Y()}
+		vertices[i].Tangent = GeometryMath.Vector3{assimpTangents[i].X(), assimpTangents[i].Y(), assimpTangents[i].Z()}
 	}
 
 	var indices []uint32

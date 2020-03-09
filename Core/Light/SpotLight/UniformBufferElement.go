@@ -1,7 +1,7 @@
 package SpotLight
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	ubo "github.com/Adi146/goggle-engine/Core/UniformBuffer"
 )
 
@@ -33,12 +33,12 @@ func (elem *UniformBufferElement) Set(light SpotLight) {
 	elem.ForceUpdate()
 }
 
-func (elem *UniformBufferElement) SetPosition(pos Vector.Vector3) {
+func (elem *UniformBufferElement) SetPosition(pos GeometryMath.Vector3) {
 	elem.SpotLight.SetPosition(pos)
 	elem.ubo.UpdateData(&pos[0], elem.getOffset()+position_offset, ubo.Std140_size_vec3)
 }
 
-func (elem *UniformBufferElement) SetDirection(val Vector.Vector3) {
+func (elem *UniformBufferElement) SetDirection(val GeometryMath.Vector3) {
 	elem.SpotLight.SetDirection(val)
 	elem.ubo.UpdateData(&val[0], elem.getOffset()+direction_offset, ubo.Std140_size_vec3)
 }
@@ -53,17 +53,17 @@ func (elem *UniformBufferElement) SetOuterCone(val float32) {
 	elem.ubo.UpdateData(&val, elem.getOffset()+outerCone_offset, ubo.Std140_size_single)
 }
 
-func (elem *UniformBufferElement) SetAmbient(color Vector.Vector3) {
+func (elem *UniformBufferElement) SetAmbient(color GeometryMath.Vector3) {
 	elem.SpotLight.SetAmbient(color)
 	elem.ubo.UpdateData(&color[0], elem.getOffset()+ambient_offset, ubo.Std140_size_vec3)
 }
 
-func (elem *UniformBufferElement) SetDiffuse(color Vector.Vector3) {
+func (elem *UniformBufferElement) SetDiffuse(color GeometryMath.Vector3) {
 	elem.SpotLight.SetDiffuse(color)
 	elem.ubo.UpdateData(&color[0], elem.getOffset()+diffuse_offset, ubo.Std140_size_vec3)
 }
 
-func (elem *UniformBufferElement) SetSpecular(color Vector.Vector3) {
+func (elem *UniformBufferElement) SetSpecular(color GeometryMath.Vector3) {
 	elem.SpotLight.SetSpecular(color)
 	elem.ubo.UpdateData(&color[0], elem.getOffset()+specular_offset, ubo.Std140_size_vec3)
 }

@@ -1,15 +1,13 @@
 package Scene
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Angle"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 type Node struct {
 	scene          *Scene
-	transformation *Matrix.Matrix4x4
+	transformation *GeometryMath.Matrix4x4
 
 	children []INode
 	parent   INode
@@ -51,23 +49,23 @@ func (node *Node) setScene(scene *Scene) {
 	}
 }
 
-func (node *Node) GetLocalTransformation() *Matrix.Matrix4x4 {
+func (node *Node) GetLocalTransformation() *GeometryMath.Matrix4x4 {
 	return node.transformation
 }
 
-func (node *Node) SetLocalTransformation(matrix *Matrix.Matrix4x4) {
+func (node *Node) SetLocalTransformation(matrix *GeometryMath.Matrix4x4) {
 	node.transformation = matrix
 }
 
-func (node *Node) GetLocalRotation() []Angle.EulerAngles {
-	return Angle.ExtractFromMatrix(node.GetLocalTransformation())
+func (node *Node) GetLocalRotation() []GeometryMath.EulerAngles {
+	return GeometryMath.ExtractFromMatrix(node.GetLocalTransformation())
 }
 
-func (node *Node) GetLocalPosition() *Vector.Vector3 {
-	return node.GetLocalTransformation().MulVector(&Vector.Vector3{0, 0, 0})
+func (node *Node) GetLocalPosition() *GeometryMath.Vector3 {
+	return node.GetLocalTransformation().MulVector(&GeometryMath.Vector3{0, 0, 0})
 }
 
-func (node *Node) GetGlobalTransformation() *Matrix.Matrix4x4 {
+func (node *Node) GetGlobalTransformation() *GeometryMath.Matrix4x4 {
 	if parent := node.GetParent(); parent == nil {
 		return node.GetLocalTransformation()
 	} else {
@@ -75,12 +73,12 @@ func (node *Node) GetGlobalTransformation() *Matrix.Matrix4x4 {
 	}
 }
 
-func (node *Node) GetGlobalRotation() []Angle.EulerAngles {
-	return Angle.ExtractFromMatrix(node.GetGlobalTransformation())
+func (node *Node) GetGlobalRotation() []GeometryMath.EulerAngles {
+	return GeometryMath.ExtractFromMatrix(node.GetGlobalTransformation())
 }
 
-func (node *Node) GetGlobalPosition() *Vector.Vector3 {
-	return node.GetGlobalTransformation().MulVector(&Vector.Vector3{0, 0, 0})
+func (node *Node) GetGlobalPosition() *GeometryMath.Vector3 {
+	return node.GetGlobalTransformation().MulVector(&GeometryMath.Vector3{0, 0, 0})
 }
 
 func (node *Node) Tick(timeDelta float32) error {

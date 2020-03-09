@@ -1,19 +1,21 @@
 package Light
 
-import "github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+)
 
 type PositionalLightBase struct {
-	Position Vector.Vector3 `yaml:"position,flow"`
+	Position GeometryMath.Vector3 `yaml:"position,flow"`
 
 	Linear    float32 `yaml:"linear,flow"`
 	Quadratic float32 `yaml:"quadratic,flow"`
 }
 
-func (light *PositionalLightBase) GetPosition() Vector.Vector3 {
+func (light *PositionalLightBase) GetPosition() GeometryMath.Vector3 {
 	return light.Position
 }
 
-func (light *PositionalLightBase) SetPosition(pos Vector.Vector3) {
+func (light *PositionalLightBase) SetPosition(pos GeometryMath.Vector3) {
 	light.Position = pos
 }
 

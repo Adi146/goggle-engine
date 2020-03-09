@@ -1,10 +1,10 @@
 package SceneGraph
 
 import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"reflect"
 
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
@@ -41,7 +41,7 @@ type Rotor struct {
 func (node *Rotor) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.SetLocalTransformation(node.GetLocalTransformation().Mul(Matrix.RotateY(node.Config.Speed * timeDelta)))
+	node.SetLocalTransformation(node.GetLocalTransformation().Mul(GeometryMath.RotateY(node.Config.Speed * timeDelta)))
 
 	return err
 }

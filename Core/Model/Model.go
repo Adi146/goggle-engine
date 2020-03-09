@@ -1,8 +1,7 @@
 package Model
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	Material2 "github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -16,7 +15,7 @@ type MeshesWithMaterial struct {
 
 type Model struct {
 	Meshes      []MeshesWithMaterial
-	ModelMatrix *Matrix.Matrix4x4
+	ModelMatrix *GeometryMath.Matrix4x4
 	Shader      Shader.IShaderProgram
 }
 
@@ -42,6 +41,6 @@ func (model *Model) Draw(step *Scene.ProcessingPipelineStep) error {
 	return err.Err()
 }
 
-func (model *Model) GetPosition() *Vector.Vector3 {
-	return model.ModelMatrix.MulVector(&Vector.Vector3{0, 0, 0})
+func (model *Model) GetPosition() *GeometryMath.Vector3 {
+	return model.ModelMatrix.MulVector(&GeometryMath.Vector3{0, 0, 0})
 }

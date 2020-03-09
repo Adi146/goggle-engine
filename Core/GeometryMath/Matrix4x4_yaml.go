@@ -1,0 +1,112 @@
+package GeometryMath
+
+import (
+	"fmt"
+	"gopkg.in/yaml.v3"
+)
+
+const (
+	yaml_key_orthogonal  = "orthogonal"
+	yaml_key_perspective = "perspective"
+	yaml_key_rotation    = "rotation"
+	yaml_key_scale       = "scale"
+	yaml_key_translation = "translation"
+)
+
+type iMatrixConfig interface {
+	decode() *Matrix4x4
+}
+
+type tmpConfig map[string]yaml.Node
+
+func (m1 *Matrix4x4) UnmarshalYAML(value *yaml.Node) error {
+	var tmpConfig tmpConfig
+	value.Decode(&tmpConfig)
+
+	*m1 = *Identity()
+	for yamlKey, tmpValue := range tmpConfig {
+		config, err := getMatrixConfig(yamlKey)
+		if err != nil {
+			return err
+		}
+
+		tmpValue.Decode(config)
+		*m1 = *m1.Mul(config.decode())
+	}
+
+	return nil
+}
+
+func getMatrixConfig(yamlKey string)(iMatrixConfig, error) {
+	switch yamlKey {
+	case yaml_key_orthogonal:
+		return new(orthogonalConfig), nil
+	case yaml_key_perspective:
+		return new(perspectiveConfig), nil
+	case yaml_key_rotation:
+		return new(rotationConfig), nil
+	case yaml_key_scale:
+		return new(scaleConfig), nil
+	case yaml_key_translation:
+		return new(translationConfig), nil
+	default:
+		return nil, fmt.Errorf("matrix key %s is not supported", yamlKey)
+	}
+}
+
+type orthogonalConfig struct {
+	Left   float32 `yaml:"left"`
+	Right  float32 `yaml:"right"`
+	Bottom float32 `yaml:"bottom"`
+	Top    float32 `yaml:"top"`
+	Near   float32 `yaml:"near"`
+	Far    float32 `yaml:"far"`
+}
+
+func (config *orthogonalConfig) decode() *Matrix4x4 {
+	return Orthogonal(
+		config.Left,
+		config.Right,
+		config.Bottom,
+		config.Top,
+		config.Near,
+		config.Far,
+	)
+}
+
+type perspectiveConfig struct {
+	Fovy   float32 `yaml:"fovy"`
+	Aspect float32 `yaml:"aspect"`
+	Near   float32 `yaml:"near"`
+	Far    float32 `yaml:"far"`
+}
+
+func (config *perspectiveConfig) decode() *Matrix4x4 {
+	return Perspective(
+		Radians(config.Fovy)/2,
+		config.Aspect,
+		config.Near,
+		config.Far,
+	)
+}
+
+type rotationConfig struct {
+	Vector Vector3 `yaml:"axis"`
+	Angle  float32  `yaml:"angle"`
+}
+
+func (config *rotationConfig) decode() *Matrix4x4 {
+	return Rotate(Radians(config.Angle), &config.Vector)
+}
+
+type scaleConfig float32
+
+func (config *scaleConfig) decode() *Matrix4x4 {
+	return Scale(float32(*config))
+}
+
+type translationConfig Vector3
+
+func (config *translationConfig) decode() *Matrix4x4 {
+	return Translate((*Vector3)(config))
+}

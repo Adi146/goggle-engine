@@ -1,8 +1,10 @@
 package Light
 
-import "github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+)
 
 type IDirectionalLight interface {
-	GetDirection() Vector.Vector3
-	SetDirection(val Vector.Vector3)
+	GetDirection() GeometryMath.Vector3
+	SetDirection(val GeometryMath.Vector3)
 }

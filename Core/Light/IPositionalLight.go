@@ -1,10 +1,12 @@
 package Light
 
-import "github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+)
 
 type IPositionalLight interface {
-	GetPosition() Vector.Vector3
-	SetPosition(pos Vector.Vector3)
+	GetPosition() GeometryMath.Vector3
+	SetPosition(pos GeometryMath.Vector3)
 
 	GetLinear() float32
 	SetLinear(val float32)

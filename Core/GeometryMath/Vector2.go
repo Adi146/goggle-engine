@@ -1,6 +1,4 @@
-package Vector
-
-import "github.com/Adi146/goggle-engine/Core/GeometryMath"
+package GeometryMath
 
 type Vector2 [2]float32
 
@@ -49,7 +47,7 @@ func (v1 *Vector2) Dot(v2 *Vector2) float32 {
 }
 
 func (v1 *Vector2) Length() float32 {
-	return GeometryMath.Sqrt(GeometryMath.Pow(v1.X(), 2) + GeometryMath.Pow(v1.Y(), 2))
+	return Sqrt(Pow(v1.X(), 2) + Pow(v1.Y(), 2))
 }
 
 func (v1 *Vector2) Normalize() *Vector2 {

@@ -2,7 +2,7 @@ package Skybox
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Buffer"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -12,15 +12,15 @@ import (
 
 var (
 	vertieces = []Buffer.Vertex{
-		{Position: Vector.Vector3{-1.0, 1.0, 1.0}},
-		{Position: Vector.Vector3{-1.0, 1.0, -1.0}},
-		{Position: Vector.Vector3{-1.0, -1.0, 1.0}},
-		{Position: Vector.Vector3{-1.0, -1.0, -1.0}},
+		{Position: GeometryMath.Vector3{-1.0, 1.0, 1.0}},
+		{Position: GeometryMath.Vector3{-1.0, 1.0, -1.0}},
+		{Position: GeometryMath.Vector3{-1.0, -1.0, 1.0}},
+		{Position: GeometryMath.Vector3{-1.0, -1.0, -1.0}},
 
-		{Position: Vector.Vector3{1.0, 1.0, 1.0}},
-		{Position: Vector.Vector3{1.0, 1.0, -1.0}},
-		{Position: Vector.Vector3{1.0, -1.0, 1.0}},
-		{Position: Vector.Vector3{1.0, -1.0, -1.0}},
+		{Position: GeometryMath.Vector3{1.0, 1.0, 1.0}},
+		{Position: GeometryMath.Vector3{1.0, 1.0, -1.0}},
+		{Position: GeometryMath.Vector3{1.0, -1.0, 1.0}},
+		{Position: GeometryMath.Vector3{1.0, -1.0, -1.0}},
 	}
 	indices = []uint32{
 		0, 2, 1, //Left
@@ -85,6 +85,6 @@ func (skybox *Skybox) Draw(step *Scene.ProcessingPipelineStep) error {
 	return err
 }
 
-func (skybox *Skybox) GetPosition() *Vector.Vector3 {
-	return &Vector.Vector3{0, 0, 0}
+func (skybox *Skybox) GetPosition() *GeometryMath.Vector3 {
+	return &GeometryMath.Vector3{0, 0, 0}
 }

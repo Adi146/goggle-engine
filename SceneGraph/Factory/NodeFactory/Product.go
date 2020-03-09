@@ -2,7 +2,7 @@ package NodeFactory
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/MatrixFactory"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"gopkg.in/yaml.v3"
 	"reflect"
@@ -13,10 +13,10 @@ type Product struct {
 }
 
 type tmpProduct struct {
-	Type           string                 `yaml:"type"`
-	Children       map[string]Product     `yaml:"children"`
-	Config         yaml.Node              `yaml:"config"`
-	Transformation []MatrixFactory.Config `yaml:"transformation"`
+	Type           string                   `yaml:"type"`
+	Children       map[string]Product       `yaml:"children"`
+	Config         yaml.Node                `yaml:"config"`
+	Transformation []GeometryMath.Matrix4x4 `yaml:"transformation"`
 }
 
 func (product *Product) UnmarshalYAML(value *yaml.Node) error {
@@ -45,7 +45,7 @@ func (product *Product) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	for _, transformation := range tmpProduct.Transformation {
-		node.SetLocalTransformation(node.GetLocalTransformation().Mul(&transformation.Matrix4x4))
+		node.SetLocalTransformation(node.GetLocalTransformation().Mul(&transformation))
 	}
 
 	product.INode = node

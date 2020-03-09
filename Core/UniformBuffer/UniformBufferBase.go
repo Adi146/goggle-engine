@@ -11,9 +11,9 @@ const (
 )
 
 type UniformBufferBase struct {
-	ubo   uint32
-	Size  int    `yaml:"size"`
-	Index uint32 `yaml:"index"`
+	ubo     uint32
+	Size    int    `yaml:"size"`
+	Binding uint32 `yaml:"binding"`
 }
 
 func (buff *UniformBufferBase) Init() error {
@@ -22,7 +22,7 @@ func (buff *UniformBufferBase) Init() error {
 	gl.BufferData(gl.UNIFORM_BUFFER, buff.Size, nil, gl.STATIC_DRAW)
 	buff.Unbind()
 
-	gl.BindBufferRange(gl.UNIFORM_BUFFER, buff.Index, buff.ubo, 0, buff.Size)
+	gl.BindBufferRange(gl.UNIFORM_BUFFER, buff.Binding, buff.ubo, 0, buff.Size)
 
 	return nil
 }
@@ -43,6 +43,6 @@ func (buff *UniformBufferBase) UpdateData(data interface{}, offset int, size int
 	gl.NamedBufferSubData(buff.ubo, offset, size, gl.Ptr(data))
 }
 
-func (buff *UniformBufferBase) GetIndex() uint32 {
-	return buff.Index
+func (buff *UniformBufferBase) GetBinding() uint32 {
+	return buff.Binding
 }

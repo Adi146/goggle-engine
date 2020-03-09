@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	skybox_uniformAddress = "u_skybox"
+	ua_skybox = "u_skybox"
 
-	cameraUBO_uniformAddress = "camera"
+	ua_camera = "camera"
 )
 
 type ShaderProgram struct {
@@ -36,9 +36,9 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string)
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *Texture.Texture:
-		return program.BindUniform(v, skybox_uniformAddress)
+		return program.BindUniform(v, ua_skybox)
 	case *Camera.UniformBuffer:
-		return program.BindUniform(v, cameraUBO_uniformAddress)
+		return program.BindUniform(v, ua_camera)
 	default:
 		return fmt.Errorf("type %T not supported", v)
 	}

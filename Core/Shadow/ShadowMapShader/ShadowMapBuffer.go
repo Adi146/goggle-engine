@@ -1,4 +1,4 @@
-package Shadow
+package ShadowMapShader
 
 import (
 	"fmt"

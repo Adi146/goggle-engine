@@ -1,4 +1,4 @@
-package Model
+package Material
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"

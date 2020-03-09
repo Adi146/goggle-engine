@@ -3,6 +3,7 @@ package Model
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Vector"
+	Material2 "github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
@@ -10,7 +11,7 @@ import (
 
 type MeshesWithMaterial struct {
 	*Mesh
-	*Material
+	*Material2.Material
 }
 
 type Model struct {

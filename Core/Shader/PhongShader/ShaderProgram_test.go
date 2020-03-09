@@ -12,8 +12,8 @@ var (
 	}
 	fragmentShaders = []string{
 		"phong.frag",
-		"material.frag",
 		"lights.frag",
+		"../../Model/Material/material.frag",
 		"../../Shadow/shadow.frag",
 	}
 )

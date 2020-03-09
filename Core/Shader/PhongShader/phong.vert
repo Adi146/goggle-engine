@@ -16,7 +16,7 @@ struct DirectionalLight {
     mat4 lightViewMatrix;
 };
 
-layout (std140) uniform Camera {
+layout (std140) uniform camera {
     mat4 u_projectionMatrix;
     mat4 u_viewMatrix;
 };

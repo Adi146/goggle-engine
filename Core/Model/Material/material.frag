@@ -31,34 +31,58 @@ struct Material {
 
 uniform Material u_material;
 
-MaterialColor GetMaterialColor() {
-    MaterialColor color = u_material.baseColor;
+vec4 GetDiffuseColor() {
+    vec4 baseColor = u_material.baseColor.diffuse;
+
     if (u_material.numTextureDiffuse > 0) {
         vec4 diffuse = vec4(0.0, 0.0, 0.0, 0.0);
         for (int i = 0; i < u_material.numTextureDiffuse; i++){
             diffuse += texture(u_material.texturesDiffuse[i], v_uv);
         }
-        if (diffuse.a < 0.1) {
-            discard;
-        }
-        color.diffuse = diffuse;
+        baseColor = diffuse;
     }
+
+    return baseColor;
+}
+
+vec3 GetSpecularColor() {
+    vec3 baseColor = u_material.baseColor.specular;
 
     if (u_material.numTextureSpecular > 0) {
         vec4 specular = vec4(0, 0, 0, 0);
         for (int i = 0; i < u_material.numTextureSpecular; i++) {
             specular += texture(u_material.texturesSpecular[i], v_uv);
         }
-        color.specular = vec3(specular);
+        baseColor = vec3(specular);
     }
+
+    return baseColor;
+}
+
+vec3 GetEmissiveColor() {
+    vec3 baseColor = u_material.baseColor.emissive;
 
     if (u_material.numTextureEmissive > 0) {
         vec4 emissive = vec4(0, 0, 0, 0);
         for (int i = 0; i < u_material.numTextureEmissive; i++) {
             emissive += texture(u_material.texturesEmissive[i], v_uv);
         }
-        color.emissive = vec3(emissive);
+        baseColor = vec3(emissive);
     }
+
+    return baseColor;
+}
+
+MaterialColor GetMaterialColor() {
+    MaterialColor color = u_material.baseColor;
+    color.diffuse = GetDiffuseColor();
+
+    if (color.diffuse.a < 0.1) {
+        discard;
+    }
+
+    color.specular = GetSpecularColor();
+    color.emissive = GetEmissiveColor();
 
     return color;
 }

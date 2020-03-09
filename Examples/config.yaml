@@ -16,8 +16,8 @@ shaders:
       - ../Core/Shader/PhongShader/phong.vert
     fragmentShaders:
       - ../Core/Shader/PhongShader/phong.frag
-      - ../Core/Shader/PhongShader/material.frag
       - ../Core/Shader/PhongShader/lights.frag
+      - ../Core/Model/Material/material.frag
       - ../Core/Shadow/shadow.frag
     uniformBuffers:
       - camera
@@ -45,9 +45,10 @@ shaders:
   shadowMap:
     type: shadowMapShader
     vertexShaders:
-      - ../Core/Shadow/shadowMap.vert
+      - ../Core/Shadow/ShadowMapShader/shadowMap.vert
     fragmentShaders:
-      - ../Core/Shadow/shadowMap.frag
+      - ../Core/Shadow/ShadowMapShader/shadowMap.frag
+      - ../Core/Model/Material/material.frag
     uniformBuffers:
       - directionalLight
 

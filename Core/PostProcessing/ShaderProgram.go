@@ -3,17 +3,17 @@ package PostProcessing
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/Shadow"
+	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 const (
-	screenTexture_uniformAddress = "u_screenTexture"
+	ua_screenTexture = "u_screenTexture"
 
-	kernelOffset_uniformAddress = "u_kernelOffset"
-	kernel_uniformAddress       = "u_kernel"
+	ua_kernelOffset = "u_kernelOffset"
+	ua_kernel       = "u_kernel"
 )
 
 type ShaderProgram struct {
@@ -39,10 +39,10 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *FrameBuffer.OffScreenBuffer:
 		program.Bind()
-		return program.BindUniform(&v.ColorTexture, screenTexture_uniformAddress)
-	case *Shadow.ShadowMapBuffer:
+		return program.BindUniform(&v.ColorTexture, ua_screenTexture)
+	case *ShadowMapShader.ShadowMapBuffer:
 		program.Bind()
-		return program.BindUniform(&v.ShadowMap, screenTexture_uniformAddress)
+		return program.BindUniform(&v.ShadowMap, ua_screenTexture)
 	case *Kernel:
 		return program.bindKernel(v)
 	default:
@@ -53,8 +53,8 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 func (program *ShaderProgram) bindKernel(kernel *Kernel) error {
 	var err Error.ErrorCollection
 
-	err.Push(program.BindUniform(kernel.GetOffset(), kernelOffset_uniformAddress))
-	err.Push(program.BindUniform(kernel.GetKernel(), kernel_uniformAddress))
+	err.Push(program.BindUniform(kernel.GetOffset(), ua_kernelOffset))
+	err.Push(program.BindUniform(kernel.GetKernel(), ua_kernel))
 
 	return err.Err()
 }

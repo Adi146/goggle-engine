@@ -2,6 +2,7 @@ package AssetImporter
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"path"
 	"strings"
@@ -36,7 +37,7 @@ func ImportModel(filename string, shader Shader.IShaderProgram) (*Model.Model, I
 			assimp.Process_CalcTangentSpace,
 	)
 
-	materials := make([]*Model.Material, assimpScene.NumMaterials())
+	materials := make([]*Material.Material, assimpScene.NumMaterials())
 	meshes := make([]Model.MeshesWithMaterial, assimpScene.NumMeshes())
 
 	for i, assimpMaterial := range assimpScene.Materials() {
@@ -64,7 +65,7 @@ func ImportModel(filename string, shader Shader.IShaderProgram) (*Model.Model, I
 	}, result
 }
 
-func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Model.Material, ImportResult) {
+func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Material.Material, ImportResult) {
 	var result ImportResult
 
 	assimpDiffuse, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorDiffuse, assimp.TextureType(assimp.TextureMapping_None), 0)
@@ -93,7 +94,7 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Mo
 		modelTextures = append(modelTextures, textures...)
 	}
 
-	return &Model.Material{
+	return &Material.Material{
 		DiffuseBaseColor:  Vector.Vector4{assimpDiffuse.R(), assimpDiffuse.G(), assimpDiffuse.B(), assimpDiffuse.A()},
 		SpecularBaseColor: Vector.Vector3{assimpSpecular.R(), assimpSpecular.G(), assimpSpecular.B()},
 		EmissiveBaseColor: Vector.Vector3{assimpEmissive.R(), assimpEmissive.G(), assimpEmissive.B()},

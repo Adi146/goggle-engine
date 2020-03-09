@@ -2,7 +2,7 @@ package LightNode
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath/Matrix"
-	"github.com/Adi146/goggle-engine/Core/Shadow"
+	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/MatrixFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
@@ -23,8 +23,8 @@ const ShadowMapFramebufferName = "shadowMapBuffer"
 func init() {
 	NodeFactory.AddType(DirectionalLightNodeFactoryName, reflect.TypeOf((*DirectionalLightNodeConfig)(nil)).Elem())
 	UniformBufferFactory.AddType(DirectionalLightUBOFactoryName, reflect.TypeOf((*DirectionalLight.UniformBuffer)(nil)).Elem())
-	ShaderFactory.AddType(ShadowMapShaderFactoryName, Shadow.NewIShaderProgram)
-	FrameBufferFactory.AddType(ShadowMapFramebufferName, reflect.TypeOf((*Shadow.ShadowMapBuffer)(nil)).Elem())
+	ShaderFactory.AddType(ShadowMapShaderFactoryName, ShadowMapShader.NewIShaderProgram)
+	FrameBufferFactory.AddType(ShadowMapFramebufferName, reflect.TypeOf((*ShadowMapShader.ShadowMapBuffer)(nil)).Elem())
 }
 
 type DirectionalLightNodeConfig struct {

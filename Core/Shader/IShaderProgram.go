@@ -7,4 +7,5 @@ type IShaderProgram interface {
 	Destroy()
 
 	BindObject(i interface{}) error
+	BindUniform(i interface{}, address string) error
 }

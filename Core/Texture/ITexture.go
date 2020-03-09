@@ -1,6 +1,8 @@
 package Texture
 
 type ITexture interface {
-	Bind(unit uint32)
+	GetUnit() *Unit
+
+	Bind() error
 	Unbind()
 }

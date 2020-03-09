@@ -15,19 +15,21 @@ type OffScreenBuffer struct {
 }
 
 func (buff *OffScreenBuffer) Init() error {
-	buff.ColorTexture.TextureTarget = Texture.Texture2D
+	buff.ColorTexture.Target = gl.TEXTURE_2D
 
 	var err error
 	if err = gl.Init(); err != nil {
 		return err
 	}
 
-	gl.GenTextures(1, &buff.ColorTexture.TextureID)
-	gl.BindTexture(gl.TEXTURE_2D, buff.ColorTexture.TextureID)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGB, buff.Width, buff.Height, 0, gl.RGB, gl.UNSIGNED_BYTE, nil)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-	gl.BindTexture(gl.TEXTURE_2D, 0)
+	gl.GenTextures(1, &buff.ColorTexture.ID)
+	if err := buff.ColorTexture.Bind(); err != nil {
+		return err
+	}
+	gl.TexImage2D(buff.ColorTexture.Target, 0, gl.RGB, buff.Width, buff.Height, 0, gl.RGB, gl.UNSIGNED_BYTE, nil)
+	gl.TexParameteri(buff.ColorTexture.Target, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(buff.ColorTexture.Target, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	buff.ColorTexture.Unbind()
 
 	gl.GenRenderbuffers(1, &buff.rbo)
 	gl.BindRenderbuffer(gl.RENDERBUFFER, buff.rbo)
@@ -36,7 +38,7 @@ func (buff *OffScreenBuffer) Init() error {
 
 	gl.GenFramebuffers(1, &buff.FBO)
 	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.FBO)
-	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, buff.ColorTexture.TextureID, 0)
+	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, buff.ColorTexture.Target, buff.ColorTexture.ID, 0)
 	gl.FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, buff.rbo)
 
 	if status := gl.CheckFramebufferStatus(gl.FRAMEBUFFER); status != gl.FRAMEBUFFER_COMPLETE {

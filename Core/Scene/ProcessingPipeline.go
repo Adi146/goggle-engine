@@ -3,7 +3,6 @@ package Scene
 import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/Window"
 )
 
@@ -27,7 +26,6 @@ func (pipeline ProcessingPipeline) Run() {
 
 	for !pipeline.Window.ShouldClose() {
 		pipeline.Window.PollEvents()
-		Texture.Clear()
 
 		timeDelta, _ := pipeline.Window.GetTimeDeltaAndFPS()
 		for _, scene := range pipeline.Scenes {
@@ -40,16 +38,8 @@ func (pipeline ProcessingPipeline) Run() {
 
 			step.FrameBuffer.Clear()
 			step.Scene.Draw(&step)
-
-			for _, texture := range step.FrameBuffer.GetTextures() {
-				textureUnit, err := Texture.FindFreeUnit(texture)
-				if err != nil {
-					panic(err)
-				}
-
-				Texture.BindTexture(texture, textureUnit, true)
-			}
 		}
+
 		pipeline.Window.SwapWindow()
 	}
 }

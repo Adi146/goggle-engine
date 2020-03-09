@@ -14,3 +14,15 @@ type Material struct {
 
 	Textures []*Texture.Texture
 }
+
+func (material *Material) Bind() {
+	for _, texture := range material.Textures {
+		texture.Bind()
+	}
+}
+
+func (material *Material) Unbind() {
+	for _, texture := range material.Textures {
+		texture.Unbind()
+	}
+}

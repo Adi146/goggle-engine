@@ -39,10 +39,10 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *FrameBuffer.OffScreenBuffer:
 		program.Bind()
-		return program.BindTexture(&v.ColorTexture, screenTexture_uniformAddress, true)
+		return program.BindUniform(&v.ColorTexture, screenTexture_uniformAddress)
 	case *Shadow.ShadowMapBuffer:
 		program.Bind()
-		return program.BindTexture(&v.ShadowMap, screenTexture_uniformAddress, true)
+		return program.BindUniform(&v.ShadowMap, screenTexture_uniformAddress)
 	case *Kernel:
 		return program.bindKernel(v)
 	default:

@@ -38,13 +38,13 @@ const (
 )
 
 var (
-	textureUniformMap = map[Texture.TextureType]string{
+	textureUniformMap = map[Texture.Type]string{
 		Texture.DiffuseTexture:  texture_diffuse_unifromAddress,
 		Texture.SpecularTexture: texture_specular_uniformAddress,
 		Texture.EmissiveTexture: texture_emissive_uniformAddress,
 		Texture.NormalsTexture:  texture_normals_unifromAddress,
 	}
-	numTextureUniformMap = map[Texture.TextureType]string{
+	numTextureUniformMap = map[Texture.Type]string{
 		Texture.DiffuseTexture:  texture_numDiffuse_uniformAddress,
 		Texture.SpecularTexture: texture_numSpecular_uniformAddress,
 		Texture.EmissiveTexture: texture_numEmissive_uniformAddress,
@@ -79,7 +79,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.bindModel(v)
 	case *Shadow.ShadowMapBuffer:
 		program.Bind()
-		return program.BindTexture(&v.ShadowMap, texture_shadowMap_uniformAddress, true)
+		return program.BindUniform(&v.ShadowMap, texture_shadowMap_uniformAddress)
 	case *DirectionalLight.UniformBuffer:
 		return program.BindUniform(v, directionalLightUBO_uniformAddress)
 	case *PointLight.UniformBuffer:
@@ -101,10 +101,10 @@ func (program *ShaderProgram) bindMaterial(material *Model.Material) error {
 	err.Push(program.BindUniform(&material.EmissiveBaseColor, material_emissiveBase_uniformAddress))
 	err.Push(program.BindUniform(material.Shininess, material_shineness_uniformAddress))
 
-	textureIndexMap := make(map[Texture.TextureType]int)
+	textureIndexMap := make(map[Texture.Type]int)
 	for _, texture := range material.Textures {
-		err.Push(program.BindTexture(texture, fmt.Sprintf(textureUniformMap[texture.TextureType], textureIndexMap[texture.TextureType]), false))
-		textureIndexMap[texture.TextureType] += 1
+		err.Push(program.BindUniform(texture, fmt.Sprintf(textureUniformMap[texture.Type], textureIndexMap[texture.Type])))
+		textureIndexMap[texture.Type] += 1
 	}
 	for textureType, uniformAddress := range numTextureUniformMap {
 		err.Push(program.BindUniform(int32(textureIndexMap[textureType]), uniformAddress))

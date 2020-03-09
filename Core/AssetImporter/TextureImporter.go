@@ -29,7 +29,7 @@ func (helper *CubeMapImportHelper) getArray() []string {
 	}
 }
 
-func ImportTexture(filename string, textureType Texture.TextureType) (*Texture.Texture, ImportResult) {
+func ImportTexture(filename string, textureType Texture.Type) (*Texture.Texture, ImportResult) {
 	var result ImportResult
 
 	rgba, err := loadRGBA(filename)
@@ -45,7 +45,7 @@ func ImportTexture(filename string, textureType Texture.TextureType) (*Texture.T
 	return texture, result
 }
 
-func ImportCubeMap(files CubeMapImportHelper, textureType Texture.TextureType) (*Texture.Texture, ImportResult) {
+func ImportCubeMap(files CubeMapImportHelper, textureType Texture.Type) (*Texture.Texture, ImportResult) {
 	var result ImportResult
 	rgbas := make([]*image.RGBA, len(files.getArray()))
 

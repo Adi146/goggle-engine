@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ShadowMap Texture.TextureType = "shadowMap"
+	ShadowMap Texture.Type = "shadowMap"
 )
 
 type ShadowMapBuffer struct {
@@ -18,25 +18,28 @@ type ShadowMapBuffer struct {
 }
 
 func (buff *ShadowMapBuffer) Init() error {
-	buff.ShadowMap.TextureType = ShadowMap
-	buff.ShadowMap.TextureTarget = Texture.Texture2D
+	buff.ShadowMap.Type = ShadowMap
+	buff.ShadowMap.Target = gl.TEXTURE_2D
 
 	var err error
 	if err = gl.Init(); err != nil {
 		return err
 	}
 
-	gl.GenTextures(1, &buff.ShadowMap.TextureID)
-	gl.BindTexture(gl.TEXTURE_2D, buff.ShadowMap.TextureID)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT24, buff.Width, buff.Height, 0, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.GenTextures(1, &buff.ShadowMap.ID)
+	if err := buff.ShadowMap.Bind(); err != nil {
+		return err
+	}
+	gl.TexImage2D(buff.ShadowMap.Target, 0, gl.DEPTH_COMPONENT24, buff.Width, buff.Height, 0, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
+	gl.TexParameteri(buff.ShadowMap.Target, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	gl.TexParameteri(buff.ShadowMap.Target, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	gl.TexParameteri(buff.ShadowMap.Target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(buff.ShadowMap.Target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	buff.ShadowMap.Unbind()
 
 	gl.GenFramebuffers(1, &buff.FBO)
 	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.FBO)
-	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, buff.ShadowMap.TextureID, 0)
+	gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, buff.ShadowMap.Target, buff.ShadowMap.ID, 0)
 	gl.DrawBuffer(gl.NONE)
 	gl.ReadBuffer(gl.NONE)
 

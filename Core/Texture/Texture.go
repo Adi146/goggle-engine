@@ -4,20 +4,42 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-type TextureType string
-type TextureTarget uint32
+type Type string
 
 type Texture struct {
-	TextureID     uint32
-	TextureType   TextureType
-	TextureTarget TextureTarget
+	ID     uint32
+	Target uint32
+	Type   Type
+	Unit   *Unit
 }
 
-func (tex *Texture) Bind(unit uint32) {
-	gl.ActiveTexture(gl.TEXTURE0 + unit)
-	gl.BindTexture(uint32(tex.TextureTarget), tex.TextureID)
+func (texture *Texture) GetUnit() *Unit {
+	return texture.Unit
 }
 
-func (tex *Texture) Unbind() {
-	gl.BindTexture(uint32(tex.TextureTarget), 0)
+func (texture *Texture) Bind() error {
+	if texture.Unit == nil {
+		unit, err := unitManager.FindUnit(texture)
+		if err != nil {
+			return err
+		}
+
+		texture.Unit = unit
+		texture.Unit.Texture = texture
+	}
+
+	texture.Unit.Activate()
+	gl.BindTexture(texture.Target, texture.ID)
+
+	return nil
+}
+
+func (texture *Texture) Unbind() {
+	if texture.Unit != nil {
+		texture.Unit.Activate()
+		gl.BindTexture(texture.Target, 0)
+
+		texture.Unit.Texture = nil
+		texture.Unit = nil
+	}
 }

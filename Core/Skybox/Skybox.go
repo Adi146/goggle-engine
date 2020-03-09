@@ -77,6 +77,7 @@ func (skybox *Skybox) Draw(step *Scene.ProcessingPipelineStep) error {
 	shader.Bind()
 	err := shader.BindObject(skybox.Texture)
 	skybox.Mesh.Draw()
+	skybox.Texture.Unbind()
 	shader.Unbind()
 
 	gl.DepthFunc(uint32(oldDepthFunc))

@@ -14,7 +14,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
-var textureTypeMap = map[assimp.TextureMapping]Texture.TextureType{
+var textureTypeMap = map[assimp.TextureMapping]Texture.Type{
 	assimp.TextureMapping_Diffuse:  Texture.DiffuseTexture,
 	assimp.TextureMapping_Specular: Texture.SpecularTexture,
 	assimp.TextureMapping_Emissive: Texture.EmissiveTexture,

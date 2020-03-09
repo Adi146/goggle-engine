@@ -34,6 +34,7 @@ func (model *Model) Draw(step *Scene.ProcessingPipelineStep) error {
 	for _, mesh := range model.Meshes {
 		err.Push(shader.BindObject(mesh.Material))
 		mesh.Draw()
+		mesh.Material.Unbind()
 	}
 	shader.Unbind()
 

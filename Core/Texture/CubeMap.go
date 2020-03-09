@@ -7,29 +7,29 @@ import (
 )
 
 const (
-	SkyboxTexture TextureType = "skybox"
-
-	CubeMap TextureTarget = gl.TEXTURE_CUBE_MAP
+	SkyboxTexture Type = "skybox"
 )
 
-func NewCubeMapFromFile(images []*image.RGBA, textureType TextureType) (*Texture, error) {
+func NewCubeMapFromFile(images []*image.RGBA, textureType Type) (*Texture, error) {
 	texture := Texture{
-		TextureTarget: CubeMap,
+		Target: gl.TEXTURE_CUBE_MAP,
 	}
 
-	gl.GenTextures(1, &texture.TextureID)
-	gl.BindTexture(gl.TEXTURE_CUBE_MAP, texture.TextureID)
+	gl.GenTextures(1, &texture.ID)
+	if err := texture.Bind(); err != nil {
+		return nil, err
+	}
 
-	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(texture.Target, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	gl.TexParameteri(texture.Target, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
 
 	for i, img := range images {
 		gl.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+uint32(i), 0, gl.RGBA8, int32(img.Bounds().Dx()), int32(img.Bounds().Dy()), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
 	}
-	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
+	texture.Unbind()
 
 	return &texture, nil
 }

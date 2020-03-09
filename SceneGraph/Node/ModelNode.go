@@ -15,7 +15,7 @@ import (
 
 const ModelNodeFactoryName = "Node.ModelNode"
 
-var textureTypeMap = map[string]Texture.TextureType{
+var textureTypeMap = map[string]Texture.Type{
 	"diffuse":  Texture.DiffuseTexture,
 	"specular": Texture.SpecularTexture,
 	"emissive": Texture.EmissiveTexture,

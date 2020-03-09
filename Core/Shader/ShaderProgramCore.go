@@ -127,26 +127,19 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 			gl.Uniform1fv(location, int32(len(v)), &v[0])
 		case int32:
 			gl.Uniform1i(location, v)
+		case uint32:
+			gl.Uniform1i(location, int32(v))
+		case Texture.ITexture:
+			if err := v.Bind(); err != nil {
+				return err
+			}
+
+			return program.BindUniform(v.GetUnit().ID, uniformAddress)
 		default:
 			return fmt.Errorf("type %T not supported", v)
 		}
 	}
 
-	return nil
-}
-
-func (program *ShaderProgramCore) BindTexture(texture Texture.ITexture, uniformAddress string, reserve bool) error {
-	unit, err := Texture.FindFreeUnit(texture)
-	if err != nil {
-		return err
-	}
-
-	err = program.BindUniform(int32(unit), uniformAddress)
-	if err != nil {
-		return err
-	}
-
-	Texture.BindTexture(texture, unit, reserve)
 	return nil
 }
 

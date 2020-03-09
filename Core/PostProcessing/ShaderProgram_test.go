@@ -2,7 +2,7 @@ package PostProcessing_test
 
 import (
 	"github.com/Adi146/goggle-engine/Core/PostProcessing"
-	"github.com/Adi146/goggle-engine/Core/TestUtils"
+	"github.com/Adi146/goggle-engine/Core/Utils/TestUtils"
 	"testing"
 )
 

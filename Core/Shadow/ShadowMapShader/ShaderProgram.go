@@ -29,7 +29,7 @@ func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) 
 	return &ShaderProgram{
 		ShaderProgramCore: shaderCore,
 		MaterialShader: Material.ShaderProgram{
-			ShaderProgramCore:shaderCore,
+			ShaderProgramCore: shaderCore,
 			BindFunctions: []func(program *Material.ShaderProgram, material *Material.Material) error{
 				Material.BindDiffuse,
 			},

@@ -22,11 +22,9 @@ const (
 	ua_spotLight        = "spotLight"
 )
 
-
-
 type ShaderProgram struct {
 	*Shader.ShaderProgramCore
-	ShadowShader Shadow.ShaderProgram
+	ShadowShader   Shadow.ShaderProgram
 	MaterialShader Material.ShaderProgram
 }
 
@@ -42,7 +40,7 @@ func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) 
 			ShaderProgramCore: shaderCore,
 		},
 		MaterialShader: Material.ShaderProgram{
-			ShaderProgramCore:shaderCore,
+			ShaderProgramCore: shaderCore,
 			BindFunctions: []func(program *Material.ShaderProgram, material *Material.Material) error{
 				Material.BindDiffuse,
 				Material.BindSpecular,

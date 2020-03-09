@@ -5,8 +5,8 @@ import (
 )
 
 type Unit struct {
-	ID       uint32
-	Texture  ITexture
+	ID      uint32
+	Texture ITexture
 }
 
 func (unit *Unit) Activate() {

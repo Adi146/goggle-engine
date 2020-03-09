@@ -8,23 +8,23 @@ import (
 )
 
 const (
-	ua_material = "u_material"
+	ua_material  = "u_material"
 	ua_baseColor = ua_material + ".baseColor"
 	ua_shininess = ua_material + ".shininess"
 
-	ua_color_diffuse = ua_baseColor + ".diffuse"
+	ua_color_diffuse  = ua_baseColor + ".diffuse"
 	ua_color_specular = ua_baseColor + ".specular"
 	ua_color_emissive = ua_baseColor + ".emissive"
 
-	ua_textures_diffuse = ua_material + ".texturesDiffuse[%d]"
+	ua_textures_diffuse  = ua_material + ".texturesDiffuse[%d]"
 	ua_textures_specular = ua_material + ".texturesSpecular[%d]"
 	ua_textures_emissive = ua_material + ".texturesEmissive[%d]"
-	ua_textures_normals = ua_material + ".texturesNormals[%d]"
+	ua_textures_normals  = ua_material + ".texturesNormals[%d]"
 
-	ua_num_textures_diffuse = ua_material + ".numTextureDiffuse"
+	ua_num_textures_diffuse  = ua_material + ".numTextureDiffuse"
 	ua_num_textures_specular = ua_material + ".numTextureSpecular"
 	ua_num_textures_emissive = ua_material + ".numTextureEmissive"
-	ua_num_textures_normals = ua_material + ".numTextureNormals"
+	ua_num_textures_normals  = ua_material + ".numTextureNormals"
 )
 
 type ShaderProgram struct {
@@ -45,7 +45,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 func (program *ShaderProgram) bindMaterial(material *Material) error {
 	var err Error.ErrorCollection
 
-	for _, bindFunction := range program.BindFunctions{
+	for _, bindFunction := range program.BindFunctions {
 		err.Push(bindFunction(program, material))
 	}
 

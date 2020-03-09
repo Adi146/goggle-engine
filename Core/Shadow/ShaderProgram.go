@@ -18,7 +18,7 @@ type ShaderProgram struct {
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *ShadowMapShader.ShadowMapBuffer:
-		return program.BindObject(&v.ShadowMap)
+		return program.BindObject(v.ShadowMap)
 	case Texture.ITexture:
 		program.Bind()
 		return program.BindUniform(v, ua_shadowMap)

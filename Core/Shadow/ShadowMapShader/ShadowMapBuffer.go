@@ -8,34 +8,22 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-const (
-	ShadowMap Texture.Type = "shadowMap"
-)
-
 type ShadowMapBuffer struct {
 	FrameBuffer.FrameBufferBase `yaml:",inline"`
-	ShadowMap                   Texture.Texture
+	ShadowMap                   *Texture.Texture
 }
 
 func (buff *ShadowMapBuffer) Init() error {
-	buff.ShadowMap.Type = ShadowMap
-	buff.ShadowMap.Target = gl.TEXTURE_2D
-
 	var err error
 	if err = gl.Init(); err != nil {
 		return err
 	}
 
-	gl.GenTextures(1, &buff.ShadowMap.ID)
-	if err := buff.ShadowMap.Bind(); err != nil {
+	shadowMap, err := NewShadowMap(buff.Width, buff.Height)
+	if err != nil {
 		return err
 	}
-	gl.TexImage2D(buff.ShadowMap.Target, 0, gl.DEPTH_COMPONENT24, buff.Width, buff.Height, 0, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
-	gl.TexParameteri(buff.ShadowMap.Target, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-	gl.TexParameteri(buff.ShadowMap.Target, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-	gl.TexParameteri(buff.ShadowMap.Target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(buff.ShadowMap.Target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-	buff.ShadowMap.Unbind()
+	buff.ShadowMap = shadowMap
 
 	gl.GenFramebuffers(1, &buff.FBO)
 	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.FBO)
@@ -58,6 +46,6 @@ func (buff *ShadowMapBuffer) Destroy() {
 
 func (buff *ShadowMapBuffer) GetTextures() []*Texture.Texture {
 	return []*Texture.Texture{
-		&buff.ShadowMap,
+		buff.ShadowMap,
 	}
 }

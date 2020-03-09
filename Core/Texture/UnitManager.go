@@ -18,7 +18,7 @@ func (man *UnitManager) populate() {
 		*man = make([]*Unit, numTextureUnits)
 		for i := int32(0); i < numTextureUnits; i++ {
 			(*man)[i] = &Unit{
-				ID: uint32(i),
+				ID:      uint32(i),
 				Texture: nil,
 			}
 		}

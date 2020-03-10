@@ -4,7 +4,6 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Buffer"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model"
-	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -46,10 +45,9 @@ var (
 type Skybox struct {
 	*Model.Mesh
 	*Texture.Texture
-	Shader Shader.IShaderProgram
 }
 
-func NewSkybox(texture *Texture.Texture, shader Shader.IShaderProgram) (*Skybox, error) {
+func NewSkybox(texture *Texture.Texture) (*Skybox, error) {
 	mesh, err := Model.NewMesh(vertieces, Buffer.RegisterVertexBufferAttributes, indices)
 	if err != nil {
 		return nil, err
@@ -58,27 +56,17 @@ func NewSkybox(texture *Texture.Texture, shader Shader.IShaderProgram) (*Skybox,
 	return &Skybox{
 		Mesh:    mesh,
 		Texture: texture,
-		Shader:  shader,
 	}, nil
 }
 
-func (skybox *Skybox) Draw(step *Scene.ProcessingPipelineStep) error {
+func (skybox *Skybox) Draw(shader Shader.IShaderProgram) error {
 	var oldDepthFunc int32
 	gl.GetIntegerv(gl.DEPTH_FUNC, &oldDepthFunc)
 	gl.DepthFunc(gl.LEQUAL)
 
-	var shader Shader.IShaderProgram
-	if step.EnforcedShader == nil {
-		shader = skybox.Shader
-	} else {
-		shader = step.EnforcedShader
-	}
-
-	shader.Bind()
 	err := shader.BindObject(skybox.Texture)
-	skybox.Mesh.Draw()
+	skybox.Mesh.Draw(shader)
 	skybox.Texture.Unbind()
-	shader.Unbind()
 
 	gl.DepthFunc(uint32(oldDepthFunc))
 

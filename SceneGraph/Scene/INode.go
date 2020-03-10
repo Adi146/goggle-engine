@@ -26,5 +26,4 @@ type INode interface {
 	GetGlobalPosition() *GeometryMath.Vector3
 
 	Tick(timeDelta float32) error
-	Draw() error
 }

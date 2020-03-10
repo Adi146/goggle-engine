@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
-	"github.com/Adi146/goggle-engine/Core/Shader"
 	"path"
 	"strings"
 
@@ -21,7 +20,7 @@ var textureTypeMap = map[assimp.TextureMapping]Texture.Type{
 	assimp.TextureMapping_Normals:  Texture.NormalsTexture,
 }
 
-func ImportModel(filename string, shader Shader.IShaderProgram) (*Model.Model, ImportResult) {
+func ImportModel(filename string) (*Model.Model, ImportResult) {
 	var result ImportResult
 
 	assimpScene := assimp.ImportFile(filename, 0)
@@ -60,7 +59,6 @@ func ImportModel(filename string, shader Shader.IShaderProgram) (*Model.Model, I
 	return &Model.Model{
 		Meshes:      meshes,
 		ModelMatrix: GeometryMath.Identity(),
-		Shader:      shader,
 	}, result
 }
 

@@ -1,6 +1,7 @@
 package Node
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"reflect"
@@ -48,7 +49,7 @@ func (config *ModelNodeConfig) Create() (Scene.INode, error) {
 	var importErrors Error.ErrorCollection
 	var importWarnings Error.ErrorCollection
 
-	model, result := AssetImporter.ImportModel(config.File, config.Shader.IShaderProgram)
+	model, result := AssetImporter.ImportModel(config.File)
 	importErrors.Push(&result.Errors)
 	importWarnings.Push(&result.Warnings)
 	if result.Success() {
@@ -82,19 +83,24 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 
 	node.ModelMatrix = node.GetGlobalTransformation()
 
-	return err
-}
-
-func (node *ModelNode) Draw() error {
-	err := node.INode.Draw()
-
 	if scene := node.GetScene(); scene != nil {
 		if node.Config.IsTransparent {
-			scene.TransparentObjects = append(scene.TransparentObjects, node.Model)
+			scene.TransparentObjects = append(scene.TransparentObjects, node)
 		} else {
-			scene.OpaqueObjects = append(scene.OpaqueObjects, node.Model)
+			scene.OpaqueObjects = append(scene.OpaqueObjects, node)
 		}
 	}
 
 	return err
+}
+
+func (node *ModelNode) Draw(shader Shader.IShaderProgram) error {
+	if shader == nil {
+		node.Config.Shader.Bind()
+		defer node.Config.Shader.Unbind()
+
+		shader = node.Config.Shader
+	}
+
+	return node.Model.Draw(shader)
 }

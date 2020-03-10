@@ -1,21 +1,14 @@
-package Scene
+package ProcessingPipeline
 
 import (
-	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Window"
 )
 
 type ProcessingPipeline struct {
-	Steps  []ProcessingPipelineStep
-	Scenes []IScene
+	Steps  []Step
+	Scenes []Scene.IScene
 	Window Window.IWindow
-}
-
-type ProcessingPipelineStep struct {
-	FrameBuffer    FrameBuffer.IFrameBuffer
-	Scene          IScene
-	EnforcedShader Shader.IShaderProgram
 }
 
 func (pipeline ProcessingPipeline) Run() {
@@ -34,10 +27,7 @@ func (pipeline ProcessingPipeline) Run() {
 
 		for i := range pipeline.Steps {
 			step := pipeline.Steps[len(pipeline.Steps)-1-i]
-			step.FrameBuffer.Bind()
-
-			step.FrameBuffer.Clear()
-			step.Scene.Draw(&step)
+			step.Execute()
 		}
 
 		pipeline.Window.SwapWindow()

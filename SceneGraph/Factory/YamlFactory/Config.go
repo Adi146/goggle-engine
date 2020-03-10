@@ -1,7 +1,7 @@
 package YamlFactory
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/Core/ProcessingPipeline"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/SceneFactory"
 	"io/ioutil"
@@ -87,7 +87,7 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	}
 
 	return &Factory.Config{
-		Pipeline: Scene.ProcessingPipeline{
+		Pipeline: ProcessingPipeline.ProcessingPipeline{
 			Steps:  pipelineSteps,
 			Scenes: SceneFactory.GetAll(),
 			Window: window.(Window.IWindow),
@@ -95,8 +95,8 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 	}, nil
 }
 
-func (config *config) UnmarshalProcessingPipeline() ([]Scene.ProcessingPipelineStep, error) {
-	var Pipeline []Scene.ProcessingPipelineStep
+func (config *config) UnmarshalProcessingPipeline() ([]ProcessingPipeline.Step, error) {
+	var Pipeline []ProcessingPipeline.Step
 
 	for _, stepConfig := range config.ProcessingPipelineConfig {
 		frameBuffer, err := FrameBufferFactory.Get(stepConfig.FrameBuffer)
@@ -110,7 +110,7 @@ func (config *config) UnmarshalProcessingPipeline() ([]Scene.ProcessingPipelineS
 
 		Pipeline = append(
 			Pipeline,
-			Scene.ProcessingPipelineStep{
+			ProcessingPipeline.Step{
 				Scene:          scene,
 				FrameBuffer:    frameBuffer,
 				EnforcedShader: stepConfig.EnforcedShader.IShaderProgram,

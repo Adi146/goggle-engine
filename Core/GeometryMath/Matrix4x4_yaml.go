@@ -37,7 +37,7 @@ func (m1 *Matrix4x4) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-func getMatrixConfig(yamlKey string)(iMatrixConfig, error) {
+func getMatrixConfig(yamlKey string) (iMatrixConfig, error) {
 	switch yamlKey {
 	case yaml_key_orthogonal:
 		return new(orthogonalConfig), nil
@@ -92,7 +92,7 @@ func (config *perspectiveConfig) decode() *Matrix4x4 {
 
 type rotationConfig struct {
 	Vector Vector3 `yaml:"axis"`
-	Angle  float32  `yaml:"angle"`
+	Angle  float32 `yaml:"angle"`
 }
 
 func (config *rotationConfig) decode() *Matrix4x4 {

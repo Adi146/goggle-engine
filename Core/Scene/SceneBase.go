@@ -2,6 +2,7 @@ package Scene
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"sort"
 
 	"github.com/Adi146/goggle-engine/Core/Window"
@@ -38,39 +39,47 @@ func (scene *SceneBase) SetMouseInput(input Window.IMouseInput) {
 	scene.mouseInput = input
 }
 
-func (scene *SceneBase) Draw(step *ProcessingPipelineStep) error {
-	var err Error.ErrorCollection
+func (scene *SceneBase) Tick(timeDelta float32) {
+	scene.PreRenderObjects = []IDrawable{}
+	scene.OpaqueObjects = []IDrawable{}
+	scene.TransparentObjects = []IDrawable{}
+}
 
-	err.Push(scene.drawPreRenderObjects(step))
-	err.Push(scene.drawOpaqueObjects(step))
-	err.Push(scene.drawTransparentObjects(step))
+func (scene *SceneBase) Draw(shader Shader.IShaderProgram) error {
+	if shader != nil {
+		shader.Bind()
+		defer shader.Unbind()
+	}
+
+	var err Error.ErrorCollection
+	err.Push(scene.drawPreRenderObjects(shader))
+	err.Push(scene.drawOpaqueObjects(shader))
+	err.Push(scene.drawTransparentObjects(shader))
 
 	return err.Err()
 }
 
-func (scene *SceneBase) drawPreRenderObjects(step *ProcessingPipelineStep) error {
+func (scene *SceneBase) drawPreRenderObjects(shader Shader.IShaderProgram) error {
 	var err Error.ErrorCollection
 
 	for _, drawable := range scene.PreRenderObjects {
-		err.Push(drawable.Draw(step))
+		err.Push(drawable.Draw(shader))
 	}
-	scene.PreRenderObjects = []IDrawable{}
 
 	return err.Err()
 }
 
-func (scene *SceneBase) drawOpaqueObjects(step *ProcessingPipelineStep) error {
+func (scene *SceneBase) drawOpaqueObjects(shader Shader.IShaderProgram) error {
 	var err Error.ErrorCollection
 
 	for _, drawable := range scene.OpaqueObjects {
-		err.Push(drawable.Draw(step))
+		err.Push(drawable.Draw(shader))
 	}
-	scene.OpaqueObjects = []IDrawable{}
 
 	return err.Err()
 }
 
-func (scene *SceneBase) drawTransparentObjects(step *ProcessingPipelineStep) error {
+func (scene *SceneBase) drawTransparentObjects(shader Shader.IShaderProgram) error {
 	var err Error.ErrorCollection
 
 	transparentDrawables := make([]transparentObject, len(scene.TransparentObjects))
@@ -82,10 +91,8 @@ func (scene *SceneBase) drawTransparentObjects(step *ProcessingPipelineStep) err
 	}
 	sort.Sort(byDistance(transparentDrawables))
 	for _, drawable := range transparentDrawables {
-		err.Push(drawable.Draw(step))
+		err.Push(drawable.Draw(shader))
 	}
-
-	scene.TransparentObjects = []IDrawable{}
 
 	return err.Err()
 }

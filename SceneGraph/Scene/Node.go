@@ -90,13 +90,3 @@ func (node *Node) Tick(timeDelta float32) error {
 
 	return err.Err()
 }
-
-func (node *Node) Draw() error {
-	var err Error.ErrorCollection
-
-	for _, child := range node.GetChildren() {
-		err.Push(child.Draw())
-	}
-
-	return err.Err()
-}

@@ -2,6 +2,7 @@ package Node
 
 import (
 	"github.com/Adi146/goggle-engine/Core/AssetImporter"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Skybox"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
@@ -41,7 +42,7 @@ func (config *SkyboxNodeConfig) Create() (Scene.INode, error) {
 		return nil, result.Errors.Err()
 	}
 
-	skyBox, err := Skybox.NewSkybox(cubeMap, config.Shader.IShaderProgram)
+	skyBox, err := Skybox.NewSkybox(cubeMap)
 	if err != nil {
 		return nil, err
 	}
@@ -58,10 +59,23 @@ type SkyboxNode struct {
 	Config *SkyboxNodeConfig
 }
 
-func (node *SkyboxNode) Draw() error {
+func (node *SkyboxNode) Tick(timeDelta float32) error {
+	err := node.INode.Tick(timeDelta)
+
 	if scene := node.GetScene(); scene != nil {
-		scene.OpaqueObjects = append(scene.OpaqueObjects, node.Skybox)
+		scene.OpaqueObjects = append(scene.OpaqueObjects, node)
 	}
 
-	return nil
+	return err
+}
+
+func (node *SkyboxNode) Draw(shader Shader.IShaderProgram) error {
+	if shader == nil {
+		node.Config.Shader.Bind()
+		defer node.Config.Shader.Unbind()
+
+		shader = node.Config.Shader
+	}
+
+	return node.Skybox.Draw(shader)
 }

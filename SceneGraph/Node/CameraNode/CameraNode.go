@@ -76,10 +76,6 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 
 	node.ICamera.SetViewMatrix(*GeometryMath.LookAt(position, position.Add(front), up))
 
-	return nil
-}
-
-func (node *CameraNode) Draw() error {
 	if scene := node.GetScene(); scene != nil {
 		scene.CameraPosition = node.GetGlobalPosition()
 	}

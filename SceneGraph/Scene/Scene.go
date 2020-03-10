@@ -2,14 +2,13 @@ package Scene
 
 import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Log"
 )
 
 type Scene struct {
 	coreScene.SceneBase
 	Root INode
-
-	CurrentStep *coreScene.ProcessingPipelineStep
 }
 
 func (scene *Scene) Init() error {
@@ -17,17 +16,16 @@ func (scene *Scene) Init() error {
 }
 
 func (scene *Scene) Tick(timeDelta float32) {
+	scene.SceneBase.Tick(timeDelta)
+
 	if scene.Root != nil {
 		Log.Error(scene.Root.Tick(timeDelta), "tick error")
 	}
 }
 
-func (scene *Scene) Draw(step *coreScene.ProcessingPipelineStep) {
-	scene.CurrentStep = step
-
+func (scene *Scene) Draw(shader Shader.IShaderProgram) {
 	if scene.Root != nil {
-		Log.Error(scene.Root.Draw(), "render error")
-		Log.Error(scene.SceneBase.Draw(step), "render error")
+		Log.Error(scene.SceneBase.Draw(shader), "render error")
 	}
 }
 

@@ -52,10 +52,16 @@ func (scene *Scene) Init() error {
 }
 
 func (scene *Scene) Tick(timeDelta float32) {
+	scene.SceneBase.Tick(timeDelta)
+	scene.OpaqueObjects = append(scene.OpaqueObjects, scene.quad)
 }
 
-func (scene *Scene) Draw(step *sceneCore.ProcessingPipelineStep) {
-	scene.Shader.Bind()
-	scene.Shader.BindObject(scene.Kernel)
-	scene.quad.Draw()
+func (scene *Scene) Draw(shader Shader.IShaderProgram) {
+	if shader == nil {
+		shader = scene.Shader
+	}
+
+	shader.BindObject(scene.Kernel)
+
+	scene.SceneBase.Draw(shader)
 }

@@ -12,7 +12,7 @@ import (
 )
 
 type ShaderProgramCore struct {
-	programId       uint32
+	ID              uint32
 	vertexShaders   []*Shader
 	fragmentShaders []*Shader
 }
@@ -46,28 +46,28 @@ func NewShaderProgramFromFiles(vertexShaderFiles []string, fragmentShaderFiles [
 
 func NewShaderProgram(vertexShaders []*Shader, fragmentShaders []*Shader) (*ShaderProgramCore, error) {
 	program := ShaderProgramCore{
-		programId:       gl.CreateProgram(),
+		ID:              gl.CreateProgram(),
 		vertexShaders:   vertexShaders,
 		fragmentShaders: fragmentShaders,
 	}
 
 	for _, vertexShader := range vertexShaders {
-		gl.AttachShader(program.programId, vertexShader.shaderId)
+		gl.AttachShader(program.ID, vertexShader.shaderId)
 	}
 	for _, fragmentShader := range fragmentShaders {
-		gl.AttachShader(program.programId, fragmentShader.shaderId)
+		gl.AttachShader(program.ID, fragmentShader.shaderId)
 	}
 
-	gl.LinkProgram(program.programId)
+	gl.LinkProgram(program.ID)
 
 	var status int32
-	gl.GetProgramiv(program.programId, gl.LINK_STATUS, &status)
+	gl.GetProgramiv(program.ID, gl.LINK_STATUS, &status)
 	if status == gl.FALSE {
 		var logLength int32
-		gl.GetProgramiv(program.programId, gl.INFO_LOG_LENGTH, &logLength)
+		gl.GetProgramiv(program.ID, gl.INFO_LOG_LENGTH, &logLength)
 
 		log := strings.Repeat("\x00", int(logLength+1))
-		gl.GetProgramInfoLog(program.programId, logLength, nil, gl.Str(log))
+		gl.GetProgramInfoLog(program.ID, logLength, nil, gl.Str(log))
 
 		return nil, fmt.Errorf("failed to link program: %v", log)
 	}
@@ -77,17 +77,17 @@ func NewShaderProgram(vertexShaders []*Shader, fragmentShaders []*Shader) (*Shad
 
 func (program *ShaderProgramCore) Destroy() {
 	for _, vertexShader := range program.vertexShaders {
-		gl.DetachShader(program.programId, vertexShader.shaderId)
+		gl.DetachShader(program.ID, vertexShader.shaderId)
 		vertexShader.Destroy()
 	}
 	for _, fragmentShader := range program.fragmentShaders {
-		gl.DetachShader(program.programId, fragmentShader.shaderId)
+		gl.DetachShader(program.ID, fragmentShader.shaderId)
 		fragmentShader.Destroy()
 	}
 }
 
 func (program *ShaderProgramCore) Bind() {
-	gl.UseProgram(program.programId)
+	gl.UseProgram(program.ID)
 }
 
 func (program *ShaderProgramCore) Unbind() {
@@ -101,13 +101,8 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 		if err != nil {
 			return err
 		}
-		gl.UniformBlockBinding(program.programId, index, v.GetBinding())
+		gl.UniformBlockBinding(program.ID, index, v.GetBinding())
 	default:
-		var currentProgram int32
-		if gl.GetIntegerv(gl.CURRENT_PROGRAM, &currentProgram); uint32(currentProgram) != program.programId {
-			return fmt.Errorf("shader is not bound")
-		}
-
 		location, err := program.getUniformLocation(uniformAddress)
 		if err != nil {
 			return err
@@ -115,19 +110,19 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 
 		switch v := i.(type) {
 		case *GeometryMath.Matrix4x4:
-			gl.UniformMatrix4fv(location, 1, false, &v[0][0])
+			gl.ProgramUniformMatrix4fv(program.ID, location, 1, false, &v[0][0])
 		case *GeometryMath.Vector3:
-			gl.Uniform3fv(location, 1, &v[0])
+			gl.ProgramUniform3fv(program.ID, location, 1, &v[0])
 		case *GeometryMath.Vector4:
-			gl.Uniform4fv(location, 1, &v[0])
+			gl.ProgramUniform4fv(program.ID, location, 1, &v[0])
 		case float32:
-			gl.Uniform1f(location, v)
+			gl.ProgramUniform1f(program.ID, location, v)
 		case []float32:
-			gl.Uniform1fv(location, int32(len(v)), &v[0])
+			gl.ProgramUniform1fv(program.ID, location, int32(len(v)), &v[0])
 		case int32:
-			gl.Uniform1i(location, v)
+			gl.ProgramUniform1i(program.ID, location, v)
 		case uint32:
-			gl.Uniform1i(location, int32(v))
+			gl.ProgramUniform1i(program.ID, location, int32(v))
 		case Texture.ITexture:
 			if err := v.Bind(); err != nil {
 				return err
@@ -143,7 +138,7 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 }
 
 func (program *ShaderProgramCore) getUniformLocation(uniformAddress string) (int32, error) {
-	location := gl.GetUniformLocation(program.programId, gl.Str(uniformAddress+"\x00"))
+	location := gl.GetUniformLocation(program.ID, gl.Str(uniformAddress+"\x00"))
 	if location == -1 {
 		return location, fmt.Errorf("uniform address %s not found", uniformAddress)
 	}
@@ -152,7 +147,7 @@ func (program *ShaderProgramCore) getUniformLocation(uniformAddress string) (int
 }
 
 func (program *ShaderProgramCore) getUniformBlockIndex(uniformAddress string) (uint32, error) {
-	index := gl.GetUniformBlockIndex(program.programId, gl.Str(uniformAddress+"\x00"))
+	index := gl.GetUniformBlockIndex(program.ID, gl.Str(uniformAddress+"\x00"))
 	if index == gl.INVALID_INDEX {
 		return index, fmt.Errorf("uniform block %s not found", uniformAddress)
 	}

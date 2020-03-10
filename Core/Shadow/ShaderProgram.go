@@ -20,7 +20,6 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	case *ShadowMapShader.ShadowMapBuffer:
 		return program.BindObject(v.ShadowMap)
 	case Texture.ITexture:
-		program.Bind()
 		return program.BindUniform(v, ua_shadowMap)
 	default:
 		return fmt.Errorf("shadow shader does not support type %T", v)

@@ -38,10 +38,8 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string)
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *FrameBuffer.OffScreenBuffer:
-		program.Bind()
 		return program.BindUniform(&v.ColorTexture, ua_screenTexture)
 	case *ShadowMapShader.ShadowMapBuffer:
-		program.Bind()
 		return program.BindUniform(&v.ShadowMap, ua_screenTexture)
 	case *Kernel:
 		return program.bindKernel(v)

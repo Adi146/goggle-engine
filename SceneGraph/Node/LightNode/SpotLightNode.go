@@ -3,24 +3,21 @@ package LightNode
 import (
 	"github.com/Adi146/goggle-engine/Core/Light/SpotLight"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
 const SpotLightNodeFactoryName = "Node.LightNode.SpotLightNode"
-const SpotLightUBOFactoryName = "spotLight"
 
 func init() {
 	NodeFactory.AddType(SpotLightNodeFactoryName, reflect.TypeOf((*SpotLightNodeConfig)(nil)).Elem())
-	UniformBufferFactory.AddType(SpotLightUBOFactoryName, reflect.TypeOf((*SpotLight.UniformBuffer)(nil)).Elem())
 }
 
 type SpotLightNodeConfig struct {
 	Scene.NodeConfig
 	SpotLight.SpotLight `yaml:"spotLight"`
-	UboConfig           UniformBufferFactory.Config `yaml:"uniformBuffer"`
+	UBOElement          SpotLight.UniformBufferElement `yaml:"uniformBuffer"`
 }
 
 func (config *SpotLightNodeConfig) Create() (Scene.INode, error) {
@@ -29,17 +26,11 @@ func (config *SpotLightNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
-	lightUbo := config.UboConfig.IUniformBuffer.(SpotLight.IUniformBuffer)
-	light, err := lightUbo.GetNewElement()
-	if err != nil {
-		return nil, err
-	}
-
-	light.Set(config.SpotLight)
+	config.UBOElement.Set(config.SpotLight)
 
 	node := &SpotLightNode{
 		INode:      nodeBase,
-		ISpotLight: light,
+		ISpotLight: &config.UBOElement,
 		Config:     config,
 	}
 

@@ -11,6 +11,8 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Shadow"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
+	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 )
 
 const (
@@ -21,6 +23,10 @@ const (
 	ua_pointLight       = "pointLight"
 	ua_spotLight        = "spotLight"
 )
+
+func init() {
+	ShaderFactory.AddType("phong", NewIShaderProgram)
+}
 
 type ShaderProgram struct {
 	*Shader.ShaderProgramCore
@@ -64,14 +70,19 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.BindUniform(v.ModelMatrix, ua_modelMatrix)
 	case *ShadowMapShader.ShadowMapBuffer:
 		return program.ShadowShader.BindObject(v)
-	case *DirectionalLight.UniformBuffer:
-		return program.BindUniform(v, ua_directionalLight)
-	case *PointLight.UniformBuffer:
-		return program.BindUniform(v, ua_pointLight)
-	case *SpotLight.UniformBuffer:
-		return program.BindUniform(v, ua_spotLight)
-	case *Camera.UniformBuffer:
-		return program.BindUniform(v, ua_camera)
+	case UniformBuffer.IUniformBuffer:
+		switch t := v.GetType(); t {
+		case DirectionalLight.UBO_type:
+			return program.BindUniform(v, ua_directionalLight)
+		case PointLight.UBO_type:
+			return program.BindUniform(v, ua_pointLight)
+		case SpotLight.UBO_type:
+			return program.BindUniform(v, ua_spotLight)
+		case Camera.UBO_type:
+			return program.BindUniform(v, ua_camera)
+		default:
+			return fmt.Errorf("phong shader does not support uniform buffers of type %s", t)
+		}
 	default:
 		return fmt.Errorf("phong shader does not support type %T", v)
 	}

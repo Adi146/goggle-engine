@@ -6,19 +6,18 @@ import (
 )
 
 const (
-	element_size = 112
-
+	element_size   = 112
 	element_offset = 16
 
-	position_offset  = 0
-	direction_offset = 16
-	innerCone_offset = 28
-	outerCone_offset = 32
-	ambient_offset   = 48
-	diffuse_offset   = 64
-	specular_offset  = 80
-	linear_offset    = 92
-	quadratic_offset = 96
+	offset_position  = 0
+	offset_direction = 16
+	offset_innerCone = 28
+	offset_outerCone = 32
+	offset_ambient   = 48
+	offset_diffuse   = 64
+	offset_specular  = 80
+	offset_linear    = 92
+	offset_quadratic = 96
 )
 
 type UniformBufferElement struct {
@@ -35,47 +34,47 @@ func (elem *UniformBufferElement) Set(light SpotLight) {
 
 func (elem *UniformBufferElement) SetPosition(pos GeometryMath.Vector3) {
 	elem.SpotLight.SetPosition(pos)
-	elem.ubo.UpdateData(&pos[0], elem.getOffset()+position_offset, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&pos[0], elem.getOffset()+offset_position, ubo.Std140_size_vec3)
 }
 
 func (elem *UniformBufferElement) SetDirection(val GeometryMath.Vector3) {
 	elem.SpotLight.SetDirection(val)
-	elem.ubo.UpdateData(&val[0], elem.getOffset()+direction_offset, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&val[0], elem.getOffset()+offset_direction, ubo.Std140_size_vec3)
 }
 
 func (elem *UniformBufferElement) SetInnerCone(val float32) {
 	elem.SpotLight.SetInnerCone(val)
-	elem.ubo.UpdateData(&val, elem.getOffset()+innerCone_offset, ubo.Std140_size_single)
+	elem.ubo.UpdateData(&val, elem.getOffset()+offset_innerCone, ubo.Std140_size_single)
 }
 
 func (elem *UniformBufferElement) SetOuterCone(val float32) {
 	elem.SpotLight.SetOuterCone(val)
-	elem.ubo.UpdateData(&val, elem.getOffset()+outerCone_offset, ubo.Std140_size_single)
+	elem.ubo.UpdateData(&val, elem.getOffset()+offset_outerCone, ubo.Std140_size_single)
 }
 
 func (elem *UniformBufferElement) SetAmbient(color GeometryMath.Vector3) {
 	elem.SpotLight.SetAmbient(color)
-	elem.ubo.UpdateData(&color[0], elem.getOffset()+ambient_offset, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&color[0], elem.getOffset()+offset_ambient, ubo.Std140_size_vec3)
 }
 
 func (elem *UniformBufferElement) SetDiffuse(color GeometryMath.Vector3) {
 	elem.SpotLight.SetDiffuse(color)
-	elem.ubo.UpdateData(&color[0], elem.getOffset()+diffuse_offset, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&color[0], elem.getOffset()+offset_diffuse, ubo.Std140_size_vec3)
 }
 
 func (elem *UniformBufferElement) SetSpecular(color GeometryMath.Vector3) {
 	elem.SpotLight.SetSpecular(color)
-	elem.ubo.UpdateData(&color[0], elem.getOffset()+specular_offset, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&color[0], elem.getOffset()+offset_specular, ubo.Std140_size_vec3)
 }
 
 func (elem *UniformBufferElement) SetLinear(val float32) {
 	elem.SpotLight.SetLinear(val)
-	elem.ubo.UpdateData(&val, elem.getOffset()+linear_offset, ubo.Std140_size_single)
+	elem.ubo.UpdateData(&val, elem.getOffset()+offset_linear, ubo.Std140_size_single)
 }
 
 func (elem *UniformBufferElement) SetQuadratic(val float32) {
 	elem.SpotLight.SetQuadratic(val)
-	elem.ubo.UpdateData(&val, elem.getOffset()+quadratic_offset, ubo.Std140_size_single)
+	elem.ubo.UpdateData(&val, elem.getOffset()+offset_quadratic, ubo.Std140_size_single)
 }
 
 func (elem *UniformBufferElement) ForceUpdate() {
@@ -89,15 +88,15 @@ func (elem *UniformBufferElement) ForceUpdate() {
 	linear := elem.Linear
 	quadratic := elem.Quadratic
 
-	elem.ubo.UpdateData(&pos[0], elem.getOffset()+position_offset, ubo.Std140_size_vec3)
-	elem.ubo.UpdateData(&direction[0], elem.getOffset()+direction_offset, ubo.Std140_size_vec3)
-	elem.ubo.UpdateData(&innerCone, elem.getOffset()+innerCone_offset, ubo.Std140_size_single)
-	elem.ubo.UpdateData(&outerCone, elem.getOffset()+outerCone_offset, ubo.Std140_size_single)
-	elem.ubo.UpdateData(&ambient[0], elem.getOffset()+ambient_offset, ubo.Std140_size_vec3)
-	elem.ubo.UpdateData(&diffuse[0], elem.getOffset()+diffuse_offset, ubo.Std140_size_vec3)
-	elem.ubo.UpdateData(&specular[0], elem.getOffset()+specular_offset, ubo.Std140_size_vec3)
-	elem.ubo.UpdateData(&linear, elem.getOffset()+linear_offset, ubo.Std140_size_single)
-	elem.ubo.UpdateData(&quadratic, elem.getOffset()+quadratic_offset, ubo.Std140_size_single)
+	elem.ubo.UpdateData(&pos[0], elem.getOffset()+offset_position, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&direction[0], elem.getOffset()+offset_direction, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&innerCone, elem.getOffset()+offset_innerCone, ubo.Std140_size_single)
+	elem.ubo.UpdateData(&outerCone, elem.getOffset()+offset_outerCone, ubo.Std140_size_single)
+	elem.ubo.UpdateData(&ambient[0], elem.getOffset()+offset_ambient, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&diffuse[0], elem.getOffset()+offset_diffuse, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&specular[0], elem.getOffset()+offset_specular, ubo.Std140_size_vec3)
+	elem.ubo.UpdateData(&linear, elem.getOffset()+offset_linear, ubo.Std140_size_single)
+	elem.ubo.UpdateData(&quadratic, elem.getOffset()+offset_quadratic, ubo.Std140_size_single)
 }
 
 func (elem *UniformBufferElement) getOffset() int {

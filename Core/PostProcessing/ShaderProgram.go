@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
@@ -15,6 +16,10 @@ const (
 	ua_kernelOffset = "u_kernelOffset"
 	ua_kernel       = "u_kernel"
 )
+
+func init() {
+	ShaderFactory.AddType("postProcessing", NewIShaderProgram)
+}
 
 type ShaderProgram struct {
 	*Shader.ShaderProgramCore
@@ -44,7 +49,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	case *Kernel:
 		return program.bindKernel(v)
 	default:
-		return fmt.Errorf("post processing shader dows not support type %T", v)
+		return fmt.Errorf("post processing shader does not support type %T", v)
 	}
 }
 

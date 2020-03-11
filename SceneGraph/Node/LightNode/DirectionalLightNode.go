@@ -9,18 +9,15 @@ import (
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
 const DirectionalLightNodeFactoryName = "Node.LightNode.DirectionalLightNode"
-const DirectionalLightUBOFactoryName = "directionalLight"
 const ShadowMapShaderFactoryName = "shadowMapShader"
 const ShadowMapFramebufferName = "shadowMapBuffer"
 
 func init() {
 	NodeFactory.AddType(DirectionalLightNodeFactoryName, reflect.TypeOf((*DirectionalLightNodeConfig)(nil)).Elem())
-	UniformBufferFactory.AddType(DirectionalLightUBOFactoryName, reflect.TypeOf((*DirectionalLight.UniformBuffer)(nil)).Elem())
 	ShaderFactory.AddType(ShadowMapShaderFactoryName, ShadowMapShader.NewIShaderProgram)
 	FrameBufferFactory.AddType(ShadowMapFramebufferName, reflect.TypeOf((*ShadowMapShader.ShadowMapBuffer)(nil)).Elem())
 }
@@ -28,7 +25,7 @@ func init() {
 type DirectionalLightNodeConfig struct {
 	Scene.NodeConfig
 	DirectionalLight.DirectionalLight `yaml:"directionalLight"`
-	UboConfig                         UniformBufferFactory.Config `yaml:"uniformBuffer"`
+	UBO                               DirectionalLight.UniformBuffer `yaml:"uniformBuffer"`
 	ShadowMap                         struct {
 		ProjectionMatrix GeometryMath.Matrix4x4 `yaml:"projection"`
 	} `yaml:"shadowMap"`
@@ -42,7 +39,7 @@ func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
-	light := config.UboConfig.IUniformBuffer.(DirectionalLight.IDirectionalLight)
+	light := &config.UBO
 	config.DirectionalLight.ProjectionMatrix = config.ShadowMap.ProjectionMatrix
 	light.Set(config.DirectionalLight)
 

@@ -7,6 +7,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
+	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 )
 
 const (
@@ -47,11 +48,16 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.MaterialShader.BindObject(v)
 	case *Model.Model:
 		return program.BindUniform(v.ModelMatrix, ua_modelMatrix)
-	case *DirectionalLight.UniformBuffer:
-		return program.BindUniform(v, ua_directionalLight)
+	case UniformBuffer.IUniformBuffer:
+		switch t := v.GetType(); t {
+		case DirectionalLight.UBO_type:
+			return program.BindUniform(v, ua_directionalLight)
+		default:
+			return fmt.Errorf("shadow map shader does not support uniform buffers of type %s", t)
+		}
 	case *Texture.Texture:
 		return nil
 	default:
-		return fmt.Errorf("type %T not supported", v)
+		return fmt.Errorf("shadow map shader does not support type %T", v)
 	}
 }

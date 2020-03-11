@@ -8,25 +8,15 @@ import (
 const (
 	num_elements = 64
 
-	num_lights_offset = 0
+	offset_num_lights = 0
+
+	ubo_size          = ubo.Std140_size_single + num_elements*element_size
+	UBO_type ubo.Type = "pointLight"
 )
 
 type UniformBuffer struct {
-	ubo.UniformBufferBase `yaml:",inline"`
-	Elements              []*UniformBufferElement `yaml:"lights"`
-}
-
-func (buff *UniformBuffer) Init() error {
-	buff.Size = ubo.Std140_size_single + num_elements*element_size
-
-	err := buff.UniformBufferBase.Init()
-	if err != nil {
-		return err
-	}
-
-	buff.ForceUpdate()
-
-	return nil
+	ubo.UniformBufferBase
+	Elements []*UniformBufferElement
 }
 
 func (buff *UniformBuffer) ForceUpdate() {
@@ -36,25 +26,23 @@ func (buff *UniformBuffer) ForceUpdate() {
 	}
 }
 
-func (buff *UniformBuffer) GetNewElement() (*UniformBufferElement, error) {
+func (buff *UniformBuffer) AddElement(elem *UniformBufferElement) error {
 	nextIndex := len(buff.Elements)
 
 	if nextIndex+1 > num_elements {
-		return nil, fmt.Errorf("buffer exceeded")
+		return fmt.Errorf("buffer exceeded")
 	}
 
-	elem := &UniformBufferElement{
-		ubo:          buff,
-		ElementIndex: nextIndex,
-	}
+	elem.ubo = buff
+	elem.ElementIndex = nextIndex
 
 	buff.Elements = append(buff.Elements, elem)
 	buff.UpdateNumLights()
 
-	return elem, nil
+	return nil
 }
 
 func (buff *UniformBuffer) UpdateNumLights() {
 	num := int32(len(buff.Elements))
-	buff.UpdateData(&num, num_lights_offset, ubo.Std140_size_single)
+	buff.UpdateData(&num, offset_num_lights, ubo.Std140_size_single)
 }

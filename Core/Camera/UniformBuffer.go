@@ -6,19 +6,16 @@ import (
 )
 
 const (
-	projectionMatrix_offset = 0
-	viewMatrix_offset       = 64
+	offset_projectionMatrix = 0
+	offset_viewMatrix       = 64
+
+	ubo_size          = 2 * ubo.Std140_size_mat4
+	UBO_type ubo.Type = "camera"
 )
 
 type UniformBuffer struct {
 	Camera
-	ubo.UniformBufferBase `yaml:",inline"`
-}
-
-func (buff *UniformBuffer) Init() error {
-	buff.Size = 2 * ubo.Std140_size_mat4
-
-	return buff.UniformBufferBase.Init()
+	ubo.UniformBufferBase
 }
 
 func (buff *UniformBuffer) Set(camera Camera) {
@@ -28,15 +25,18 @@ func (buff *UniformBuffer) Set(camera Camera) {
 
 func (buff *UniformBuffer) SetProjectionMatrix(matrix GeometryMath.Matrix4x4) {
 	buff.Camera.SetProjectionMatrix(matrix)
-	buff.UpdateData(&matrix[0][0], projectionMatrix_offset, ubo.Std140_size_mat4)
+	buff.UpdateData(&matrix[0][0], offset_projectionMatrix, ubo.Std140_size_mat4)
 }
 
 func (buff *UniformBuffer) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
 	buff.Camera.SetViewMatrix(matrix)
-	buff.UpdateData(&matrix[0][0], viewMatrix_offset, ubo.Std140_size_mat4)
+	buff.UpdateData(&matrix[0][0], offset_viewMatrix, ubo.Std140_size_mat4)
 }
 
 func (buff *UniformBuffer) ForceUpdate() {
-	buff.UpdateData(&buff.ProjectionMatrix[0][0], projectionMatrix_offset, ubo.Std140_size_mat4)
-	buff.UpdateData(&buff.ViewMatrix[0][0], viewMatrix_offset, ubo.Std140_size_mat4)
+	projectionMatrix := buff.ProjectionMatrix
+	viewMatrix := buff.ViewMatrix
+
+	buff.UpdateData(&projectionMatrix[0][0], offset_projectionMatrix, ubo.Std140_size_mat4)
+	buff.UpdateData(&viewMatrix[0][0], offset_viewMatrix, ubo.Std140_size_mat4)
 }

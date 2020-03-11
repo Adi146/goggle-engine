@@ -4,14 +4,13 @@ import (
 	"github.com/Adi146/goggle-engine/Core/ProcessingPipeline"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/SceneFactory"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"io/ioutil"
 	"os"
 
 	"github.com/Adi146/goggle-engine/Core/Utils/Log"
 	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"gopkg.in/yaml.v3"
 )
 
@@ -35,12 +34,6 @@ func (config *config) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 	FrameBufferFactory.SetConfig(frameBufferFactory)
-
-	var uniformBufferFactory UniformBufferFactory.FactoryConfig
-	if err := value.Decode(&uniformBufferFactory); err != nil {
-		return err
-	}
-	UniformBufferFactory.SetConfig(uniformBufferFactory)
 
 	var shaderFactory ShaderFactory.FactoryConfig
 	if err := value.Decode(&shaderFactory); err != nil {

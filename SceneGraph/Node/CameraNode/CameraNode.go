@@ -6,24 +6,21 @@ import (
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/Core/Camera"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/UniformBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
 const CameraNodeFactoryName = "Node.Camera"
-const CameraUBOFactoryName = "camera"
 
 func init() {
 	NodeFactory.AddType(CameraNodeFactoryName, reflect.TypeOf((*CameraNodeConfig)(nil)).Elem())
-	UniformBufferFactory.AddType(CameraUBOFactoryName, reflect.TypeOf((*Camera.UniformBuffer)(nil)).Elem())
 }
 
 type CameraNodeConfig struct {
 	Scene.NodeConfig
-	FrontVector      GeometryMath.Vector3        `yaml:"front"`
-	UpVector         GeometryMath.Vector3        `yaml:"up"`
-	ProjectionMatrix GeometryMath.Matrix4x4      `yaml:"projection"`
-	UboConfig        UniformBufferFactory.Config `yaml:"uniformBuffer"`
+	FrontVector      GeometryMath.Vector3   `yaml:"front"`
+	UpVector         GeometryMath.Vector3   `yaml:"up"`
+	ProjectionMatrix GeometryMath.Matrix4x4 `yaml:"projection"`
+	UBO              Camera.UniformBuffer   `yaml:"uniformBuffer"`
 }
 
 func (config *CameraNodeConfig) Create() (Scene.INode, error) {
@@ -34,15 +31,11 @@ func (config *CameraNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
-	projectionMatrix := config.ProjectionMatrix
-
-	cameraBase := Camera.NewCamera(projectionMatrix)
-	camera := config.UboConfig.IUniformBuffer.(Camera.ICamera)
-	camera.Set(*cameraBase)
+	config.UBO.SetProjectionMatrix(config.ProjectionMatrix)
 
 	node := &CameraNode{
 		INode:   nodeBase,
-		ICamera: camera,
+		ICamera: &config.UBO,
 
 		Config: config,
 	}

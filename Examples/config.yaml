@@ -19,11 +19,6 @@ shaders:
       - ../Core/Shader/PhongShader/lights.frag
       - ../Core/Model/Material/material.frag
       - ../Core/Shadow/shadow.frag
-    uniformBuffers:
-      - camera
-      - directionalLight
-      - pointLight
-      - spotLight
     frameBuffers:
       - shadowMap
   postProcessing:
@@ -40,8 +35,6 @@ shaders:
       - ../Core/Skybox/skybox.vert
     fragmentShaders:
       - ../Core/Skybox/skybox.frag
-    uniformBuffers:
-      - camera
   shadowMap:
     type: shadowMapShader
     vertexShaders:
@@ -49,8 +42,6 @@ shaders:
     fragmentShaders:
       - ../Core/Shadow/ShadowMapShader/shadowMap.frag
       - ../Core/Model/Material/material.frag
-    uniformBuffers:
-      - directionalLight
 
 frameBuffers:
   default:
@@ -80,24 +71,6 @@ frameBuffers:
       depthTest: true
       culling: front
       blend: false
-
-uniformBuffers:
-  camera:
-    type: camera
-    config:
-      binding: 0
-  directionalLight:
-    type: directionalLight
-    config:
-      binding: 1
-  pointLight:
-    type: pointLight
-    config:
-      binding: 2
-  spotLight:
-    type: spotLight
-    config:
-      binding: 3
 
 scenes:
   postProcessing:
@@ -138,7 +111,11 @@ scenes:
                       aspect: 0.5625
                       near: 0.1
                       far: 10000
-                  uniformBuffer: camera
+                  uniformBuffer:
+                    binding: 0
+                    shaders:
+                      - phong
+                      - skybox
                 transformation:
                   - rotation:
                       angle: 180
@@ -155,7 +132,10 @@ scenes:
                     linear: 0.0014
                     quadratic: 0.000007
                     direction: [0, 0, 1]
-                  uniformBuffer: spotLight
+                  uniformBuffer:
+                    binding: 3
+                    shaders:
+                      - phong
           sun:
             type: SceneGraph.Rotor
             config:
@@ -169,7 +149,11 @@ scenes:
                     ambient: [0.32, 0.32, 0.32]
                     diffuse: [0.8, 0.8, 0.8]
                     specular: [0.8, 0.8, 0.8]
-                  uniformBuffer: directionalLight
+                  uniformBuffer:
+                    binding: 1
+                    shaders:
+                      - phong
+                      - shadowMap
                   shadowMap:
                     projection:
                       orthogonal:
@@ -222,7 +206,7 @@ scenes:
                     specular: [0.0, 0.0, 1.0]
                     linear: 0.0014
                     quadratic: 0.000007
-                  uniformBuffer: pointLight
+                  uniformBuffer: spotLight
                 transformation:
                   - translation: [0, 100, -300]
               redLight:
@@ -234,7 +218,11 @@ scenes:
                     specular: [1.0, 0.0, 0.0]
                     linear: 0.0014
                     quadratic: 0.000007
-                  uniformBuffer: pointLight
+                  uniformBuffer:
+                    id: spotLight
+                    binding: 2
+                    shaders:
+                      - phong
                 transformation:
                   - translation: [0, 100, 300]
           window1:

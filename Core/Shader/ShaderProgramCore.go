@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -96,7 +95,7 @@ func (program *ShaderProgramCore) Unbind() {
 
 func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress string) error {
 	switch v := i.(type) {
-	case UniformBuffer.IUniformBuffer:
+	case IUniformBlock:
 		index, err := program.getUniformBlockIndex(uniformAddress)
 		if err != nil {
 			return err

@@ -14,9 +14,9 @@ type SceneBase struct {
 	mouseInput    Window.IMouseInput
 
 	CameraPosition     *GeometryMath.Vector3
-	PreRenderObjects   []IDrawable
+	PreRenderObjects   []IPreRenderObject
 	OpaqueObjects      []IDrawable
-	TransparentObjects []IDrawable
+	TransparentObjects []ITransparentDrawable
 }
 
 func (scene *SceneBase) Init() error {
@@ -40,9 +40,9 @@ func (scene *SceneBase) SetMouseInput(input Window.IMouseInput) {
 }
 
 func (scene *SceneBase) Tick(timeDelta float32) {
-	scene.PreRenderObjects = []IDrawable{}
+	scene.PreRenderObjects = []IPreRenderObject{}
 	scene.OpaqueObjects = []IDrawable{}
-	scene.TransparentObjects = []IDrawable{}
+	scene.TransparentObjects = []ITransparentDrawable{}
 }
 
 func (scene *SceneBase) Draw(shader Shader.IShaderProgram) error {
@@ -62,6 +62,7 @@ func (scene *SceneBase) Draw(shader Shader.IShaderProgram) error {
 func (scene *SceneBase) drawPreRenderObjects(shader Shader.IShaderProgram) error {
 	var err Error.ErrorCollection
 
+	sort.Sort(byPriority(scene.PreRenderObjects))
 	for _, drawable := range scene.PreRenderObjects {
 		err.Push(drawable.Draw(shader))
 	}

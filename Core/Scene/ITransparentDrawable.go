@@ -1,5 +1,12 @@
 package Scene
 
+import "github.com/Adi146/goggle-engine/Core/GeometryMath"
+
+type ITransparentDrawable interface {
+	IDrawable
+	GetPosition() *GeometryMath.Vector3
+}
+
 type transparentObject struct {
 	IDrawable
 	CameraDistance float32

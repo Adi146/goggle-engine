@@ -72,7 +72,3 @@ func (skybox *Skybox) Draw(shader Shader.IShaderProgram) error {
 
 	return err
 }
-
-func (skybox *Skybox) GetPosition() *GeometryMath.Vector3 {
-	return &GeometryMath.Vector3{0, 0, 0}
-}

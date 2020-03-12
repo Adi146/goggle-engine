@@ -2,7 +2,6 @@ package Model
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Buffer"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
@@ -32,8 +31,4 @@ func (mesh *Mesh) Draw(shader Shader.IShaderProgram) error {
 	mesh.vertexBuffer.Unbind()
 
 	return nil
-}
-
-func (mesh *Mesh) GetPosition() *GeometryMath.Vector3 {
-	return &GeometryMath.Vector3{0, 0, 0}
 }

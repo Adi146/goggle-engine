@@ -29,10 +29,10 @@ func init() {
 
 type ModelNodeConfig struct {
 	Scene.NodeConfig
-	File          string               `yaml:"file"`
-	Textures      map[string][]string  `yaml:"textures"`
-	IsTransparent bool                 `yaml:"isTransparent"`
-	Shader        ShaderFactory.Config `yaml:"shader"`
+	File          string                               `yaml:"file"`
+	Textures      map[Texture.Type][]Texture.Texture2D `yaml:"textures"`
+	IsTransparent bool                                 `yaml:"isTransparent"`
+	Shader        ShaderFactory.Config                 `yaml:"shader"`
 }
 
 func (config *ModelNodeConfig) Create() (Scene.INode, error) {
@@ -53,13 +53,11 @@ func (config *ModelNodeConfig) Create() (Scene.INode, error) {
 	importErrors.Push(&result.Errors)
 	importWarnings.Push(&result.Warnings)
 	if result.Success() {
-		for textureType, textureFiles := range config.Textures {
-			for _, textureFile := range textureFiles {
-				texture, result := AssetImporter.ImportTexture(textureFile, textureTypeMap[textureType])
-				importErrors.Push(&result.Errors)
-				importWarnings.Push(&result.Warnings)
+		for textureType, textures := range config.Textures {
+			for _, texture := range textures {
+				texture.Type = textureType
 				for _, mesh := range model.Meshes {
-					mesh.Textures = append(mesh.Textures, texture)
+					mesh.Textures = append(mesh.Textures, &texture)
 				}
 			}
 		}

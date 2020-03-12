@@ -82,7 +82,7 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Ma
 		result.Warnings.Push(fmt.Errorf("could not load shininess"))
 	}
 
-	var modelTextures []*Texture.Texture
+	var modelTextures []Texture.ITexture
 	for textureType, _ := range textureTypeMap {
 		textures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, textureType, modelDir)
 		result.Errors.Push(&textureResult.Errors)
@@ -102,9 +102,9 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Ma
 	}, result
 }
 
-func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]*Texture.Texture, ImportResult) {
+func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]Texture.ITexture, ImportResult) {
 	var result ImportResult
-	var textures []*Texture.Texture
+	var textures []Texture.ITexture
 
 	numTextures := assimpMaterial.GetMaterialTextureCount(assimp.TextureType(textureType))
 	for i := 0; i < numTextures; i++ {
@@ -119,10 +119,9 @@ func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType
 			result.Warnings.Push(fmt.Errorf("embedded textures are not supported yet"))
 			continue
 		} else {
-			texture, textureResult := ImportTexture(path.Join(modelDir, textureFile), textureTypeMap[textureType])
-			result.Warnings.Push(&textureResult.Warnings)
-			result.Warnings.Push(&textureResult.Errors)
-			if !textureResult.Success() {
+			texture, err := Texture.ImportTexture(path.Join(modelDir, textureFile), textureTypeMap[textureType])
+			if err != nil {
+				result.Warnings.Push(err)
 				continue
 			}
 			textures = append(textures, texture)

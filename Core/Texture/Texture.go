@@ -17,6 +17,10 @@ func (texture *Texture) GetUnit() *Unit {
 	return texture.Unit
 }
 
+func (texture *Texture) GetType() Type {
+	return texture.Type
+}
+
 func (texture *Texture) Bind() error {
 	if texture.Unit == nil {
 		unit, err := unitManager.FindUnit(texture)

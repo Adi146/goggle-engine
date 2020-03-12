@@ -58,7 +58,7 @@ func BindDiffuse(program *ShaderProgram, material *Material) error {
 	err.Push(program.BindUniform(&material.DiffuseBaseColor, ua_color_diffuse))
 	var i int32
 	for _, texture := range material.Textures {
-		if texture.Type == Texture.DiffuseTexture {
+		if texture.GetType() == Texture.DiffuseTexture {
 			err.Push(program.BindUniform(texture, fmt.Sprintf(ua_textures_diffuse, i)))
 			i++
 		}
@@ -75,7 +75,7 @@ func BindSpecular(program *ShaderProgram, material *Material) error {
 	err.Push(program.BindUniform(&material.SpecularBaseColor, ua_color_specular))
 	var i int32
 	for _, texture := range material.Textures {
-		if texture.Type == Texture.SpecularTexture {
+		if texture.GetType() == Texture.SpecularTexture {
 			err.Push(program.BindUniform(texture, fmt.Sprintf(ua_textures_specular, i)))
 			i++
 		}
@@ -92,7 +92,7 @@ func BindEmissive(program *ShaderProgram, material *Material) error {
 	err.Push(program.BindUniform(&material.EmissiveBaseColor, ua_color_emissive))
 	var i int32
 	for _, texture := range material.Textures {
-		if texture.Type == Texture.EmissiveTexture {
+		if texture.GetType() == Texture.EmissiveTexture {
 			err.Push(program.BindUniform(texture, fmt.Sprintf(ua_textures_emissive, i)))
 			i++
 		}
@@ -108,7 +108,7 @@ func BindNormals(program *ShaderProgram, material *Material) error {
 
 	var i int32
 	for _, texture := range material.Textures {
-		if texture.Type == Texture.NormalsTexture {
+		if texture.GetType() == Texture.NormalsTexture {
 			err.Push(program.BindUniform(texture, fmt.Sprintf(ua_textures_normals, i)))
 			i++
 		}

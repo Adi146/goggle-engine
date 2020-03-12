@@ -12,7 +12,7 @@ type Material struct {
 
 	Shininess float32
 
-	Textures []*Texture.Texture
+	Textures []Texture.ITexture
 }
 
 func (material *Material) Bind() {

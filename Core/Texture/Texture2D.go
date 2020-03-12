@@ -15,7 +15,11 @@ const (
 	NormalsTexture  Type = "normals"
 )
 
-func NewTextureFromFile(img *image.RGBA, textureType Type) (*Texture, error) {
+type Texture2D struct {
+	Texture
+}
+
+func NewTextureFromRGBA(img *image.RGBA, textureType Type) (*Texture2D, error) {
 	texture := Texture{
 		Type:   textureType,
 		Target: gl.TEXTURE_2D,
@@ -34,5 +38,23 @@ func NewTextureFromFile(img *image.RGBA, textureType Type) (*Texture, error) {
 	gl.TexImage2D(texture.Target, 0, gl.RGBA8, int32(img.Bounds().Dx()), int32(img.Bounds().Dy()), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
 	texture.Unbind()
 
-	return &texture, nil
+	return &Texture2D{
+		Texture: texture,
+	}, nil
+}
+
+func ImportTexture(filename string, textureType Type) (*Texture2D, error) {
+
+	rgba, err := loadRGBA(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	rgba = flipRGBA(rgba)
+	texture, err := NewTextureFromRGBA(rgba, textureType)
+	if err != nil {
+		return nil, err
+	}
+
+	return texture, nil
 }

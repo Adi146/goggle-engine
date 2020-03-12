@@ -1,7 +1,6 @@
 package Node
 
 import (
-	"github.com/Adi146/goggle-engine/Core/AssetImporter"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Skybox"
 	"github.com/Adi146/goggle-engine/Core/Texture"
@@ -22,8 +21,8 @@ func init() {
 type SkyboxNodeConfig struct {
 	Scene.NodeConfig
 
-	Shader   ShaderFactory.Config              `yaml:"shader"`
-	Textures AssetImporter.CubeMapImportHelper `yaml:"textures"`
+	Shader  ShaderFactory.Config `yaml:"shader"`
+	CubeMap Texture.CubeMap      `yaml:"textures"`
 }
 
 func (config *SkyboxNodeConfig) Create() (Scene.INode, error) {
@@ -37,12 +36,9 @@ func (config *SkyboxNodeConfig) Create() (Scene.INode, error) {
 		Config: config,
 	}
 
-	cubeMap, result := AssetImporter.ImportCubeMap(config.Textures, Texture.SkyboxTexture)
-	if result.Errors.Len() > 0 {
-		return nil, result.Errors.Err()
-	}
+	config.CubeMap.Type = Texture.SkyboxTexture
 
-	skyBox, err := Skybox.NewSkybox(cubeMap)
+	skyBox, err := Skybox.NewSkybox(&config.CubeMap)
 	if err != nil {
 		return nil, err
 	}

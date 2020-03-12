@@ -10,7 +10,11 @@ const (
 	SkyboxTexture Type = "skybox"
 )
 
-func NewCubeMapFromFile(images []*image.RGBA, textureType Type) (*Texture, error) {
+type CubeMap struct {
+	Texture
+}
+
+func NewCubeMapFromRGBAs(images []*image.RGBA, textureType Type) (*CubeMap, error) {
 	texture := Texture{
 		Target: gl.TEXTURE_CUBE_MAP,
 	}
@@ -31,5 +35,26 @@ func NewCubeMapFromFile(images []*image.RGBA, textureType Type) (*Texture, error
 	}
 	texture.Unbind()
 
-	return &texture, nil
+	return &CubeMap{
+		Texture: texture,
+	}, nil
+}
+
+func ImportCubeMap(files []string, textureType Type) (*CubeMap, error) {
+	rgbas := make([]*image.RGBA, len(files))
+
+	for i, filename := range files {
+		rgba, err := loadRGBA(filename)
+		if err != nil {
+			return nil, err
+		}
+		rgbas[i] = rgba
+	}
+
+	cubeMap, err := NewCubeMapFromRGBAs(rgbas, textureType)
+	if err != nil {
+		return nil, err
+	}
+
+	return cubeMap, nil
 }

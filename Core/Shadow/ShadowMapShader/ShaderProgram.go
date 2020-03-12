@@ -55,7 +55,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		default:
 			return fmt.Errorf("shadow map shader does not support uniform buffers of type %s", t)
 		}
-	case *Texture.Texture:
+	case Texture.ITexture:
 		return nil
 	default:
 		return fmt.Errorf("shadow map shader does not support type %T", v)

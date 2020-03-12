@@ -44,10 +44,10 @@ var (
 
 type Skybox struct {
 	*Model.Mesh
-	*Texture.Texture
+	*Texture.CubeMap
 }
 
-func NewSkybox(texture *Texture.Texture) (*Skybox, error) {
+func NewSkybox(texture *Texture.CubeMap) (*Skybox, error) {
 	mesh, err := Model.NewMesh(vertieces, Buffer.RegisterVertexBufferAttributes, indices)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func NewSkybox(texture *Texture.Texture) (*Skybox, error) {
 
 	return &Skybox{
 		Mesh:    mesh,
-		Texture: texture,
+		CubeMap: texture,
 	}, nil
 }
 
@@ -64,9 +64,9 @@ func (skybox *Skybox) Draw(shader Shader.IShaderProgram) error {
 	gl.GetIntegerv(gl.DEPTH_FUNC, &oldDepthFunc)
 	gl.DepthFunc(gl.LEQUAL)
 
-	err := shader.BindObject(skybox.Texture)
+	err := shader.BindObject(skybox.CubeMap)
 	skybox.Mesh.Draw(shader)
-	skybox.Texture.Unbind()
+	skybox.CubeMap.Unbind()
 
 	gl.DepthFunc(uint32(oldDepthFunc))
 

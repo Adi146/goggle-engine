@@ -1,4 +1,4 @@
-package AssetImporter
+package Model
 
 import (
 	"fmt"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/Adi146/assimp"
 	"github.com/Adi146/goggle-engine/Core/Buffer"
-	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 )
 
@@ -20,7 +19,7 @@ var textureTypeMap = map[assimp.TextureMapping]Texture.Type{
 	assimp.TextureMapping_Normals:  Texture.NormalsTexture,
 }
 
-func ImportModel(filename string) (*Model.Model, ImportResult) {
+func ImportModel(filename string) (*Model, ImportResult) {
 	var result ImportResult
 
 	assimpScene := assimp.ImportFile(filename, 0)
@@ -36,7 +35,7 @@ func ImportModel(filename string) (*Model.Model, ImportResult) {
 	)
 
 	materials := make([]*Material.Material, assimpScene.NumMaterials())
-	meshes := make([]Model.MeshesWithMaterial, assimpScene.NumMeshes())
+	meshes := make([]MeshesWithMaterial, assimpScene.NumMeshes())
 
 	for i, assimpMaterial := range assimpScene.Materials() {
 		material, materialResult := importAssimpMaterial(assimpMaterial, path.Dir(filename))
@@ -56,7 +55,7 @@ func ImportModel(filename string) (*Model.Model, ImportResult) {
 		meshes[i].Material = materials[assimpMesh.MaterialIndex()]
 	}
 
-	return &Model.Model{
+	return &Model{
 		Meshes:      meshes,
 		ModelMatrix: GeometryMath.Identity(),
 	}, result
@@ -131,7 +130,7 @@ func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType
 	return textures, result
 }
 
-func importAssimpMesh(assimpMesh *assimp.Mesh) (*Model.Mesh, ImportResult) {
+func importAssimpMesh(assimpMesh *assimp.Mesh) (*Mesh, ImportResult) {
 	var result ImportResult
 
 	assimpVertices := assimpMesh.Vertices()
@@ -153,7 +152,7 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Model.Mesh, ImportResult) {
 		indices = append(indices, assimpFace.CopyIndices()...)
 	}
 
-	mesh, err := Model.NewMesh(vertices, Buffer.RegisterVertexBufferAttributes, indices)
+	mesh, err := NewMesh(vertices, Buffer.RegisterVertexBufferAttributes, indices)
 	result.Errors.Push(err)
 
 	return mesh, result

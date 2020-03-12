@@ -1,4 +1,4 @@
-package AssetImporter
+package Model
 
 import (
 	"github.com/Adi146/goggle-engine/Utils/Error"

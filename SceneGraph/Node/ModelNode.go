@@ -6,12 +6,9 @@ import (
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"reflect"
 
-	"github.com/Adi146/goggle-engine/Core/AssetImporter"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
-	"github.com/Adi146/goggle-engine/Utils/Error"
-	"github.com/Adi146/goggle-engine/Utils/Log"
 )
 
 const ModelNodeFactoryName = "Node.ModelNode"
@@ -29,10 +26,9 @@ func init() {
 
 type ModelNodeConfig struct {
 	Scene.NodeConfig
-	File          string                               `yaml:"file"`
-	Textures      map[Texture.Type][]Texture.Texture2D `yaml:"textures"`
-	IsTransparent bool                                 `yaml:"isTransparent"`
-	Shader        ShaderFactory.Config                 `yaml:"shader"`
+	Model         Model.Model          `yaml:",inline"`
+	IsTransparent bool                 `yaml:"isTransparent"`
+	Shader        ShaderFactory.Config `yaml:"shader"`
 }
 
 func (config *ModelNodeConfig) Create() (Scene.INode, error) {
@@ -43,30 +39,11 @@ func (config *ModelNodeConfig) Create() (Scene.INode, error) {
 
 	node := &ModelNode{
 		INode:  nodeBase,
+		Model:  &config.Model,
 		Config: config,
 	}
 
-	var importErrors Error.ErrorCollection
-	var importWarnings Error.ErrorCollection
-
-	model, result := AssetImporter.ImportModel(config.File)
-	importErrors.Push(&result.Errors)
-	importWarnings.Push(&result.Warnings)
-	if result.Success() {
-		for textureType, textures := range config.Textures {
-			for _, texture := range textures {
-				texture.Type = textureType
-				for _, mesh := range model.Meshes {
-					mesh.Textures = append(mesh.Textures, &texture)
-				}
-			}
-		}
-
-		Log.Warn(&importWarnings, "import warnings")
-		node.Model = model
-	}
-
-	return node, importErrors.Err()
+	return node, nil
 }
 
 type ModelNode struct {

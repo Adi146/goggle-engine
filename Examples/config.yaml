@@ -2,8 +2,6 @@ openGlLogging: true
 
 processingPipeline:
   - frameBuffer: default
-    scene: postProcessing
-  - frameBuffer: offScreen
     scene: main
 
 shaders:
@@ -23,7 +21,7 @@ shaders:
     vertexShaders:
       - ../Core/PostProcessing/postProcessing.vert
     fragmentShaders:
-      - ../Core/PostProcessing/none.frag
+      - ../Core/PostProcessing/kernel.frag
     frameBuffers:
       - offScreen
   skybox:
@@ -70,27 +68,28 @@ frameBuffers:
       blend: false
 
 scenes:
-  postProcessing:
-    type: postProcessing
-    config:
-      kernel: [
-        1, 2, 1,
-        2, 4, 2,
-        1, 2, 2
-      ]
-      kernelOffset:
-        numerator: 1
-        denominator: 300
-      kernelMultiplier:
-        numerator: 1
-        denominator: 16
-      shaderName: postProcessing
   main:
     type: sceneGraph
     config:
       root:
         type: Scene.Node
         children:
+          postProcessing:
+            type: Node.PostProcessing
+            config:
+              kernel: [
+                1, 2, 1,
+                2, 4, 2,
+                1, 2, 2
+              ]
+              kernelOffset:
+                numerator: 1
+                denominator: 300
+              kernelMultiplier:
+                numerator: 1
+                denominator: 16
+              shader: postProcessing
+              frameBuffer: offScreen
           cameraControl:
             type: UI.Control.WASDControl
             config:

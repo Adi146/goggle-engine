@@ -61,9 +61,9 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 
 	if scene := node.GetScene(); scene != nil {
 		if node.Config.IsTransparent {
-			scene.TransparentObjects = append(scene.TransparentObjects, node)
+			scene.AddTransparentObject(node)
 		} else {
-			scene.OpaqueObjects = append(scene.OpaqueObjects, node)
+			scene.AddOpaqueObject(node)
 		}
 	}
 

@@ -14,9 +14,11 @@ import (
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
-const DirectionalLightNodeFactoryName = "Node.LightNode.DirectionalLightNode"
-const ShadowMapShaderFactoryName = "shadowMapShader"
-const ShadowMapFramebufferName = "shadowMapBuffer"
+const (
+	DirectionalLightNodeFactoryName = "Node.LightNode.DirectionalLightNode"
+	ShadowMapShaderFactoryName      = "shadowMapShader"
+	ShadowMapFramebufferName        = "shadowMapBuffer"
+)
 
 func init() {
 	NodeFactory.AddType(DirectionalLightNodeFactoryName, reflect.TypeOf((*DirectionalLightNodeConfig)(nil)).Elem())
@@ -77,7 +79,7 @@ func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 	node.SetViewMatrix(*GeometryMath.LookAt(newDirection.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0}))
 
 	if scene := node.GetScene(); scene != nil {
-		scene.PreRenderObjects = append(scene.PreRenderObjects, node)
+		scene.AddPreRenderObject(node)
 	}
 
 	return err
@@ -97,8 +99,4 @@ func (node *DirectionalLightNode) Draw(shader Shader.IShaderProgram, invoker cor
 	}
 
 	return scene.Draw(node.Config.ShadowMap.Shader, node, scene)
-}
-
-func (node *DirectionalLightNode) GetPriority() int {
-	return 0
 }

@@ -14,4 +14,9 @@ type IScene interface {
 	SetKeyboardInput(input Window.IKeyboardInput)
 	GetMouseInput() Window.IMouseInput
 	SetMouseInput(input Window.IMouseInput)
+
+	Clear()
+	AddPreRenderObject(obj IDrawable)
+	AddOpaqueObject(obj IDrawable)
+	AddTransparentObject(obj ITransparentDrawable)
 }

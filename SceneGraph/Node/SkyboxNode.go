@@ -60,7 +60,7 @@ func (node *SkyboxNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
 	if scene := node.GetScene(); scene != nil {
-		scene.OpaqueObjects = append(scene.OpaqueObjects, node)
+		scene.AddOpaqueObject(node)
 	}
 
 	return err

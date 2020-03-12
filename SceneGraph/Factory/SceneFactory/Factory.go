@@ -8,8 +8,7 @@ import (
 
 var (
 	typeFactory = map[string]reflect.Type{
-		"sceneGraph":     reflect.TypeOf((*SceneGraphProduct)(nil)).Elem(),
-		"postProcessing": reflect.TypeOf((*PostProcessingProduct)(nil)).Elem(),
+		"sceneGraph": reflect.TypeOf((*SceneGraphProduct)(nil)).Elem(),
 	}
 	globalConfig FactoryConfig
 )

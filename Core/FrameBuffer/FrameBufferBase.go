@@ -33,16 +33,16 @@ func (buff *FrameBufferBase) Clear() {
 }
 
 func (buff *FrameBufferBase) Bind() {
-	buff.rebind()
-
 	buff.previousBuffer = boundFBO
-	boundFBO = buff
+	buff.rebind()
 }
 
 func (buff *FrameBufferBase) rebind() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.GetFBO())
 	width, height := buff.GetSize()
 	gl.Viewport(0, 0, width, height)
+
+	boundFBO = buff
 
 	if buff.DepthTest {
 		gl.Enable(gl.DEPTH_TEST)

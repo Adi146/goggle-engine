@@ -15,9 +15,9 @@ type SceneBase struct {
 	mouseInput    Window.IMouseInput
 
 	CameraPosition     *GeometryMath.Vector3
-	PreRenderObjects   []IPreRenderObject
-	OpaqueObjects      []IDrawable
-	TransparentObjects []ITransparentDrawable
+	preRenderObjects   []IDrawable
+	opaqueObjects      []IDrawable
+	transparentObjects []ITransparentDrawable
 }
 
 func (scene *SceneBase) Init() error {
@@ -41,9 +41,25 @@ func (scene *SceneBase) SetMouseInput(input Window.IMouseInput) {
 }
 
 func (scene *SceneBase) Tick(timeDelta float32) {
-	scene.PreRenderObjects = []IPreRenderObject{}
-	scene.OpaqueObjects = []IDrawable{}
-	scene.TransparentObjects = []ITransparentDrawable{}
+	scene.Clear()
+}
+
+func (scene *SceneBase) AddPreRenderObject(obj IDrawable) {
+	scene.preRenderObjects = append(scene.preRenderObjects, obj)
+}
+
+func (scene *SceneBase) AddOpaqueObject(obj IDrawable) {
+	scene.opaqueObjects = append(scene.opaqueObjects, obj)
+}
+
+func (scene *SceneBase) AddTransparentObject(obj ITransparentDrawable) {
+	scene.transparentObjects = append(scene.transparentObjects, obj)
+}
+
+func (scene *SceneBase) Clear() {
+	scene.preRenderObjects = []IDrawable{}
+	scene.opaqueObjects = []IDrawable{}
+	scene.transparentObjects = []ITransparentDrawable{}
 }
 
 func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
@@ -73,9 +89,8 @@ func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, or
 func (scene *SceneBase) drawPreRenderObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
 	var err Error.ErrorCollection
 
-	sort.Sort(byPriority(scene.PreRenderObjects))
-	for _, drawable := range scene.PreRenderObjects {
-		err.Push(drawable.Draw(shader, invoker, origin))
+	for i := 0; i < len(scene.preRenderObjects); i++ {
+		err.Push(scene.preRenderObjects[i].Draw(shader, invoker, origin))
 	}
 
 	return err.Err()
@@ -84,8 +99,8 @@ func (scene *SceneBase) drawPreRenderObjects(shader Shader.IShaderProgram, invok
 func (scene *SceneBase) drawOpaqueObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
 	var err Error.ErrorCollection
 
-	for _, drawable := range scene.OpaqueObjects {
-		err.Push(drawable.Draw(shader, invoker, origin))
+	for i := 0; i < len(scene.opaqueObjects); i++ {
+		err.Push(scene.opaqueObjects[i].Draw(shader, invoker, origin))
 	}
 
 	return err.Err()
@@ -94,8 +109,8 @@ func (scene *SceneBase) drawOpaqueObjects(shader Shader.IShaderProgram, invoker 
 func (scene *SceneBase) drawTransparentObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
 	var err Error.ErrorCollection
 
-	transparentDrawables := make([]transparentObject, len(scene.TransparentObjects))
-	for i, drawable := range scene.TransparentObjects {
+	transparentDrawables := make([]transparentObject, len(scene.transparentObjects))
+	for i, drawable := range scene.transparentObjects {
 		transparentDrawables[i] = transparentObject{
 			IDrawable:      drawable,
 			CameraDistance: scene.CameraPosition.Sub(drawable.GetPosition()).Length(),

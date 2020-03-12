@@ -12,7 +12,6 @@ import (
 	_ "github.com/Adi146/goggle-engine/SceneGraph/Node/LightNode"
 	_ "github.com/Adi146/goggle-engine/UI/Control"
 
-	_ "github.com/Adi146/goggle-engine/Core/PostProcessing"
 	_ "github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
 
 	_ "github.com/ftrvxmtrx/tga"

@@ -1,6 +1,7 @@
 package Node
 
 import (
+	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
@@ -69,7 +70,7 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 	return err
 }
 
-func (node *ModelNode) Draw(shader Shader.IShaderProgram) error {
+func (node *ModelNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
 	if shader == nil {
 		node.Config.Shader.Bind()
 		defer node.Config.Shader.Unbind()
@@ -77,5 +78,5 @@ func (node *ModelNode) Draw(shader Shader.IShaderProgram) error {
 		shader = node.Config.Shader
 	}
 
-	return node.Model.Draw(shader)
+	return node.Model.Draw(shader, nil, nil)
 }

@@ -2,7 +2,6 @@ package Scene
 
 import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
-	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Log"
 )
 
@@ -20,12 +19,6 @@ func (scene *Scene) Tick(timeDelta float32) {
 
 	if scene.Root != nil {
 		Log.Error(scene.Root.Tick(timeDelta), "tick error")
-	}
-}
-
-func (scene *Scene) Draw(shader Shader.IShaderProgram) {
-	if scene.Root != nil {
-		Log.Error(scene.SceneBase.Draw(shader), "render error")
 	}
 }
 

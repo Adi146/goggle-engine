@@ -2,6 +2,8 @@ package LightNode
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
@@ -27,7 +29,9 @@ type DirectionalLightNodeConfig struct {
 	DirectionalLight.DirectionalLight `yaml:"directionalLight"`
 	UBO                               DirectionalLight.UniformBuffer `yaml:"uniformBuffer"`
 	ShadowMap                         struct {
-		ProjectionMatrix GeometryMath.Matrix4x4 `yaml:"projection"`
+		ProjectionMatrix GeometryMath.Matrix4x4    `yaml:"projection"`
+		Shader           ShaderFactory.Config      `yaml:"shader"`
+		FrameBuffer      FrameBufferFactory.Config `yaml:"frameBuffer"`
 	} `yaml:"shadowMap"`
 }
 
@@ -72,5 +76,29 @@ func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 	node.SetDirection(newDirection)
 	node.SetViewMatrix(*GeometryMath.LookAt(newDirection.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0}))
 
+	if scene := node.GetScene(); scene != nil {
+		scene.PreRenderObjects = append(scene.PreRenderObjects, node)
+	}
+
 	return err
+}
+
+func (node *DirectionalLightNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
+	if invoker == node {
+		return nil
+	}
+
+	node.Config.ShadowMap.FrameBuffer.Bind()
+	defer node.Config.ShadowMap.FrameBuffer.Unbind()
+	node.Config.ShadowMap.FrameBuffer.Clear()
+
+	if shader != nil {
+		defer shader.Bind()
+	}
+
+	return scene.Draw(node.Config.ShadowMap.Shader, node, scene)
+}
+
+func (node *DirectionalLightNode) GetPriority() int {
+	return 0
 }

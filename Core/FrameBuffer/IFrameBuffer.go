@@ -7,6 +7,7 @@ type IFrameBuffer interface {
 	Destroy()
 
 	Bind()
+	Unbind()
 
 	GetSize() (int32, int32)
 	GetFBO() uint32

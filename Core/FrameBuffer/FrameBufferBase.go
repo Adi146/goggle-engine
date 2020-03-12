@@ -4,6 +4,8 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
+var boundFBO *FrameBufferBase
+
 type FrameBufferBase struct {
 	FBO uint32
 
@@ -13,6 +15,8 @@ type FrameBufferBase struct {
 	DepthTest bool         `yaml:"depthTest"`
 	Culling   CullFunction `yaml:"culling"`
 	Blend     bool         `yaml:"blend"`
+
+	previousBuffer *FrameBufferBase
 }
 
 func (buff *FrameBufferBase) GetFBO() uint32 {
@@ -29,6 +33,13 @@ func (buff *FrameBufferBase) Clear() {
 }
 
 func (buff *FrameBufferBase) Bind() {
+	buff.rebind()
+
+	buff.previousBuffer = boundFBO
+	boundFBO = buff
+}
+
+func (buff *FrameBufferBase) rebind() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, buff.GetFBO())
 	width, height := buff.GetSize()
 	gl.Viewport(0, 0, width, height)
@@ -51,5 +62,11 @@ func (buff *FrameBufferBase) Bind() {
 		gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	} else {
 		gl.Disable(gl.BLEND)
+	}
+}
+
+func (buff *FrameBufferBase) Unbind() {
+	if boundFBO == buff && buff.previousBuffer != nil {
+		buff.previousBuffer.rebind()
 	}
 }

@@ -1,6 +1,7 @@
 package Node
 
 import (
+	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Skybox"
 	"github.com/Adi146/goggle-engine/Core/Texture"
@@ -65,7 +66,7 @@ func (node *SkyboxNode) Tick(timeDelta float32) error {
 	return err
 }
 
-func (node *SkyboxNode) Draw(shader Shader.IShaderProgram) error {
+func (node *SkyboxNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
 	if shader == nil {
 		node.Config.Shader.Bind()
 		defer node.Config.Shader.Unbind()
@@ -73,5 +74,5 @@ func (node *SkyboxNode) Draw(shader Shader.IShaderProgram) error {
 		shader = node.Config.Shader
 	}
 
-	return node.Skybox.Draw(shader)
+	return node.Skybox.Draw(shader, nil, nil)
 }

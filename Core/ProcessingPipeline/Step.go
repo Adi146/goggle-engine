@@ -15,5 +15,6 @@ type Step struct {
 func (step *Step) Execute() {
 	step.FrameBuffer.Bind()
 	step.FrameBuffer.Clear()
-	step.Scene.Draw(step.EnforcedShader)
+	step.Scene.Draw(step.EnforcedShader, nil, nil)
+	step.FrameBuffer.Unbind()
 }

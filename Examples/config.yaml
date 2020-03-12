@@ -5,9 +5,6 @@ processingPipeline:
     scene: postProcessing
   - frameBuffer: offScreen
     scene: main
-  - frameBuffer: shadowMap
-    scene: main
-    enforcedShader: shadowMap
 
 shaders:
   phong:
@@ -163,6 +160,8 @@ scenes:
                         top: 3000
                         near: -3000
                         far: 3000
+                    shader: shadowMap
+                    frameBuffer: shadowMap
           arena:
             type: Node.ModelNode
             config:

@@ -5,5 +5,5 @@ import (
 )
 
 type IDrawable interface {
-	Draw(shader Shader.IShaderProgram) error
+	Draw(shader Shader.IShaderProgram, invoker IDrawable, scene IScene) error
 }

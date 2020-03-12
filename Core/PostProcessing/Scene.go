@@ -56,12 +56,12 @@ func (scene *Scene) Tick(timeDelta float32) {
 	scene.OpaqueObjects = append(scene.OpaqueObjects, scene.quad)
 }
 
-func (scene *Scene) Draw(shader Shader.IShaderProgram) {
+func (scene *Scene) Draw(shader Shader.IShaderProgram, invoker sceneCore.IDrawable, origin sceneCore.IScene) error {
 	if shader == nil {
 		shader = scene.Shader
 	}
 
 	shader.BindObject(scene.Kernel)
 
-	scene.SceneBase.Draw(shader)
+	return scene.SceneBase.Draw(shader, invoker, origin)
 }

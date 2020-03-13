@@ -4,7 +4,6 @@ import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Skybox"
-	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
@@ -22,8 +21,8 @@ func init() {
 type SkyboxNodeConfig struct {
 	Scene.NodeConfig
 
-	Shader  ShaderFactory.Config `yaml:"shader"`
-	CubeMap Texture.CubeMap      `yaml:"textures"`
+	Shader ShaderFactory.Config `yaml:"shader"`
+	Skybox Skybox.Skybox        `yaml:"textures"`
 }
 
 func (config *SkyboxNodeConfig) Create() (Scene.INode, error) {
@@ -34,17 +33,9 @@ func (config *SkyboxNodeConfig) Create() (Scene.INode, error) {
 
 	node := &SkyboxNode{
 		INode:  nodeBase,
+		Skybox: &config.Skybox,
 		Config: config,
 	}
-
-	config.CubeMap.Type = Texture.SkyboxTexture
-
-	skyBox, err := Skybox.NewSkybox(&config.CubeMap)
-	if err != nil {
-		return nil, err
-	}
-
-	node.Skybox = skyBox
 
 	return node, nil
 }

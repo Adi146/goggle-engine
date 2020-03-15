@@ -5,8 +5,8 @@ import (
 )
 
 type Camera struct {
-	ProjectionMatrix GeometryMath.Matrix4x4
-	ViewMatrix       GeometryMath.Matrix4x4
+	ProjectionMatrix GeometryMath.Matrix4x4 `yaml:"projection"`
+	ViewMatrix       GeometryMath.Matrix4x4 `yaml:"view"`
 }
 
 func NewCamera(projectionMatrix GeometryMath.Matrix4x4) *Camera {
@@ -22,14 +22,6 @@ func NewCameraPerspective(fov float32, width float32, height float32) *Camera {
 
 func NewCameraOrthogonal() *Camera {
 	return NewCamera(*GeometryMath.Orthogonal(-2, 2, -2, 2, -10, 100))
-}
-
-func (camera *Camera) Get() Camera {
-	return *camera
-}
-
-func (camera *Camera) Set(val Camera) {
-	*camera = val
 }
 
 func (camera *Camera) GetViewMatrix() GeometryMath.Matrix4x4 {

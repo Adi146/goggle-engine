@@ -5,9 +5,6 @@ import (
 )
 
 type ICamera interface {
-	Get() Camera
-	Set(camera Camera)
-
 	GetViewMatrix() GeometryMath.Matrix4x4
 	SetViewMatrix(matrix GeometryMath.Matrix4x4)
 

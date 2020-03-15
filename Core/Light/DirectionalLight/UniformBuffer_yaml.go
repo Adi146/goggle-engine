@@ -6,19 +6,15 @@ import (
 )
 
 func (buff *UniformBuffer) UnmarshalYAML(value *yaml.Node) error {
-	tmpConfig := ubo.YamlConfig{
+	ubo := ubo.UniformBufferBase{
 		Size: ubo_size,
 		Type: UBO_type,
 	}
-	if err := value.Decode(&tmpConfig); err != nil {
+
+	if err := value.Decode(&ubo); err != nil {
 		return err
 	}
 
-	tmpBuff, err := tmpConfig.Create()
-	if err != nil {
-		return err
-	}
-
-	buff.UniformBufferBase = tmpBuff
+	buff.UniformBufferBase = ubo
 	return nil
 }

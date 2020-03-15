@@ -5,7 +5,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type YamlConfig struct {
+type yamlConfig struct {
 	Binding uint32 `yaml:"binding"`
 	Size    int    `yaml:"size"`
 	Type    Type   `yaml:"type"`
@@ -14,7 +14,12 @@ type YamlConfig struct {
 }
 
 func (buff *UniformBufferBase) UnmarshalYAML(value *yaml.Node) error {
-	var tmpConfig YamlConfig
+	tmpConfig := yamlConfig{
+		Binding: buff.Binding,
+		Size:    buff.Size,
+		Type:    buff.Type,
+	}
+
 	if err := value.Decode(&tmpConfig); err != nil {
 		return err
 	}
@@ -28,7 +33,7 @@ func (buff *UniformBufferBase) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-func (yaml *YamlConfig) Create() (UniformBufferBase, error) {
+func (yaml *yamlConfig) Create() (UniformBufferBase, error) {
 	buff := NewUniformBufferBase(yaml.Size, yaml.Binding, yaml.Type)
 
 	for _, shader := range yaml.Shaders {

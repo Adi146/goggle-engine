@@ -15,23 +15,24 @@ const (
 
 type UBOSection struct {
 	Camera
-	UniformBuffer.UniformBufferBase
+	*UniformBuffer.UniformBufferBase
+	Offset int
 }
 
 func (section *UBOSection) SetProjectionMatrix(matrix GeometryMath.Matrix4x4) {
 	section.Camera.SetProjectionMatrix(matrix)
-	section.UpdateData(&matrix[0][0], offset_projectionMatrix, UniformBuffer.Std140_size_mat4)
+	section.UpdateData(&matrix[0][0], section.Offset+offset_projectionMatrix, UniformBuffer.Std140_size_mat4)
 }
 
 func (section *UBOSection) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
 	section.Camera.SetViewMatrix(matrix)
-	section.UpdateData(&matrix[0][0], offset_viewMatrix, UniformBuffer.Std140_size_mat4)
+	section.UpdateData(&matrix[0][0], section.Offset+offset_viewMatrix, UniformBuffer.Std140_size_mat4)
 }
 
 func (section *UBOSection) ForceUpdate() {
 	projectionMatrix := section.ProjectionMatrix
 	viewMatrix := section.ViewMatrix
 
-	section.UpdateData(&projectionMatrix[0][0], offset_projectionMatrix, UniformBuffer.Std140_size_mat4)
-	section.UpdateData(&viewMatrix[0][0], offset_viewMatrix, UniformBuffer.Std140_size_mat4)
+	section.UpdateData(&projectionMatrix[0][0], section.Offset+offset_projectionMatrix, UniformBuffer.Std140_size_mat4)
+	section.UpdateData(&viewMatrix[0][0], section.Offset+offset_viewMatrix, UniformBuffer.Std140_size_mat4)
 }

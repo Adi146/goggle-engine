@@ -7,8 +7,8 @@ import (
 )
 
 type UBOSection_yaml struct {
-	Camera        Camera                          `yaml:",inline"`
-	UniformBuffer UniformBuffer.UniformBufferBase `yaml:"uniformBuffer"`
+	Camera        Camera                           `yaml:",inline"`
+	UniformBuffer *UniformBuffer.UniformBufferBase `yaml:"uniformBuffer"`
 }
 
 func (section *UBOSection) UnmarshalYAML(value *yaml.Node) error {
@@ -29,21 +29,14 @@ func (section *UBOSection) UnmarshalYAML(value *yaml.Node) error {
 }
 
 func (config *UBOSection_yaml) setDefaults() {
-	if config.UniformBuffer.Size == 0 {
-		config.UniformBuffer.Size = ubo_size
-	}
-
-	if config.UniformBuffer.Type == "" {
-		config.UniformBuffer.Type = UBO_type
-	}
-
-	for _, row := range config.Camera.ViewMatrix {
-		for _, cell := range row {
-			if cell != 0 {
-				return
-			}
+	if config.UniformBuffer == nil {
+		config.UniformBuffer = &UniformBuffer.UniformBufferBase{
+			Size: ubo_size,
+			Type: UBO_type,
 		}
 	}
 
-	config.Camera.ViewMatrix = *GeometryMath.Identity()
+	if config.Camera.ViewMatrix != (GeometryMath.Matrix4x4{}) {
+		config.Camera.ViewMatrix = *GeometryMath.Identity()
+	}
 }

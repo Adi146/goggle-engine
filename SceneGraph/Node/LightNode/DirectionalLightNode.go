@@ -28,12 +28,11 @@ func init() {
 
 type DirectionalLightNodeConfig struct {
 	Scene.NodeConfig
+	UBOSection                        DirectionalLight.UBOSection `yaml:",inline"`
 	DirectionalLight.DirectionalLight `yaml:"directionalLight"`
-	UBO                               DirectionalLight.UniformBuffer `yaml:"uniformBuffer"`
 	ShadowMap                         struct {
-		ProjectionMatrix GeometryMath.Matrix4x4    `yaml:"projection"`
-		Shader           ShaderFactory.Config      `yaml:"shader"`
-		FrameBuffer      FrameBufferFactory.Config `yaml:"frameBuffer"`
+		Shader      ShaderFactory.Config      `yaml:"shader"`
+		FrameBuffer FrameBufferFactory.Config `yaml:"frameBuffer"`
 	} `yaml:"shadowMap"`
 }
 
@@ -45,13 +44,9 @@ func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
 		return nil, err
 	}
 
-	light := &config.UBO
-	config.DirectionalLight.ProjectionMatrix = config.ShadowMap.ProjectionMatrix
-	light.Set(config.DirectionalLight)
-
 	node := &DirectionalLightNode{
 		INode:             nodeBase,
-		IDirectionalLight: light,
+		IDirectionalLight: &config.UBOSection,
 		Config:            config,
 	}
 

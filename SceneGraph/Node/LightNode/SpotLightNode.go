@@ -17,7 +17,7 @@ func init() {
 type SpotLightNodeConfig struct {
 	Scene.NodeConfig
 	SpotLight.SpotLight `yaml:"spotLight"`
-	UBOElement          SpotLight.UniformBufferElement `yaml:"uniformBuffer"`
+	UBOElement          SpotLight.UBOSpotLight `yaml:",inline"`
 }
 
 func (config *SpotLightNodeConfig) Create() (Scene.INode, error) {
@@ -25,8 +25,6 @@ func (config *SpotLightNodeConfig) Create() (Scene.INode, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	config.UBOElement.Set(config.SpotLight)
 
 	node := &SpotLightNode{
 		INode:      nodeBase,

@@ -9,9 +9,6 @@ type ISpotLight interface {
 	Light.IPositionalLight
 	Light.IDirectionalLight
 
-	Get() SpotLight
-	Set(light SpotLight)
-
 	GetInnerCone() float32
 	SetInnerCone(val float32)
 

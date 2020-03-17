@@ -1,4 +1,4 @@
-package DirectionalLight
+package SpotLight
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
@@ -6,12 +6,12 @@ import (
 )
 
 func (section *UBOSection) UnmarshalYAML(value *yaml.Node) error {
-	if err := value.Decode(&section.DirectionalLight); err != nil {
+	if err := value.Decode(&section.SpotLight); err != nil {
 		return err
 	}
 
 	if section.Direction == (GeometryMath.Vector3{}) {
-		section.Direction = GeometryMath.Vector3{-1, -1, -1}
+		section.Direction = GeometryMath.Vector3{0, 0, 1}
 	}
 
 	section.ForceUpdate()

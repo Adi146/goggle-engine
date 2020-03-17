@@ -9,16 +9,8 @@ type SpotLight struct {
 	Light.PositionalLightBase  `yaml:",inline"`
 	Light.DirectionalLightBase `yaml:",inline"`
 
-	InnerCone float32 `yaml:"innerCone,flow"`
-	OuterCone float32 `yaml:"outerCone,flow"`
-}
-
-func (light *SpotLight) Get() SpotLight {
-	return *light
-}
-
-func (light *SpotLight) Set(val SpotLight) {
-	*light = val
+	InnerCone float32 `yaml:"innerCone"`
+	OuterCone float32 `yaml:"outerCone"`
 }
 
 func (light *SpotLight) GetInnerCone() float32 {

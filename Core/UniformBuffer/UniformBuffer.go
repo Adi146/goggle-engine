@@ -12,15 +12,15 @@ const (
 
 type Type string
 
-type UniformBufferBase struct {
+type UniformBuffer struct {
 	ubo     uint32
 	Size    int    `yaml:"size"`
 	Binding uint32 `yaml:"binding"`
 	Type    Type
 }
 
-func NewUniformBufferBase(size int, binding uint32, uboType Type) UniformBufferBase {
-	buff := UniformBufferBase{
+func NewUniformBufferBase(size int, binding uint32, uboType Type) UniformBuffer {
+	buff := UniformBuffer{
 		Size:    size,
 		Binding: binding,
 		Type:    uboType,
@@ -36,27 +36,27 @@ func NewUniformBufferBase(size int, binding uint32, uboType Type) UniformBufferB
 	return buff
 }
 
-func (buff *UniformBufferBase) GetUBO() uint32 {
+func (buff *UniformBuffer) GetUBO() uint32 {
 	return buff.ubo
 }
 
-func (buff *UniformBufferBase) GetType() Type {
+func (buff *UniformBuffer) GetType() Type {
 	return buff.Type
 }
 
-func (buff *UniformBufferBase) Bind() {
+func (buff *UniformBuffer) Bind() {
 	gl.BindBuffer(gl.UNIFORM_BUFFER, buff.ubo)
 }
 
-func (buff *UniformBufferBase) Unbind() {
+func (buff *UniformBuffer) Unbind() {
 	gl.BindBuffer(gl.UNIFORM_BUFFER, 0)
 }
 
-func (buff *UniformBufferBase) UpdateData(data interface{}, offset int, size int) {
+func (buff *UniformBuffer) UpdateData(data interface{}, offset int, size int) {
 	ubo := buff.ubo
 	gl.NamedBufferSubData(ubo, offset, size, gl.Ptr(data))
 }
 
-func (buff *UniformBufferBase) GetBinding() uint32 {
+func (buff *UniformBuffer) GetBinding() uint32 {
 	return buff.Binding
 }

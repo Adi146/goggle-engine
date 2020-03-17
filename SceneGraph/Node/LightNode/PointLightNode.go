@@ -17,7 +17,7 @@ func init() {
 type PointLightNodeConfig struct {
 	Scene.NodeConfig
 	PointLight.PointLight `yaml:"pointLight"`
-	UBOElement            PointLight.UniformBufferElement `yaml:"uniformBuffer"`
+	UBOElement            PointLight.UBOPointLight `yaml:",inline"`
 }
 
 func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
@@ -25,8 +25,6 @@ func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	config.UBOElement.Set(config.PointLight)
 
 	node := &PointLightNode{
 		INode:       nodeBase,

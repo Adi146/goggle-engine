@@ -19,7 +19,7 @@ type CameraNodeConfig struct {
 	Scene.NodeConfig
 	FrontVector GeometryMath.Vector3 `yaml:"front"`
 	UpVector    GeometryMath.Vector3 `yaml:"up"`
-	UBOSection  Camera.UBOSection    `yaml:",inline"`
+	UBOSection  Camera.UBOCamera     `yaml:",inline"`
 }
 
 func (config *CameraNodeConfig) Create() (Scene.INode, error) {

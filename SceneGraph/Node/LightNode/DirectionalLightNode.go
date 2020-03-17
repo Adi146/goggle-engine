@@ -1,6 +1,7 @@
 package LightNode
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -28,7 +29,7 @@ func init() {
 
 type DirectionalLightNodeConfig struct {
 	Scene.NodeConfig
-	UBOSection                        DirectionalLight.UBOSection `yaml:",inline"`
+	UBOSection                        DirectionalLight.UBODirectionalLight `yaml:",inline"`
 	DirectionalLight.DirectionalLight `yaml:"directionalLight"`
 	ShadowMap                         struct {
 		Shader      ShaderFactory.Config      `yaml:"shader"`
@@ -47,6 +48,7 @@ func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
 	node := &DirectionalLightNode{
 		INode:             nodeBase,
 		IDirectionalLight: &config.UBOSection,
+		ShadowMapping:     &config.UBOSection.CameraSection,
 		Config:            config,
 	}
 
@@ -62,7 +64,8 @@ func (config *DirectionalLightNodeConfig) SetDefaults() {
 type DirectionalLightNode struct {
 	Scene.INode
 	DirectionalLight.IDirectionalLight
-	Config *DirectionalLightNodeConfig
+	ShadowMapping Camera.ICamera
+	Config        *DirectionalLightNodeConfig
 }
 
 func (node *DirectionalLightNode) Tick(timeDelta float32) error {
@@ -71,7 +74,7 @@ func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 	newDirection := *node.GetGlobalTransformation().MulVector(&node.Config.Direction).Normalize()
 
 	node.SetDirection(newDirection)
-	node.SetViewMatrix(*GeometryMath.LookAt(newDirection.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0}))
+	node.ShadowMapping.SetViewMatrix(*GeometryMath.LookAt(newDirection.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0}))
 
 	if scene := node.GetScene(); scene != nil {
 		scene.AddPreRenderObject(node)

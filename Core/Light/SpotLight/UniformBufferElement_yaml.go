@@ -30,7 +30,7 @@ func (elem *UniformBufferElement) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	if configAvailable && (!existing || ubo.Size == 0) {
-		uboBase := uboCore.UniformBufferBase{
+		uboBase := uboCore.UniformBuffer{
 			Size: ubo_size,
 			Type: UBO_type,
 		}
@@ -39,7 +39,7 @@ func (elem *UniformBufferElement) UnmarshalYAML(value *yaml.Node) error {
 			return err
 		}
 
-		ubo.UniformBufferBase = uboBase
+		ubo.UniformBuffer = uboBase
 		ubo.ForceUpdate()
 	}
 

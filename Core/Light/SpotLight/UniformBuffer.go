@@ -15,7 +15,7 @@ const (
 )
 
 type UniformBuffer struct {
-	ubo.UniformBufferBase
+	ubo.UniformBuffer
 	Elements []*UniformBufferElement
 }
 

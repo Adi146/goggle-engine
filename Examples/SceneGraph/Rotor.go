@@ -2,7 +2,6 @@ package SceneGraph
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"gopkg.in/yaml.v3"
 	"reflect"
 
@@ -12,7 +11,7 @@ import (
 const RotorFactoryName = "SceneGraph.Rotor"
 
 func init() {
-	NodeFactory.AddType(RotorFactoryName, reflect.TypeOf((*Rotor)(nil)).Elem())
+	Scene.NodeFactory.AddType(RotorFactoryName, reflect.TypeOf((*Rotor)(nil)).Elem())
 }
 
 type Rotor struct {

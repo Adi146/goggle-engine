@@ -20,10 +20,6 @@ type SceneBase struct {
 	transparentObjects []ITransparentDrawable
 }
 
-func (scene *SceneBase) Init() error {
-	return nil
-}
-
 func (scene *SceneBase) GetKeyboardInput() Window.IKeyboardInput {
 	return scene.keyboardInput
 }

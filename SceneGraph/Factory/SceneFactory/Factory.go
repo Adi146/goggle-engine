@@ -3,12 +3,13 @@ package SceneFactory
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Scene"
+	sceneGraph "github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"reflect"
 )
 
 var (
 	typeFactory = map[string]reflect.Type{
-		"sceneGraph": reflect.TypeOf((*SceneGraphProduct)(nil)).Elem(),
+		"sceneGraph": reflect.TypeOf((*sceneGraph.Scene)(nil)).Elem(),
 	}
 	globalConfig FactoryConfig
 )

@@ -3,7 +3,6 @@ package Node
 import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"gopkg.in/yaml.v3"
 	"reflect"
@@ -15,7 +14,7 @@ import (
 const ModelNodeFactoryName = "Node.ModelNode"
 
 func init() {
-	NodeFactory.AddType(ModelNodeFactoryName, reflect.TypeOf((*ModelNode)(nil)).Elem())
+	Scene.NodeFactory.AddType(ModelNodeFactoryName, reflect.TypeOf((*ModelNode)(nil)).Elem())
 }
 
 type ModelNode struct {

@@ -3,7 +3,6 @@ package LightNode
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Light"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"gopkg.in/yaml.v3"
 	"reflect"
 
@@ -13,7 +12,7 @@ import (
 const SpotLightNodeFactoryName = "Node.LightNode.SpotLightNode"
 
 func init() {
-	NodeFactory.AddType(SpotLightNodeFactoryName, reflect.TypeOf((*SpotLightNode)(nil)).Elem())
+	Scene.NodeFactory.AddType(SpotLightNodeFactoryName, reflect.TypeOf((*SpotLightNode)(nil)).Elem())
 }
 
 type SpotLightNode struct {

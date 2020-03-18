@@ -4,7 +4,6 @@ import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Skybox"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"gopkg.in/yaml.v3"
@@ -15,7 +14,7 @@ const SkyboxNodeFactoryName = "Node.Skybox"
 const SkyboxShaderFactoryName = "skybox"
 
 func init() {
-	NodeFactory.AddType(SkyboxNodeFactoryName, reflect.TypeOf((*SkyboxNode)(nil)).Elem())
+	Scene.NodeFactory.AddType(SkyboxNodeFactoryName, reflect.TypeOf((*SkyboxNode)(nil)).Elem())
 	ShaderFactory.AddType(SkyboxShaderFactoryName, Skybox.NewIShaderProgram)
 }
 

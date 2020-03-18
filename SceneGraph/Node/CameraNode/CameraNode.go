@@ -2,7 +2,6 @@ package CameraNode
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"gopkg.in/yaml.v3"
 	"reflect"
 
@@ -13,7 +12,7 @@ import (
 const CameraNodeFactoryName = "Node.Camera"
 
 func init() {
-	NodeFactory.AddType(CameraNodeFactoryName, reflect.TypeOf((*CameraNode)(nil)).Elem())
+	Scene.NodeFactory.AddType(CameraNodeFactoryName, reflect.TypeOf((*CameraNode)(nil)).Elem())
 }
 
 type CameraNode struct {

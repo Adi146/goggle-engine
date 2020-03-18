@@ -3,7 +3,6 @@ package Scene
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Utils/Error"
-	"gopkg.in/yaml.v3"
 )
 
 type Node struct {
@@ -88,12 +87,4 @@ func (node *Node) Tick(timeDelta float32) error {
 	}
 
 	return err.Err()
-}
-
-func (node *Node) UnmarshalYAML(value *yaml.Node) error {
-	if node.Transformation == nil || *node.Transformation == (GeometryMath.Matrix4x4{}) {
-		node.Transformation = GeometryMath.Identity()
-	}
-
-	return nil
 }

@@ -7,7 +7,6 @@ import (
 type IScene interface {
 	IDrawable
 
-	Init() error
 	Tick(timeDelta float32)
 
 	GetKeyboardInput() Window.IKeyboardInput

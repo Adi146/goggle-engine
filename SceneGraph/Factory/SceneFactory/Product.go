@@ -33,10 +33,6 @@ func (product *Product) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	if err := scene.Init(); err != nil {
-		return err
-	}
-
 	product.IScene = scene
 	return nil
 }

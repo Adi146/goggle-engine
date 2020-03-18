@@ -1,10 +1,10 @@
-package Light
+package internal
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 )
 
-type IPositionalLight interface {
+type ILightPosition interface {
 	GetPosition() GeometryMath.Vector3
 	SetPosition(pos GeometryMath.Vector3)
 

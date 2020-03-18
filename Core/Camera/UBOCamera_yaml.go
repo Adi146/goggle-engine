@@ -6,7 +6,7 @@ import (
 )
 
 type UBOCamera_yaml struct {
-	Section UBOSection `yaml:",inline"`
+	Section CameraSection `yaml:",inline"`
 }
 
 type UBOCamera_uniformBuffer_yaml struct {
@@ -25,7 +25,7 @@ func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	yamlConfig := UBOCamera_yaml{
-		Section: UBOSection{
+		Section: CameraSection{
 			Camera:        camera.Camera,
 			UniformBuffer: uboYamlConfig.UniformBuffer,
 			Offset:        0,

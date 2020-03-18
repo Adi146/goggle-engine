@@ -3,9 +3,7 @@ package PhongShader
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
-	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
-	"github.com/Adi146/goggle-engine/Core/Light/PointLight"
-	"github.com/Adi146/goggle-engine/Core/Light/SpotLight"
+	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -72,11 +70,11 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.ShadowShader.BindObject(v)
 	case UniformBuffer.IUniformBuffer:
 		switch t := v.GetType(); t {
-		case DirectionalLight.UBO_type:
+		case Light.DirectionalLight_ubo_type:
 			return program.BindUniform(v, ua_directionalLight)
-		case PointLight.UBO_type:
+		case Light.PointLight_ubo_type:
 			return program.BindUniform(v, ua_pointLight)
-		case SpotLight.UBO_type:
+		case Light.SpotLight_ubo_type:
 			return program.BindUniform(v, ua_spotLight)
 		case Camera.UBO_type:
 			return program.BindUniform(v, ua_camera)

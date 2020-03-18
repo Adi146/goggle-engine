@@ -1,10 +1,10 @@
-package Light
+package internal
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 )
 
-type ILight interface {
+type ILightColor interface {
 	GetAmbient() GeometryMath.Vector3
 	SetAmbient(color GeometryMath.Vector3)
 

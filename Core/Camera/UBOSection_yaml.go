@@ -5,7 +5,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func (section *UBOSection) UnmarshalYAML(value *yaml.Node) error {
+func (section *CameraSection) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&section.Camera); err != nil {
 		return err
 	}

@@ -23,28 +23,29 @@ struct DirectionalLight {
 
 struct PointLight{
     vec3 position;
+    float linear;
+    float quadratic;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct SpotLight{
+    vec3 position;
+    float linear;
+    float quadratic;
 
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 
-    float linear;
-    float quadratic;
-};
-
-struct SpotLight{
-    vec3 position;
     vec3 direction;
 
     float innerCone;
     float outerCone;
 
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
 
-    float linear;
-    float quadratic;
 };
 
 layout (std140) uniform camera {

@@ -3,6 +3,7 @@ package LightNode
 import (
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/Light"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
@@ -11,7 +12,6 @@ import (
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"reflect"
 
-	"github.com/Adi146/goggle-engine/Core/Light/DirectionalLight"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
@@ -29,9 +29,9 @@ func init() {
 
 type DirectionalLightNodeConfig struct {
 	Scene.NodeConfig
-	UBOSection                        DirectionalLight.UBODirectionalLight `yaml:",inline"`
-	DirectionalLight.DirectionalLight `yaml:"directionalLight"`
-	ShadowMap                         struct {
+	UBODirectionalLight    Light.UBODirectionalLight `yaml:",inline"`
+	Light.DirectionalLight `yaml:"directionalLight"`
+	ShadowMap              struct {
 		Shader      ShaderFactory.Config      `yaml:"shader"`
 		FrameBuffer FrameBufferFactory.Config `yaml:"frameBuffer"`
 	} `yaml:"shadowMap"`
@@ -47,8 +47,8 @@ func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
 
 	node := &DirectionalLightNode{
 		INode:             nodeBase,
-		IDirectionalLight: &config.UBOSection,
-		ShadowMapping:     &config.UBOSection.CameraSection,
+		IDirectionalLight: &config.UBODirectionalLight,
+		ShadowMapping:     &config.UBODirectionalLight.CameraSection,
 		Config:            config,
 	}
 
@@ -56,14 +56,11 @@ func (config *DirectionalLightNodeConfig) Create() (Scene.INode, error) {
 }
 
 func (config *DirectionalLightNodeConfig) SetDefaults() {
-	if config.Direction.Length() == 0 {
-		config.Direction = GeometryMath.Vector3{0, 0, -1}
-	}
 }
 
 type DirectionalLightNode struct {
 	Scene.INode
-	DirectionalLight.IDirectionalLight
+	Light.IDirectionalLight
 	ShadowMapping Camera.ICamera
 	Config        *DirectionalLightNodeConfig
 }
@@ -71,7 +68,7 @@ type DirectionalLightNode struct {
 func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	newDirection := *node.GetGlobalTransformation().MulVector(&node.Config.Direction).Normalize()
+	newDirection := *node.GetGlobalTransformation().MulVector(&node.Config.DirectionalLight.Direction).Normalize()
 
 	node.SetDirection(newDirection)
 	node.ShadowMapping.SetViewMatrix(*GeometryMath.LookAt(newDirection.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0}))

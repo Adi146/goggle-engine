@@ -1,7 +1,7 @@
 package LightNode
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Light/PointLight"
+	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"reflect"
 
@@ -16,8 +16,8 @@ func init() {
 
 type PointLightNodeConfig struct {
 	Scene.NodeConfig
-	PointLight.PointLight `yaml:"pointLight"`
-	UBOElement            PointLight.UBOPointLight `yaml:",inline"`
+	Light.PointLight `yaml:"pointLight"`
+	UBOPointLight    Light.UBOPointLight `yaml:",inline"`
 }
 
 func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
@@ -28,7 +28,7 @@ func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
 
 	node := &PointLightNode{
 		INode:       nodeBase,
-		IPointLight: &config.UBOElement,
+		IPointLight: &config.UBOPointLight,
 		Config:      config,
 	}
 
@@ -37,7 +37,7 @@ func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
 
 type PointLightNode struct {
 	Scene.INode
-	PointLight.IPointLight
+	Light.IPointLight
 	Config *PointLightNodeConfig
 }
 

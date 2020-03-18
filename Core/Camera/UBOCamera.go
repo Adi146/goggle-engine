@@ -10,12 +10,12 @@ const (
 	UBO_type UniformBuffer.Type = "camera"
 )
 
-type UBOCamera UBOSection
+type UBOCamera CameraSection
 
 func (camera *UBOCamera) SetProjectionMatrix(matrix GeometryMath.Matrix4x4) {
-	((*UBOSection)(camera)).SetProjectionMatrix(matrix)
+	((*CameraSection)(camera)).SetProjectionMatrix(matrix)
 }
 
 func (camera *UBOCamera) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
-	((*UBOSection)(camera)).SetViewMatrix(matrix)
+	((*CameraSection)(camera)).SetViewMatrix(matrix)
 }

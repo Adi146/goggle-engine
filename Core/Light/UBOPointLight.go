@@ -60,7 +60,7 @@ func (light *UBOPointLight) UnmarshalYAML(value *yaml.Node) error {
 	yamlConfig := struct {
 		Light `yaml:"pointLight"`
 	}{
-		Light: Light {
+		Light: Light{
 			PositionSection: internal.LightPositionSection{
 				LightPosition: light.LightPositionSection.LightPosition,
 				Offset:        pointLight_offset_position,

@@ -22,7 +22,7 @@ func (camera *UBOCamera) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
 }
 
 func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
-	uboYamlConfig := struct{
+	uboYamlConfig := struct {
 		UniformBuffer *UniformBuffer.UniformBuffer `yaml:"uniformBuffer"`
 	}{
 		UniformBuffer: &UniformBuffer.UniformBuffer{

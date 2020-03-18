@@ -3,6 +3,7 @@ package LightNode
 import (
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
+	"gopkg.in/yaml.v3"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
@@ -11,40 +12,36 @@ import (
 const PointLightNodeFactoryName = "Node.LightNode.PointLightNode"
 
 func init() {
-	NodeFactory.AddType(PointLightNodeFactoryName, reflect.TypeOf((*PointLightNodeConfig)(nil)).Elem())
-}
-
-type PointLightNodeConfig struct {
-	Scene.NodeConfig
-	Light.PointLight `yaml:"pointLight"`
-	UBOPointLight    Light.UBOPointLight `yaml:",inline"`
-}
-
-func (config *PointLightNodeConfig) Create() (Scene.INode, error) {
-	nodeBase, err := config.NodeConfig.Create()
-	if err != nil {
-		return nil, err
-	}
-
-	node := &PointLightNode{
-		INode:       nodeBase,
-		IPointLight: &config.UBOPointLight,
-		Config:      config,
-	}
-
-	return node, nil
+	NodeFactory.AddType(PointLightNodeFactoryName, reflect.TypeOf((*PointLightNode)(nil)).Elem())
 }
 
 type PointLightNode struct {
 	Scene.INode
-	Light.IPointLight
-	Config *PointLightNodeConfig
+	PointLight Light.IPointLight
 }
 
 func (node *PointLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.IPointLight.SetPosition(*node.GetGlobalPosition())
+	node.PointLight.SetPosition(*node.GetGlobalPosition())
 
 	return err
+}
+
+func (node *PointLightNode) UnmarshalYAML(value *yaml.Node) error {
+	if node.INode == nil {
+		node.INode = &Scene.Node{}
+	}
+	if err := value.Decode(node.INode); err != nil {
+		return err
+	}
+
+	if node.PointLight == nil {
+		node.PointLight = &Light.UBOPointLight{}
+	}
+	if err := value.Decode(node.PointLight); err != nil {
+		return err
+	}
+
+	return nil
 }

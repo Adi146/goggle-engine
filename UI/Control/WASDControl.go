@@ -3,6 +3,7 @@ package Control
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
+	"gopkg.in/yaml.v3"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
@@ -11,28 +12,14 @@ import (
 const WASDControlFactoryName = "UI.Control.WASDControl"
 
 func init() {
-	NodeFactory.AddType(WASDControlFactoryName, reflect.TypeOf((*WASDControlConfig)(nil)).Elem())
-}
-
-type WASDControlConfig struct {
-	Scene.NodeConfig
-	KeyboardSensitivity float32 `yaml:"keyboardSensitivity"`
-	MouseSensitivity    float32 `yaml:"mouseSensitivity"`
-}
-
-func (config *WASDControlConfig) Create() (Scene.INode, error) {
-	nodeBase, err := config.NodeConfig.Create()
-
-	return &WASDControl{
-		INode:  nodeBase,
-		Config: config,
-	}, err
+	NodeFactory.AddType(WASDControlFactoryName, reflect.TypeOf((*WASDControl)(nil)).Elem())
 }
 
 type WASDControl struct {
 	Scene.INode
 
-	Config *WASDControlConfig
+	KeyboardSensitivity float32
+	MouseSensitivity    float32
 
 	yaw   float32
 	pitch float32
@@ -44,22 +31,22 @@ func (node *WASDControl) Tick(timeDelta float32) error {
 	scene := node.GetScene()
 	if scene != nil {
 		xRel, yRel := scene.GetMouseInput().GetRelativeMovement()
-		node.Rotate(GeometryMath.Radians(xRel*node.Config.MouseSensitivity), GeometryMath.Radians(yRel*node.Config.MouseSensitivity))
+		node.Rotate(GeometryMath.Radians(xRel*node.MouseSensitivity), GeometryMath.Radians(yRel*node.MouseSensitivity))
 
 		if scene.GetKeyboardInput().IsKeyPressed("W") {
-			node.MoveForwards(node.Config.KeyboardSensitivity * timeDelta)
+			node.MoveForwards(node.KeyboardSensitivity * timeDelta)
 		}
 
 		if scene.GetKeyboardInput().IsKeyPressed("S") {
-			node.MoveForwards(-node.Config.KeyboardSensitivity * timeDelta)
+			node.MoveForwards(-node.KeyboardSensitivity * timeDelta)
 		}
 
 		if scene.GetKeyboardInput().IsKeyPressed("A") {
-			node.MoveSidewards(-node.Config.KeyboardSensitivity * timeDelta)
+			node.MoveSidewards(-node.KeyboardSensitivity * timeDelta)
 		}
 
 		if scene.GetKeyboardInput().IsKeyPressed("D") {
-			node.MoveSidewards(node.Config.KeyboardSensitivity * timeDelta)
+			node.MoveSidewards(node.KeyboardSensitivity * timeDelta)
 		}
 	}
 
@@ -89,4 +76,29 @@ func (node *WASDControl) Rotate(x float32, y float32) {
 	node.SetLocalTransformation(GeometryMath.Translate(currentPosition))
 	node.SetLocalTransformation(node.GetLocalTransformation().Mul(GeometryMath.RotateY(node.yaw)))
 	node.SetLocalTransformation(node.GetLocalTransformation().Mul(GeometryMath.RotateX(node.pitch)))
+}
+
+func (node *WASDControl) UnmarshalYAML(value *yaml.Node) error {
+	if node.INode == nil {
+		node.INode = &Scene.Node{}
+	}
+	if err := value.Decode(node.INode); err != nil {
+		return err
+	}
+
+	yamlConfig := struct {
+		KeyboardSensitivity float32 `yaml:"keyboardSensitivity"`
+		MouseSensitivity    float32 `yaml:"mouseSensitivity"`
+	}{
+		KeyboardSensitivity: node.KeyboardSensitivity,
+		MouseSensitivity:    node.MouseSensitivity,
+	}
+	if err := value.Decode(&yamlConfig); err != nil {
+		return err
+	}
+
+	node.KeyboardSensitivity = yamlConfig.KeyboardSensitivity
+	node.MouseSensitivity = yamlConfig.MouseSensitivity
+
+	return nil
 }

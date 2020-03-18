@@ -1,8 +1,10 @@
 package LightNode
 
 import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
+	"gopkg.in/yaml.v3"
 	"reflect"
 
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
@@ -11,42 +13,42 @@ import (
 const SpotLightNodeFactoryName = "Node.LightNode.SpotLightNode"
 
 func init() {
-	NodeFactory.AddType(SpotLightNodeFactoryName, reflect.TypeOf((*SpotLightNodeConfig)(nil)).Elem())
-}
-
-type SpotLightNodeConfig struct {
-	Scene.NodeConfig
-	Light.SpotLight `yaml:"spotLight"`
-	UBOSpotLight    Light.UBOSpotLight `yaml:",inline"`
-}
-
-func (config *SpotLightNodeConfig) Create() (Scene.INode, error) {
-	nodeBase, err := config.NodeConfig.Create()
-	if err != nil {
-		return nil, err
-	}
-
-	node := &SpotLightNode{
-		INode:      nodeBase,
-		ISpotLight: &config.UBOSpotLight,
-		Config:     config,
-	}
-
-	return node, nil
+	NodeFactory.AddType(SpotLightNodeFactoryName, reflect.TypeOf((*SpotLightNode)(nil)).Elem())
 }
 
 type SpotLightNode struct {
 	Scene.INode
-	Light.ISpotLight
-
-	Config *SpotLightNodeConfig
+	SpotLight     Light.ISpotLight
+	InitDirection GeometryMath.Vector3
 }
 
 func (node *SpotLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.SetPosition(*node.GetGlobalPosition())
-	node.SetDirection(*node.GetGlobalTransformation().Inverse().Transpose().MulVector(&node.Config.SpotLight.Direction).Normalize())
+	node.SpotLight.SetPosition(*node.GetGlobalPosition())
+	node.SpotLight.SetDirection(*node.GetGlobalTransformation().Inverse().Transpose().MulVector(&node.InitDirection).Normalize())
 
 	return err
+}
+
+func (node *SpotLightNode) UnmarshalYAML(value *yaml.Node) error {
+	if node.INode == nil {
+		node.INode = &Scene.Node{}
+	}
+	if err := value.Decode(node.INode); err != nil {
+		return err
+	}
+
+	if node.SpotLight == nil {
+		node.SpotLight = &Light.UBOSpotLight{}
+	}
+	if err := value.Decode(node.SpotLight); err != nil {
+		return err
+	}
+
+	if node.InitDirection == (GeometryMath.Vector3{}) {
+		node.InitDirection = node.SpotLight.GetDirection()
+	}
+
+	return nil
 }

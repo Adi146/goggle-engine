@@ -3,16 +3,15 @@ package Scene
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Utils/Error"
+	"gopkg.in/yaml.v3"
 )
 
 type Node struct {
 	scene          *Scene
-	transformation *GeometryMath.Matrix4x4
+	Transformation *GeometryMath.Matrix4x4
 
 	children []INode
 	parent   INode
-
-	Config *NodeConfig
 }
 
 func (node *Node) AddChild(child INode) {
@@ -50,11 +49,11 @@ func (node *Node) setScene(scene *Scene) {
 }
 
 func (node *Node) GetLocalTransformation() *GeometryMath.Matrix4x4 {
-	return node.transformation
+	return node.Transformation
 }
 
 func (node *Node) SetLocalTransformation(matrix *GeometryMath.Matrix4x4) {
-	node.transformation = matrix
+	node.Transformation = matrix
 }
 
 func (node *Node) GetLocalRotation() []GeometryMath.EulerAngles {
@@ -89,4 +88,12 @@ func (node *Node) Tick(timeDelta float32) error {
 	}
 
 	return err.Err()
+}
+
+func (node *Node) UnmarshalYAML(value *yaml.Node) error {
+	if node.Transformation == nil || *node.Transformation == (GeometryMath.Matrix4x4{}) {
+		node.Transformation = GeometryMath.Identity()
+	}
+
+	return nil
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
+	"gopkg.in/yaml.v3"
 	"reflect"
 )
 
@@ -20,49 +21,24 @@ const (
 )
 
 func init() {
-	NodeFactory.AddType(PostProcessingNodeFactoryName, reflect.TypeOf((*PostProcessingNodeConfig)(nil)).Elem())
+	NodeFactory.AddType(PostProcessingNodeFactoryName, reflect.TypeOf((*PostProcessingNode)(nil)).Elem())
 	ShaderFactory.AddType(PostProcessingShaderFactoryName, PostProcessing.NewIShaderProgram)
 	FrameBufferFactory.AddType(OffScreenFramebufferName, reflect.TypeOf((*FrameBuffer.OffScreenBuffer)(nil)).Elem())
 }
 
-type PostProcessingNodeConfig struct {
-	Scene.NodeConfig
-	Shader      ShaderFactory.Config      `yaml:"shader"`
-	FrameBuffer FrameBufferFactory.Config `yaml:"frameBuffer"`
-	Kernel      *PostProcessing.Kernel    `yaml:",inline"`
-}
-
-func (config *PostProcessingNodeConfig) Create() (Scene.INode, error) {
-	nodeBase, err := config.NodeConfig.Create()
-	if err != nil {
-		return nil, err
-	}
-
-	quad, err := PostProcessing.NewQuad()
-	if err != nil {
-		return nil, err
-	}
-
-	node := &PostProcessingNode{
-		INode:  nodeBase,
-		Config: config,
-		quad:   quad,
-	}
-
-	return node, nil
-}
-
 type PostProcessingNode struct {
 	Scene.INode
-	Config *PostProcessingNodeConfig
-	quad   *Model.Mesh
+	Quad        Model.Mesh
+	Shader      ShaderFactory.Config
+	FrameBuffer FrameBufferFactory.Config
+	Kernel      *PostProcessing.Kernel
 }
 
 func (node *PostProcessingNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	if node.Config.Kernel != nil {
-		if err := node.Config.Shader.BindObject(node.Config.Kernel); err != nil {
+	if node.Kernel != nil {
+		if err := node.Shader.BindObject(node.Kernel); err != nil {
 			return err
 		}
 	}
@@ -79,19 +55,54 @@ func (node *PostProcessingNode) Draw(shader Shader.IShaderProgram, invoker coreS
 		return nil
 	}
 
-	node.Config.FrameBuffer.Bind()
-	node.Config.FrameBuffer.Clear()
+	node.FrameBuffer.Bind()
+	node.FrameBuffer.Clear()
 	err := scene.Draw(shader, node, scene)
-	node.Config.FrameBuffer.Unbind()
+	node.FrameBuffer.Unbind()
 	if err != nil {
 		return err
 	}
 
 	scene.Clear()
 
-	node.Config.Shader.Bind()
+	node.Shader.Bind()
 	if shader != nil {
 		defer shader.Bind()
 	}
-	return node.quad.Draw(node.Config.Shader, node, scene)
+	return node.Quad.Draw(node.Shader, node, scene)
+}
+
+func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
+	if node.INode == nil {
+		node.INode = &Scene.Node{}
+	}
+	if err := value.Decode(node.INode); err != nil {
+		return err
+	}
+
+	yamlConfig := struct {
+		Shader      ShaderFactory.Config      `yaml:"shader"`
+		FrameBuffer FrameBufferFactory.Config `yaml:"frameBuffer"`
+		Kernel      *PostProcessing.Kernel    `yaml:",inline"`
+	}{
+		Shader:      node.Shader,
+		FrameBuffer: node.FrameBuffer,
+		Kernel:      node.Kernel,
+	}
+	if err := value.Decode(&yamlConfig); err != nil {
+		return err
+	}
+
+	node.Shader = yamlConfig.Shader
+	node.FrameBuffer = yamlConfig.FrameBuffer
+	node.Kernel = yamlConfig.Kernel
+
+	quad, err := PostProcessing.NewQuad()
+	if err != nil {
+		return err
+	}
+
+	node.Quad = *quad
+
+	return nil
 }

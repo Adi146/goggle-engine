@@ -7,7 +7,7 @@ import (
 
 var (
 	typeFactory = map[string]reflect.Type{
-		"Scene.Node": reflect.TypeOf((*Scene.NodeConfig)(nil)).Elem(),
+		"Scene.Node": reflect.TypeOf((*Scene.Node)(nil)).Elem(),
 	}
 )
 

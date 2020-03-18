@@ -30,15 +30,8 @@ func (product *Product) UnmarshalYAML(value *yaml.Node) error {
 		return fmt.Errorf("node type %s is not in factory", tmpProduct.Type)
 	}
 
-	nodeConfig := reflect.New(nodeType).Interface().(Scene.INodeConfig)
-	if tmpProduct.Config.Kind != 0 {
-		tmpProduct.Config.Decode(nodeConfig)
-	}
-
-	node, err := nodeConfig.Create()
-	if err != nil {
-		return err
-	}
+	node := reflect.New(nodeType).Interface().(Scene.INode)
+	tmpProduct.Config.Decode(node)
 
 	for _, child := range tmpProduct.Children {
 		node.AddChild(child.INode)

@@ -7,6 +7,7 @@ import (
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/NodeFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
+	"gopkg.in/yaml.v3"
 	"reflect"
 )
 
@@ -14,37 +15,14 @@ const SkyboxNodeFactoryName = "Node.Skybox"
 const SkyboxShaderFactoryName = "skybox"
 
 func init() {
-	NodeFactory.AddType(SkyboxNodeFactoryName, reflect.TypeOf((*SkyboxNodeConfig)(nil)).Elem())
+	NodeFactory.AddType(SkyboxNodeFactoryName, reflect.TypeOf((*SkyboxNode)(nil)).Elem())
 	ShaderFactory.AddType(SkyboxShaderFactoryName, Skybox.NewIShaderProgram)
-}
-
-type SkyboxNodeConfig struct {
-	Scene.NodeConfig
-
-	Shader ShaderFactory.Config `yaml:"shader"`
-	Skybox Skybox.Skybox        `yaml:"textures"`
-}
-
-func (config *SkyboxNodeConfig) Create() (Scene.INode, error) {
-	nodeBase, err := config.NodeConfig.Create()
-	if err != nil {
-		return nil, err
-	}
-
-	node := &SkyboxNode{
-		INode:  nodeBase,
-		Skybox: &config.Skybox,
-		Config: config,
-	}
-
-	return node, nil
 }
 
 type SkyboxNode struct {
 	Scene.INode
-	*Skybox.Skybox
-
-	Config *SkyboxNodeConfig
+	Skybox Skybox.Skybox
+	Shader ShaderFactory.Config
 }
 
 func (node *SkyboxNode) Tick(timeDelta float32) error {
@@ -59,11 +37,36 @@ func (node *SkyboxNode) Tick(timeDelta float32) error {
 
 func (node *SkyboxNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
 	if shader == nil {
-		node.Config.Shader.Bind()
-		defer node.Config.Shader.Unbind()
+		node.Shader.Bind()
+		defer node.Shader.Unbind()
 
-		shader = node.Config.Shader
+		shader = node.Shader
 	}
 
 	return node.Skybox.Draw(shader, nil, nil)
+}
+
+func (node *SkyboxNode) UnmarshalYAML(value *yaml.Node) error {
+	if node.INode == nil {
+		node.INode = &Scene.Node{}
+	}
+	if err := value.Decode(node.INode); err != nil {
+		return err
+	}
+
+	yamlConfig := struct {
+		Skybox Skybox.Skybox        `yaml:"textures"`
+		Shader ShaderFactory.Config `yaml:"shader"`
+	}{
+		Skybox: node.Skybox,
+		Shader: node.Shader,
+	}
+	if err := value.Decode(&yamlConfig); err != nil {
+		return err
+	}
+
+	node.Skybox = yamlConfig.Skybox
+	node.Shader = yamlConfig.Shader
+
+	return nil
 }

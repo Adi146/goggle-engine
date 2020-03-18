@@ -3,6 +3,7 @@ package Camera
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -49,4 +50,18 @@ func (section *CameraSection) SetUniformBuffer(ubo UniformBuffer.IUniformBuffer,
 
 func (section *CameraSection) GetSize() int {
 	return Size_cameraSection
+}
+
+func (section *CameraSection) UnmarshalYAML(value *yaml.Node) error {
+	if err := value.Decode(&section.Camera); err != nil {
+		return err
+	}
+
+	if section.ViewMatrix == (GeometryMath.Matrix4x4{}) {
+		section.ViewMatrix = *GeometryMath.Identity()
+	}
+
+	section.ForceUpdate()
+
+	return nil
 }

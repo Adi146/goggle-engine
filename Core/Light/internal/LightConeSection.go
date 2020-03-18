@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -48,4 +49,13 @@ func (section *LightConeSection) SetUniformBuffer(ubo UniformBuffer.IUniformBuff
 
 func (section *LightConeSection) GetSize() int {
 	return Size_lightConeSection
+}
+
+func (section *LightConeSection) UnmarshalYAML(value *yaml.Node) error {
+	if err := value.Decode(&section.LightCone); err != nil {
+		return err
+	}
+	section.ForceUpdate()
+
+	return nil
 }

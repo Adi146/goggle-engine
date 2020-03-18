@@ -3,6 +3,7 @@ package internal
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -59,4 +60,13 @@ func (section *LightPositionSection) SetUniformBuffer(ubo UniformBuffer.IUniform
 
 func (section *LightPositionSection) GetSize() int {
 	return Size_lightPositionSection
+}
+
+func (section *LightPositionSection) UnmarshalYAML(value *yaml.Node) error {
+	if err := value.Decode(&section.LightPosition); err != nil {
+		return err
+	}
+	section.ForceUpdate()
+
+	return nil
 }

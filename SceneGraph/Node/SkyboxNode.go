@@ -4,24 +4,21 @@ import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Skybox"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"gopkg.in/yaml.v3"
 	"reflect"
 )
 
 const SkyboxNodeFactoryName = "Node.Skybox"
-const SkyboxShaderFactoryName = "skybox"
 
 func init() {
 	Scene.NodeFactory.AddType(SkyboxNodeFactoryName, reflect.TypeOf((*SkyboxNode)(nil)).Elem())
-	ShaderFactory.AddType(SkyboxShaderFactoryName, Skybox.NewIShaderProgram)
 }
 
 type SkyboxNode struct {
 	Scene.INode
 	Skybox Skybox.Skybox
-	Shader ShaderFactory.Config
+	Shader Shader.IShaderProgram
 }
 
 func (node *SkyboxNode) Tick(timeDelta float32) error {
@@ -54,11 +51,13 @@ func (node *SkyboxNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	yamlConfig := struct {
-		Skybox Skybox.Skybox        `yaml:"textures"`
-		Shader ShaderFactory.Config `yaml:"shader"`
+		Skybox Skybox.Skybox `yaml:"textures"`
+		Shader Shader.Ptr    `yaml:"shader"`
 	}{
 		Skybox: node.Skybox,
-		Shader: node.Shader,
+		Shader: Shader.Ptr{
+			IShaderProgram: node.Shader,
+		},
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err

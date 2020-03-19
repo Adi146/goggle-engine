@@ -3,7 +3,6 @@ package Node
 import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"gopkg.in/yaml.v3"
 	"reflect"
 
@@ -21,7 +20,7 @@ type ModelNode struct {
 	Scene.INode
 	Model.Model
 	IsTransparent bool
-	Shader        ShaderFactory.Config
+	Shader        Shader.IShaderProgram
 }
 
 func (node *ModelNode) Tick(timeDelta float32) error {
@@ -60,13 +59,15 @@ func (node *ModelNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	yamlConfig := struct {
-		Model         Model.Model          `yaml:",inline"`
-		IsTransparent bool                 `yaml:"isTransparent"`
-		Shader        ShaderFactory.Config `yaml:"shader"`
+		Model         Model.Model `yaml:",inline"`
+		IsTransparent bool        `yaml:"isTransparent"`
+		Shader        Shader.Ptr  `yaml:"shader"`
 	}{
 		Model:         node.Model,
 		IsTransparent: node.IsTransparent,
-		Shader:        node.Shader,
+		Shader: Shader.Ptr{
+			IShaderProgram: node.Shader,
+		},
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err

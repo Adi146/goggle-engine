@@ -8,7 +8,6 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"gopkg.in/yaml.v3"
 	"reflect"
 
@@ -17,13 +16,11 @@ import (
 
 const (
 	DirectionalLightNodeFactoryName = "Node.LightNode.DirectionalLightNode"
-	ShadowMapShaderFactoryName      = "shadowMapShader"
 	ShadowMapFramebufferName        = "shadowMapBuffer"
 )
 
 func init() {
 	Scene.NodeFactory.AddType(DirectionalLightNodeFactoryName, reflect.TypeOf((*DirectionalLightNode)(nil)).Elem())
-	ShaderFactory.AddType(ShadowMapShaderFactoryName, ShadowMapShader.NewIShaderProgram)
 	FrameBufferFactory.AddType(ShadowMapFramebufferName, reflect.TypeOf((*ShadowMapShader.ShadowMapBuffer)(nil)).Elem())
 }
 
@@ -33,7 +30,7 @@ type DirectionalLightNode struct {
 	InitDirection    GeometryMath.Vector3
 	ShadowMap        struct {
 		Camera      Camera.ICamera
-		Shader      ShaderFactory.Config
+		Shader      Shader.IShaderProgram
 		FrameBuffer FrameBufferFactory.Config
 	}
 }
@@ -92,14 +89,16 @@ func (node *DirectionalLightNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	type shadowMapConfig struct {
-		Shader      ShaderFactory.Config      `yaml:"shader"`
+		Shader      Shader.Ptr                `yaml:"shader"`
 		FrameBuffer FrameBufferFactory.Config `yaml:"frameBuffer"`
 	}
 	yamlConfig := struct {
 		ShadowMap shadowMapConfig `yaml:"shadowMap"`
 	}{
 		ShadowMap: shadowMapConfig{
-			Shader:      node.ShadowMap.Shader,
+			Shader: Shader.Ptr{
+				IShaderProgram: node.ShadowMap.Shader,
+			},
 			FrameBuffer: node.ShadowMap.FrameBuffer,
 		},
 	}

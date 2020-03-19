@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 const (
+	shader_factory_name = "postProcessingShader"
+
 	ua_screenTexture = "u_screenTexture"
 
 	ua_kernelOffset = "u_kernelOffset"
@@ -18,7 +19,7 @@ const (
 )
 
 func init() {
-	ShaderFactory.AddType("postProcessing", NewIShaderProgram)
+	Shader.Factory.AddConstructor(shader_factory_name, NewIShaderProgram)
 }
 
 type ShaderProgram struct {

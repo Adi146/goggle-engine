@@ -10,6 +10,8 @@ import (
 )
 
 const (
+	shader_factory_name = "skyboxShader"
+
 	ua_skybox = "u_skybox"
 
 	ua_camera = "camera"
@@ -17,6 +19,10 @@ const (
 
 type ShaderProgram struct {
 	*Shader.ShaderProgramCore
+}
+
+func init() {
+	Shader.Factory.AddConstructor(shader_factory_name, NewIShaderProgram)
 }
 
 func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgram, error) {

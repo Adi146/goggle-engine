@@ -7,28 +7,25 @@ import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"gopkg.in/yaml.v3"
 	"reflect"
 )
 
 const (
-	PostProcessingNodeFactoryName   = "Node.PostProcessing"
-	PostProcessingShaderFactoryName = "postProcessing"
-	OffScreenFramebufferName        = "offScreen"
+	PostProcessingNodeFactoryName = "Node.PostProcessing"
+	OffScreenFramebufferName      = "offScreen"
 )
 
 func init() {
 	Scene.NodeFactory.AddType(PostProcessingNodeFactoryName, reflect.TypeOf((*PostProcessingNode)(nil)).Elem())
-	ShaderFactory.AddType(PostProcessingShaderFactoryName, PostProcessing.NewIShaderProgram)
 	FrameBufferFactory.AddType(OffScreenFramebufferName, reflect.TypeOf((*FrameBuffer.OffScreenBuffer)(nil)).Elem())
 }
 
 type PostProcessingNode struct {
 	Scene.INode
 	Quad        Model.Mesh
-	Shader      ShaderFactory.Config
+	Shader      Shader.IShaderProgram
 	FrameBuffer FrameBufferFactory.Config
 	Kernel      *PostProcessing.Kernel
 }
@@ -80,11 +77,13 @@ func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	yamlConfig := struct {
-		Shader      ShaderFactory.Config      `yaml:"shader"`
+		Shader      Shader.Ptr                `yaml:"shader"`
 		FrameBuffer FrameBufferFactory.Config `yaml:"frameBuffer"`
 		Kernel      *PostProcessing.Kernel    `yaml:",inline"`
 	}{
-		Shader:      node.Shader,
+		Shader: Shader.Ptr{
+			IShaderProgram: node.Shader,
+		},
 		FrameBuffer: node.FrameBuffer,
 		Kernel:      node.Kernel,
 	}

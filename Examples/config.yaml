@@ -6,7 +6,7 @@ processingPipeline:
 
 shaders:
   phong:
-    type: phong
+    type: phongShader
     vertexShaders:
       - ../Core/Shader/PhongShader/phong.vert
     fragmentShaders:
@@ -17,7 +17,7 @@ shaders:
     frameBuffers:
       - shadowMap
   postProcessing:
-    type: postProcessing
+    type: postProcessingShader
     vertexShaders:
       - ../Core/PostProcessing/postProcessing.vert
     fragmentShaders:
@@ -25,7 +25,7 @@ shaders:
     frameBuffers:
       - offScreen
   skybox:
-    type: skybox
+    type: skyboxShader
     vertexShaders:
       - ../Core/Skybox/skybox.vert
     fragmentShaders:

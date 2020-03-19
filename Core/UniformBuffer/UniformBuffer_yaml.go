@@ -1,7 +1,7 @@
 package UniformBuffer
 
 import (
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"gopkg.in/yaml.v3"
 )
 
@@ -11,7 +11,7 @@ func (buff *UniformBuffer) UnmarshalYAML(value *yaml.Node) error {
 		Size    int    `yaml:"size"`
 		Type    Type   `yaml:"type"`
 
-		Shaders []ShaderFactory.Config `shaders`
+		Shaders []Shader.Ptr `shaders`
 	}{
 		Binding: buff.Binding,
 		Size:    buff.Size,

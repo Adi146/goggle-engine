@@ -11,6 +11,8 @@ import (
 )
 
 const (
+	shader_factory_name = "shadowMapShader"
+
 	ua_modelMatrix = "u_modelMatrix"
 
 	ua_directionalLight = "directionalLight"
@@ -19,6 +21,10 @@ const (
 type ShaderProgram struct {
 	*Shader.ShaderProgramCore
 	MaterialShader Material.ShaderProgram
+}
+
+func init() {
+	Shader.Factory.AddConstructor(shader_factory_name, NewIShaderProgram)
 }
 
 func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgram, error) {

@@ -2,9 +2,9 @@ package YamlFactory
 
 import (
 	"github.com/Adi146/goggle-engine/Core/ProcessingPipeline"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/SceneFactory"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 	"io/ioutil"
 	"os"
 
@@ -22,9 +22,9 @@ type config2 struct {
 	OpenGlLogging bool `yaml:"openGlLogging"`
 
 	ProcessingPipelineConfig []struct {
-		FrameBuffer    string               `yaml:"frameBuffer"`
-		Scene          string               `yaml:"scene"`
-		EnforcedShader ShaderFactory.Config `yaml:"enforcedShader"`
+		FrameBuffer    string     `yaml:"frameBuffer"`
+		Scene          string     `yaml:"scene"`
+		EnforcedShader Shader.Ptr `yaml:"enforcedShader"`
 	} `yaml:"processingPipeline"`
 }
 
@@ -35,11 +35,9 @@ func (config *config) UnmarshalYAML(value *yaml.Node) error {
 	}
 	FrameBufferFactory.SetConfig(frameBufferFactory)
 
-	var shaderFactory ShaderFactory.FactoryConfig
-	if err := value.Decode(&shaderFactory); err != nil {
+	if err := value.Decode(&Shader.Factory); err != nil {
 		return err
 	}
-	ShaderFactory.SetConfig(shaderFactory)
 
 	var sceneFactory SceneFactory.FactoryConfig
 	if err := value.Decode(&sceneFactory); err != nil {

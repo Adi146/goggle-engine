@@ -10,10 +10,11 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Shadow"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/ShaderFactory"
 )
 
 const (
+	shader_factory_name = "phongShader"
+
 	ua_modelMatrix = "u_modelMatrix"
 
 	ua_camera           = "camera"
@@ -23,7 +24,7 @@ const (
 )
 
 func init() {
-	ShaderFactory.AddType("phong", NewIShaderProgram)
+	Shader.Factory.AddConstructor(shader_factory_name, NewIShaderProgram)
 }
 
 type ShaderProgram struct {

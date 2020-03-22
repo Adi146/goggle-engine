@@ -6,6 +6,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	yaml_key_fullscreen = "fullscreen"
+	yaml_key_desktop    = "fullscreen_desktop"
+	yaml_key_shown      = "window_shown"
+	yaml_key_hidden     = "window_hidden"
+	yaml_key_borderless = "borderless"
+	yaml_key_minimized  = "minimized"
+	yaml_key_maximized  = "maximized"
+)
+
 type Flag uint32
 
 func (flag *Flag) UnmarshalYAML(value *yaml.Node) error {
@@ -15,20 +25,21 @@ func (flag *Flag) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	for _, flagString := range yamlConfig {
+
 		switch flagString {
-		case "fullscreen":
+		case yaml_key_fullscreen:
 			*flag = *flag | sdl.WINDOW_FULLSCREEN
-		case "fullscreen_desktop":
+		case yaml_key_desktop:
 			*flag = *flag | sdl.WINDOW_FULLSCREEN_DESKTOP
-		case "window_shown":
+		case yaml_key_shown:
 			*flag = *flag | sdl.WINDOW_SHOWN
-		case "window_hidden":
+		case yaml_key_hidden:
 			*flag = *flag | sdl.WINDOW_HIDDEN
-		case "borderless":
+		case yaml_key_borderless:
 			*flag = *flag | sdl.WINDOW_BORDERLESS
-		case "minimized":
+		case yaml_key_minimized:
 			*flag = *flag | sdl.WINDOW_MINIMIZED
-		case "maximized":
+		case yaml_key_maximized:
 			*flag = *flag | sdl.WINDOW_MAXIMIZED
 		default:
 			return fmt.Errorf("flag %s is not supported", yamlConfig)

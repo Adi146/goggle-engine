@@ -1,8 +1,7 @@
-package ShadowMapShader
+package ShadowMapping
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -55,12 +54,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	case *Model.Model:
 		return program.BindUniform(v.ModelMatrix, ua_modelMatrix)
 	case UniformBuffer.IUniformBuffer:
-		switch t := v.GetType(); t {
-		case Light.DirectionalLight_ubo_type:
-			return program.BindUniform(v, ua_directionalLight)
-		default:
-			return fmt.Errorf("shadow map shader does not support uniform buffers of type %s", t)
-		}
+		return program.BindUniform(v, ua_directionalLight)
 	case Texture.ITexture:
 		return nil
 	default:

@@ -5,10 +5,10 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Light"
+	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/Shadow"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 )
 
@@ -29,7 +29,7 @@ func init() {
 
 type ShaderProgram struct {
 	*Shader.ShaderProgramCore
-	ShadowShader   Shadow.ShaderProgram
+	ShadowShader   ShadowMapping.ShaderComponent
 	MaterialShader Material.ShaderProgram
 }
 
@@ -41,7 +41,7 @@ func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) 
 
 	return &ShaderProgram{
 		ShaderProgramCore: shaderCore,
-		ShadowShader: Shadow.ShaderProgram{
+		ShadowShader: ShadowMapping.ShaderComponent{
 			ShaderProgramCore: shaderCore,
 		},
 		MaterialShader: Material.ShaderProgram{

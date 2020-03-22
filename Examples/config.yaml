@@ -9,7 +9,7 @@ shaders:
       - ../Core/Shader/PhongShader/phong.frag
       - ../Core/Shader/PhongShader/lights.frag
       - ../Core/Model/Material/material.frag
-      - ../Core/Shadow/shadow.frag
+      - ../Core/Light/ShadowMapping/shadow.frag
     frameBuffers:
       - shadowMap
   postProcessing:
@@ -29,9 +29,9 @@ shaders:
   shadowMap:
     type: shadowMapShader
     vertexShaders:
-      - ../Core/Shadow/ShadowMapShader/shadowMap.vert
+      - ../Core/Light/ShadowMapping/shadowMap.vert
     fragmentShaders:
-      - ../Core/Shadow/ShadowMapShader/shadowMap.frag
+      - ../Core/Light/ShadowMapping/shadowMap.frag
       - ../Core/Model/Material/material.frag
 
 scene:

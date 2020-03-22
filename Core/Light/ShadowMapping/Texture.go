@@ -1,17 +1,17 @@
-package ShadowMapShader
+package ShadowMapping
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Texture"
+	core "github.com/Adi146/goggle-engine/Core/Texture"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 const (
-	ShadowMap Texture.Type = "shadowMap"
+	ShadowMap core.Type = "shadowMap"
 )
 
-func NewShadowMap(width int32, height int32) (*Texture.Texture, error) {
-	texture := Texture.Texture{
+func NewShadowMap(width int32, height int32) (*core.Texture, error) {
+	texture := core.Texture{
 		Type:   ShadowMap,
 		Target: gl.TEXTURE_2D,
 	}
@@ -30,8 +30,8 @@ func NewShadowMap(width int32, height int32) (*Texture.Texture, error) {
 	return &texture, nil
 }
 
-func NewShadowCubeMap(width int32, height int32) (*Texture.Texture, error) {
-	texture := Texture.Texture{
+func NewShadowCubeMap(width int32, height int32) (*core.Texture, error) {
+	texture := core.Texture{
 		Type:   ShadowMap,
 		Target: gl.TEXTURE_CUBE_MAP,
 	}

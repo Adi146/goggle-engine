@@ -3,7 +3,7 @@ package PostProcessing
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
+	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -52,7 +52,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return errors.Err()
 	case Texture.ITexture:
 		switch t := v.GetType(); t {
-		case OffscreenTexture, ShadowMapShader.ShadowMap:
+		case OffscreenTexture, ShadowMapping.ShadowMap:
 			return program.BindUniform(v, ua_screenTexture)
 		default:
 			return fmt.Errorf("post processing shader does not support texture of type %s", t)

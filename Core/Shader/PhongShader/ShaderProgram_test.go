@@ -14,7 +14,7 @@ var (
 		"phong.frag",
 		"lights.frag",
 		"../../Model/Material/material.frag",
-		"../../Shadow/shadow.frag",
+		"../../Light/ShadowMapping/shadow.frag",
 	}
 )
 

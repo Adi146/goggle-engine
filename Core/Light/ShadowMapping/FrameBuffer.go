@@ -1,7 +1,7 @@
-package ShadowMapShader
+package ShadowMapping
 
 import (
-	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
+	core "github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"gopkg.in/yaml.v3"
@@ -13,18 +13,18 @@ const (
 	FBO_type = "shadowMap"
 )
 
-type ShadowMapBuffer struct {
-	FrameBuffer.FrameBuffer
+type FrameBuffer struct {
+	core.FrameBuffer
 	ShadowMap *Texture.Texture
 }
 
-func NewShadowMapBuffer(base FrameBuffer.FrameBuffer) (*ShadowMapBuffer, error) {
+func NewFrameBuffer(base core.FrameBuffer) (*FrameBuffer, error) {
 	if err := gl.Init(); err != nil {
 		return nil, err
 	}
 
 	shadowMap, err := NewShadowMap(base.Viewport.Width, base.Viewport.Height)
-	buff := ShadowMapBuffer{
+	buff := FrameBuffer{
 		FrameBuffer: base,
 		ShadowMap:   shadowMap,
 	}
@@ -41,22 +41,22 @@ func NewShadowMapBuffer(base FrameBuffer.FrameBuffer) (*ShadowMapBuffer, error) 
 	return &buff, buff.CheckCompleteness()
 }
 
-func (buff *ShadowMapBuffer) Destroy() {
+func (buff *FrameBuffer) Destroy() {
 	buff.FrameBuffer.Destroy()
 }
 
-func (buff *ShadowMapBuffer) GetTextures() []Texture.ITexture {
+func (buff *FrameBuffer) GetTextures() []Texture.ITexture {
 	return []Texture.ITexture{
 		buff.ShadowMap,
 	}
 }
 
-func (buff *ShadowMapBuffer) UnmarshalYAML(value *yaml.Node) error {
+func (buff *FrameBuffer) UnmarshalYAML(value *yaml.Node) error {
 	yamlConfig := struct {
-		FrameBufferBase FrameBuffer.FrameBuffer `yaml:",inline"`
-		Shaders         []Shader.Ptr            `yaml:"shaders"`
+		FrameBufferBase core.FrameBuffer `yaml:",inline"`
+		Shaders         []Shader.Ptr     `yaml:"shaders"`
 	}{
-		FrameBufferBase: FrameBuffer.FrameBuffer{
+		FrameBufferBase: core.FrameBuffer{
 			Type: FBO_type,
 		},
 	}
@@ -64,7 +64,7 @@ func (buff *ShadowMapBuffer) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	tmpBuffer, err := NewShadowMapBuffer(yamlConfig.FrameBufferBase)
+	tmpBuffer, err := NewFrameBuffer(yamlConfig.FrameBufferBase)
 	if err != nil {
 		return err
 	}

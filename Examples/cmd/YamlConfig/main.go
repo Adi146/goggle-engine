@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
 	"os"
 	"runtime"
-
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/YamlFactory"
 
 	_ "github.com/Adi146/goggle-engine/Examples/SceneGraph"
 	_ "github.com/Adi146/goggle-engine/SceneGraph/Node"
@@ -30,10 +30,10 @@ func main() {
 	}
 	defer file.Close()
 
-	config, err := YamlFactory.ReadConfig(file)
+	scene, err := Factory.ReadConfig(file)
 	if err != nil {
 		panic(err)
 	}
 
-	config.Pipeline.Run()
+	Scene.RunRenderLoop(scene)
 }

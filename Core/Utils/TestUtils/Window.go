@@ -6,24 +6,13 @@ import (
 	"testing"
 )
 
-func CreateTestWindow(t *testing.T) (Window.SDLWindow, error) {
-	window := Window.SDLWindow{
-		FrameBufferBase: FrameBuffer.FrameBufferBase{
-			Width:     100,
-			Height:    100,
-			DepthTest: false,
-			Culling: FrameBuffer.CullFunction{
-				Enabled:  false,
-				Function: 0,
-			},
-			Blend: false,
-		},
-		Title: "test window",
-		Type:  "window",
-		Sync:  "normal",
-	}
-
-	err := window.Init()
+func CreateTestWindow(t *testing.T) (*Window.SDLWindow, error) {
+	window, err := Window.NewSDLWindow(FrameBuffer.Viewport{
+		PosX:   0,
+		PosY:   0,
+		Width:  100,
+		Height: 100,
+	}, "test window", 0)
 	if err != nil {
 		t.Errorf("Error while creating sdl window %s", err.Error())
 	}

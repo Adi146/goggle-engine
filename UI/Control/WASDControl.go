@@ -29,22 +29,22 @@ func (node *WASDControl) Tick(timeDelta float32) error {
 
 	scene := node.GetScene()
 	if scene != nil {
-		xRel, yRel := scene.GetMouseInput().GetRelativeMovement()
+		xRel, yRel := scene.Window.GetMouseInput().GetRelativeMovement()
 		node.Rotate(GeometryMath.Radians(xRel*node.MouseSensitivity), GeometryMath.Radians(yRel*node.MouseSensitivity))
 
-		if scene.GetKeyboardInput().IsKeyPressed("W") {
+		if scene.Window.GetKeyboardInput().IsKeyPressed("W") {
 			node.MoveForwards(node.KeyboardSensitivity * timeDelta)
 		}
 
-		if scene.GetKeyboardInput().IsKeyPressed("S") {
+		if scene.Window.GetKeyboardInput().IsKeyPressed("S") {
 			node.MoveForwards(-node.KeyboardSensitivity * timeDelta)
 		}
 
-		if scene.GetKeyboardInput().IsKeyPressed("A") {
+		if scene.Window.GetKeyboardInput().IsKeyPressed("A") {
 			node.MoveSidewards(-node.KeyboardSensitivity * timeDelta)
 		}
 
-		if scene.GetKeyboardInput().IsKeyPressed("D") {
+		if scene.Window.GetKeyboardInput().IsKeyPressed("D") {
 			node.MoveSidewards(node.KeyboardSensitivity * timeDelta)
 		}
 	}

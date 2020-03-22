@@ -2,11 +2,11 @@ package Node
 
 import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
+	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/PostProcessing"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 	"gopkg.in/yaml.v3"
 	"reflect"
@@ -14,19 +14,17 @@ import (
 
 const (
 	PostProcessingNodeFactoryName = "Node.PostProcessing"
-	OffScreenFramebufferName      = "offScreen"
 )
 
 func init() {
 	Scene.NodeFactory.AddType(PostProcessingNodeFactoryName, reflect.TypeOf((*PostProcessingNode)(nil)).Elem())
-	FrameBufferFactory.AddType(OffScreenFramebufferName, reflect.TypeOf((*FrameBuffer.OffScreenBuffer)(nil)).Elem())
 }
 
 type PostProcessingNode struct {
 	Scene.INode
 	Quad        Model.Mesh
 	Shader      Shader.IShaderProgram
-	FrameBuffer FrameBufferFactory.Config
+	FrameBuffer PostProcessing.OffScreenBuffer
 	Kernel      *PostProcessing.Kernel
 }
 
@@ -51,20 +49,30 @@ func (node *PostProcessingNode) Draw(shader Shader.IShaderProgram, invoker coreS
 		return nil
 	}
 
+	oldFrameBuffer := FrameBuffer.GetCurrentFrameBuffer()
 	node.FrameBuffer.Bind()
 	node.FrameBuffer.Clear()
+
 	err := scene.Draw(shader, node, scene)
-	node.FrameBuffer.Unbind()
+	oldFrameBuffer.Bind()
 	if err != nil {
 		return err
 	}
 
-	scene.Clear()
+	defer Function.GetCurrentCullFunction().Set()
+	defer Function.GetCurrentDepthFunction().Set()
+	defer Function.GetCurrentBlendFunction().Set()
+
+	Function.Back.Set()
+	Function.DisabledDepth.Set()
+	Function.DisabledBlend.Set()
 
 	node.Shader.Bind()
 	if shader != nil {
 		defer shader.Bind()
 	}
+
+	scene.Clear()
 	return node.Quad.Draw(node.Shader, node, scene)
 }
 
@@ -77,9 +85,9 @@ func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	yamlConfig := struct {
-		Shader      Shader.Ptr                `yaml:"shader"`
-		FrameBuffer FrameBufferFactory.Config `yaml:"frameBuffer"`
-		Kernel      *PostProcessing.Kernel    `yaml:",inline"`
+		Shader      Shader.Ptr                     `yaml:"shader"`
+		FrameBuffer PostProcessing.OffScreenBuffer `yaml:"frameBuffer"`
+		Kernel      *PostProcessing.Kernel         `yaml:",inline"`
 	}{
 		Shader: Shader.Ptr{
 			IShaderProgram: node.Shader,

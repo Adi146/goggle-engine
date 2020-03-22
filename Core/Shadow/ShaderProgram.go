@@ -2,9 +2,10 @@ package Shadow
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 const (
@@ -17,8 +18,12 @@ type ShaderProgram struct {
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
-	case *ShadowMapShader.ShadowMapBuffer:
-		return program.BindObject(v.ShadowMap)
+	case FrameBuffer.IFrameBuffer:
+		var errors Error.ErrorCollection
+		for _, texture := range v.GetTextures() {
+			errors.Push(program.BindObject(texture))
+		}
+		return errors.Err()
 	case Texture.ITexture:
 		return program.BindUniform(v, ua_shadowMap)
 	default:

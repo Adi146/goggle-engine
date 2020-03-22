@@ -3,12 +3,12 @@ package PhongShader
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
+	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Shadow"
-	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 )
 
@@ -67,7 +67,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.MaterialShader.BindObject(v)
 	case *Model.Model:
 		return program.BindUniform(v.ModelMatrix, ua_modelMatrix)
-	case *ShadowMapShader.ShadowMapBuffer:
+	case FrameBuffer.IFrameBuffer:
 		return program.ShadowShader.BindObject(v)
 	case UniformBuffer.IUniformBuffer:
 		switch t := v.GetType(); t {

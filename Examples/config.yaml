@@ -38,39 +38,19 @@ shaders:
       - ../Core/Shadow/ShadowMapShader/shadowMap.frag
       - ../Core/Model/Material/material.frag
 
-frameBuffers:
-  default:
-    type: sdlWindow
-    config:
-      title: "YamlConfig Example (FPS: %d)"
-      type: window
-      sync: adaptive
-      width: 1920
-      height: 1080
-      depthTest: true
-      culling: true
-      blend: true
-  offScreen:
-    type: offScreen
-    config:
-      width: 1920
-      height: 1080
-      depthTest: true
-      culling: true
-      blend: true
-  shadowMap:
-    type: shadowMapBuffer
-    config:
-      width: 4096
-      height: 4096
-      depthTest: true
-      culling: front
-      blend: false
-
 scenes:
   main:
     type: sceneGraph
     config:
+      window:
+        title: "YamlConfig Example (FPS: %d)"
+        type: window
+        sync: adaptive
+        width: 1920
+        height: 1080
+      depthTest: true
+      culling: true
+      blend: true
       children:
         postProcessing:
           type: Node.PostProcessing
@@ -86,7 +66,11 @@ scenes:
             numerator: 1
             denominator: 16
           shader: postProcessing
-          frameBuffer: offScreen
+          frameBuffer:
+            width: 1920
+            height: 1080
+            shaders:
+              - postProcessing
         cameraControl:
           type: UI.Control.WASDControl
           keyboardSensitivity: 100
@@ -153,7 +137,11 @@ scenes:
                     near: -3000
                     far: 3000
                 shader: shadowMap
-                frameBuffer: shadowMap
+                frameBuffer:
+                  width: 4096
+                  height: 4096
+                  shaders:
+                    - phong
         arena:
           type: Node.ModelNode
           file: Models/arena.obj

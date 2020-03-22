@@ -3,13 +3,11 @@ package YamlFactory
 import (
 	"github.com/Adi146/goggle-engine/Core/ProcessingPipeline"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory/SceneFactory"
 	"io/ioutil"
 	"os"
 
 	"github.com/Adi146/goggle-engine/Core/Utils/Log"
-	"github.com/Adi146/goggle-engine/Core/Window"
 	"github.com/Adi146/goggle-engine/SceneGraph/Factory"
 	"gopkg.in/yaml.v3"
 )
@@ -29,12 +27,6 @@ type config2 struct {
 }
 
 func (config *config) UnmarshalYAML(value *yaml.Node) error {
-	var frameBufferFactory FrameBufferFactory.FactoryConfig
-	if err := value.Decode(&frameBufferFactory); err != nil {
-		return err
-	}
-	FrameBufferFactory.SetConfig(frameBufferFactory)
-
 	if err := value.Decode(&Shader.Factory); err != nil {
 		return err
 	}
@@ -64,50 +56,13 @@ func ReadConfig(file *os.File) (*Factory.Config, error) {
 		return nil, err
 	}
 
-	pipelineSteps, err := config.UnmarshalProcessingPipeline()
-	if err != nil {
-		return nil, err
-	}
-	window, err := FrameBufferFactory.Get("default")
-	if err != nil {
-		return nil, err
-	}
-
 	if config.OpenGlLogging {
 		Log.EnableDebugLogging()
 	}
 
 	return &Factory.Config{
 		Pipeline: ProcessingPipeline.ProcessingPipeline{
-			Steps:  pipelineSteps,
-			Scenes: SceneFactory.GetAll(),
-			Window: window.(Window.IWindow),
+			Scene: SceneFactory.GetAll()[0],
 		},
 	}, nil
-}
-
-func (config *config) UnmarshalProcessingPipeline() ([]ProcessingPipeline.Step, error) {
-	var Pipeline []ProcessingPipeline.Step
-
-	for _, stepConfig := range config.ProcessingPipelineConfig {
-		frameBuffer, err := FrameBufferFactory.Get(stepConfig.FrameBuffer)
-		if err != nil {
-			return nil, err
-		}
-		scene, err := SceneFactory.Get(stepConfig.Scene)
-		if err != nil {
-			return nil, err
-		}
-
-		Pipeline = append(
-			Pipeline,
-			ProcessingPipeline.Step{
-				Scene:          scene,
-				FrameBuffer:    frameBuffer,
-				EnforcedShader: stepConfig.EnforcedShader.IShaderProgram,
-			},
-		)
-	}
-
-	return Pipeline, nil
 }

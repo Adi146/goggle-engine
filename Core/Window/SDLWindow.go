@@ -1,32 +1,18 @@
 package Window
 
 import (
-	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/veandco/go-sdl2/sdl"
+	"gopkg.in/yaml.v3"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-var (
-	typeFlags = map[string]uint32{
-		"window":     0,
-		"borderless": sdl.WINDOW_BORDERLESS,
-		"fullscreen": sdl.WINDOW_FULLSCREEN,
-	}
-
-	syncFlags = map[string]int{
-		"normal":   0,
-		"adaptive": -1,
-		"vertical": 1,
-	}
-)
-
 type SDLWindow struct {
-	FrameBuffer.FrameBufferBase `yaml:",inline"`
+	FrameBuffer.FrameBuffer
+	*sdl.Window
 
-	window    *sdl.Window
 	glContext sdl.GLContext
 
 	keyboardInput *SDLKeyboardInput
@@ -35,15 +21,11 @@ type SDLWindow struct {
 	performanceCounterFrequency uint64
 	lastCounter                 uint64
 	shouldClose                 bool
-
-	Title string `yaml:"title"`
-	Type  string `yaml:"type"`
-	Sync  string `yaml:"sync"`
 }
 
-func (window *SDLWindow) Init() error {
+func NewSDLWindow(viewport FrameBuffer.Viewport, title string, flags Flag) (*SDLWindow, error) {
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-		return err
+		return nil, err
 	}
 
 	sdl.GLSetAttribute(sdl.GL_RED_SIZE, 8)
@@ -56,40 +38,41 @@ func (window *SDLWindow) Init() error {
 	sdl.SetRelativeMouseMode(true)
 
 	sdlWindow, err := sdl.CreateWindow(
-		window.Title,
+		title,
 		sdl.WINDOWPOS_CENTERED,
 		sdl.WINDOWPOS_CENTERED,
-		window.Width,
-		window.Height,
-		sdl.WINDOW_OPENGL|typeFlags[window.Type],
+		viewport.Width,
+		viewport.Height,
+		sdl.WINDOW_OPENGL|uint32(flags),
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	glContext, err := sdlWindow.GLCreateContext()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if err := gl.Init(); err != nil {
-		return err
+		return nil, err
 	}
 
-	sdl.GLSetSwapInterval(syncFlags[window.Sync])
-
-	window.window = sdlWindow
-	window.glContext = glContext
-	window.keyboardInput = NewSDLKeyboardInput()
-	window.mouseInput = NewSDLMouseInput()
-	window.performanceCounterFrequency = sdl.GetPerformanceFrequency()
-	window.lastCounter = sdl.GetPerformanceCounter()
-
-	return nil
+	return &SDLWindow{
+		FrameBuffer: FrameBuffer.FrameBuffer{
+			Viewport: viewport,
+		},
+		Window:                      sdlWindow,
+		glContext:                   glContext,
+		keyboardInput:               NewSDLKeyboardInput(),
+		mouseInput:                  NewSDLMouseInput(),
+		performanceCounterFrequency: sdl.GetPerformanceFrequency(),
+		lastCounter:                 sdl.GetPerformanceCounter(),
+	}, nil
 }
 
 func (window *SDLWindow) Destroy() {
 	sdl.GLDeleteContext(window.glContext)
-	window.window.Destroy()
+	window.Window.Destroy()
 	sdl.Quit()
 }
 
@@ -112,7 +95,7 @@ func (window *SDLWindow) PollEvents() {
 }
 
 func (window *SDLWindow) SwapWindow() {
-	window.window.GLSwap()
+	window.Window.GLSwap()
 }
 
 func (window *SDLWindow) GetTimeDeltaAndFPS() (float32, uint32) {
@@ -122,17 +105,11 @@ func (window *SDLWindow) GetTimeDeltaAndFPS() (float32, uint32) {
 	fps := (uint32)((float32)(window.performanceCounterFrequency) / (float32)(counterElapsed))
 	window.lastCounter = endCounter
 
-	window.window.SetTitle(fmt.Sprintf(window.Title, fps))
-
 	return timeDelta, fps
 }
 
 func (window *SDLWindow) ShouldClose() bool {
 	return window.shouldClose
-}
-
-func (window *SDLWindow) GetSize() (int32, int32) {
-	return window.window.GetSize()
 }
 
 func (window *SDLWindow) GetKeyboardInput() IKeyboardInput {
@@ -143,6 +120,28 @@ func (window *SDLWindow) GetMouseInput() IMouseInput {
 	return window.mouseInput
 }
 
-func (window *SDLWindow) GetTextures() []*Texture.Texture {
+func (window *SDLWindow) GetTextures() []Texture.ITexture {
+	return nil
+}
+
+func (window *SDLWindow) UnmarshalYAML(value *yaml.Node) error {
+	var yamlConfig struct {
+		Viewport FrameBuffer.Viewport `yaml:",inline"`
+		Title    string               `yaml:"title"`
+		Sync     SyncInterval         `yaml:"sync"`
+		Flags    Flag                 `yaml:"flags"`
+	}
+	if err := value.Decode(&yamlConfig); err != nil {
+		return err
+	}
+
+	sdlWindow, err := NewSDLWindow(yamlConfig.Viewport, yamlConfig.Title, yamlConfig.Flags)
+	if err != nil {
+		return err
+	}
+
+	*window = *sdlWindow
+	sdl.GLSetSwapInterval((int)(yamlConfig.Sync))
+
 	return nil
 }

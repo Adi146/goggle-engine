@@ -2,7 +2,6 @@ package Shader
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 	"gopkg.in/yaml.v3"
 )
@@ -12,15 +11,13 @@ type Product struct {
 	VertexShaders   []string
 	FragmentShaders []string
 	Constructor     func([]string, []string) (IShaderProgram, error)
-	FrameBuffers    []FrameBufferFactory.Config
 }
 
 func (product *Product) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
-		Type            string                      `yaml:"type"`
-		VertexShaders   []string                    `yaml:"vertexShaders"`
-		FragmentShaders []string                    `yaml:"fragmentShaders"`
-		FrameBuffers    []FrameBufferFactory.Config `yaml:"frameBuffers"`
+		Type            string   `yaml:"type"`
+		VertexShaders   []string `yaml:"vertexShaders"`
+		FragmentShaders []string `yaml:"fragmentShaders"`
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
@@ -34,7 +31,6 @@ func (product *Product) UnmarshalYAML(value *yaml.Node) error {
 	product.VertexShaders = yamlConfig.VertexShaders
 	product.FragmentShaders = yamlConfig.FragmentShaders
 	product.Constructor = shaderConstructor
-	product.FrameBuffers = yamlConfig.FrameBuffers
 
 	return nil
 }
@@ -46,12 +42,6 @@ func (product *Product) Get() (IShaderProgram, error) {
 		tmpProgram, err := product.Constructor(product.VertexShaders, product.FragmentShaders)
 		if err != nil {
 			return nil, err
-		}
-
-		for _, fboConfig := range product.FrameBuffers {
-			if err := tmpProgram.BindObject(fboConfig.IFrameBuffer); err != nil {
-				errors.Push(err)
-			}
 		}
 
 		product.shaderProgram = tmpProgram

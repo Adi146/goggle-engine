@@ -1,9 +1,11 @@
 package Scene
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Log"
+	"gopkg.in/yaml.v3"
 	"sort"
 
 	"github.com/Adi146/goggle-engine/Core/Window"
@@ -11,29 +13,15 @@ import (
 )
 
 type SceneBase struct {
-	keyboardInput Window.IKeyboardInput
-	mouseInput    Window.IMouseInput
+	Window        Window.IWindow
+	CullFunction  Function.CullFunction
+	DepthFunction Function.DepthFunction
+	BlendFunction Function.BlendFunction
 
 	CameraPosition     *GeometryMath.Vector3
 	preRenderObjects   []IDrawable
 	opaqueObjects      []IDrawable
 	transparentObjects []ITransparentDrawable
-}
-
-func (scene *SceneBase) GetKeyboardInput() Window.IKeyboardInput {
-	return scene.keyboardInput
-}
-
-func (scene *SceneBase) SetKeyboardInput(input Window.IKeyboardInput) {
-	scene.keyboardInput = input
-}
-
-func (scene *SceneBase) GetMouseInput() Window.IMouseInput {
-	return scene.mouseInput
-}
-
-func (scene *SceneBase) SetMouseInput(input Window.IMouseInput) {
-	scene.mouseInput = input
 }
 
 func (scene *SceneBase) Tick(timeDelta float32) {
@@ -68,6 +56,15 @@ func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, or
 	}
 	if origin == nil {
 		origin = scene
+	}
+
+	if invoker == scene {
+		scene.Window.Bind()
+		scene.Window.Clear()
+
+		scene.CullFunction.Set()
+		scene.DepthFunction.Set()
+		scene.BlendFunction.Set()
 	}
 
 	var err Error.ErrorCollection
@@ -118,4 +115,37 @@ func (scene *SceneBase) drawTransparentObjects(shader Shader.IShaderProgram, inv
 	}
 
 	return err.Err()
+}
+
+func (scene *SceneBase) GetWindow() Window.IWindow {
+	return scene.Window
+}
+
+func (scene *SceneBase) UnmarshalYAML(value *yaml.Node) error {
+	yamlConfig := struct {
+		WindowConfig  yaml.Node              `yaml:"window"`
+		CullFunction  Function.CullFunction  `yaml:"culling"`
+		DepthFunction Function.DepthFunction `yaml:"blend"`
+		BlendFunction Function.BlendFunction `yaml:"depthTest"`
+	}{
+		CullFunction:  scene.CullFunction,
+		DepthFunction: scene.DepthFunction,
+		BlendFunction: scene.BlendFunction,
+	}
+	if err := value.Decode(&yamlConfig); err != nil {
+		return err
+	}
+
+	scene.CullFunction = yamlConfig.CullFunction
+	scene.DepthFunction = yamlConfig.DepthFunction
+	scene.BlendFunction = yamlConfig.BlendFunction
+
+	if scene.Window == nil {
+		scene.Window = &Window.SDLWindow{}
+	}
+	if err := yamlConfig.WindowConfig.Decode(scene.Window); err != nil {
+		return err
+	}
+
+	return nil
 }

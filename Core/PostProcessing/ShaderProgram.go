@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
@@ -43,10 +44,19 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string)
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
-	case *FrameBuffer.OffScreenBuffer:
-		return program.BindUniform(&v.ColorTexture, ua_screenTexture)
-	case *ShadowMapShader.ShadowMapBuffer:
-		return program.BindUniform(&v.ShadowMap, ua_screenTexture)
+	case FrameBuffer.IFrameBuffer:
+		var errors Error.ErrorCollection
+		for _, texture := range v.GetTextures() {
+			errors.Push(program.BindObject(texture))
+		}
+		return errors.Err()
+	case Texture.ITexture:
+		switch t := v.GetType(); t {
+		case OffscreenTexture, ShadowMapShader.ShadowMap:
+			return program.BindUniform(v, ua_screenTexture)
+		default:
+			return fmt.Errorf("post processing shader does not support texture of type %s", t)
+		}
 	case *Kernel:
 		return program.bindKernel(v)
 	default:

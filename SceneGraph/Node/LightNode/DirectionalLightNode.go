@@ -2,12 +2,13 @@ package LightNode
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Camera"
+	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
+	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Shadow/ShadowMapShader"
-	"github.com/Adi146/goggle-engine/SceneGraph/Factory/FrameBufferFactory"
 	"gopkg.in/yaml.v3"
 	"reflect"
 
@@ -16,12 +17,10 @@ import (
 
 const (
 	DirectionalLightNodeFactoryName = "Node.LightNode.DirectionalLightNode"
-	ShadowMapFramebufferName        = "shadowMapBuffer"
 )
 
 func init() {
 	Scene.NodeFactory.AddType(DirectionalLightNodeFactoryName, reflect.TypeOf((*DirectionalLightNode)(nil)).Elem())
-	FrameBufferFactory.AddType(ShadowMapFramebufferName, reflect.TypeOf((*ShadowMapShader.ShadowMapBuffer)(nil)).Elem())
 }
 
 type DirectionalLightNode struct {
@@ -31,7 +30,7 @@ type DirectionalLightNode struct {
 	ShadowMap        struct {
 		Camera      Camera.ICamera
 		Shader      Shader.IShaderProgram
-		FrameBuffer FrameBufferFactory.Config
+		FrameBuffer ShadowMapShader.ShadowMapBuffer
 	}
 }
 
@@ -54,9 +53,16 @@ func (node *DirectionalLightNode) Draw(shader Shader.IShaderProgram, invoker cor
 	if invoker == node {
 		return nil
 	}
+	defer FrameBuffer.GetCurrentFrameBuffer().Bind()
+	defer Function.GetCurrentCullFunction().Set()
+	defer Function.GetCurrentDepthFunction().Set()
+	defer Function.GetCurrentBlendFunction().Set()
 
 	node.ShadowMap.FrameBuffer.Bind()
-	defer node.ShadowMap.FrameBuffer.Unbind()
+	Function.Front.Set()
+	Function.Less.Set()
+	Function.DisabledBlend.Set()
+
 	node.ShadowMap.FrameBuffer.Clear()
 
 	if shader != nil {
@@ -89,8 +95,8 @@ func (node *DirectionalLightNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	type shadowMapConfig struct {
-		Shader      Shader.Ptr                `yaml:"shader"`
-		FrameBuffer FrameBufferFactory.Config `yaml:"frameBuffer"`
+		Shader      Shader.Ptr                      `yaml:"shader"`
+		FrameBuffer ShadowMapShader.ShadowMapBuffer `yaml:"frameBuffer"`
 	}
 	yamlConfig := struct {
 		ShadowMap shadowMapConfig `yaml:"shadowMap"`

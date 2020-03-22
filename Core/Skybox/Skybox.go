@@ -2,12 +2,12 @@ package Skybox
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Buffer"
+	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 var (
@@ -61,15 +61,12 @@ func NewSkybox(texture *Texture.CubeMap) (*Skybox, error) {
 }
 
 func (skybox *Skybox) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
-	var oldDepthFunc int32
-	gl.GetIntegerv(gl.DEPTH_FUNC, &oldDepthFunc)
-	gl.DepthFunc(gl.LEQUAL)
+	defer Function.GetCurrentDepthFunction().Set()
+	Function.LessEqual.Set()
 
 	err := shader.BindObject(skybox.CubeMap)
 	skybox.Mesh.Draw(shader, nil, nil)
 	skybox.CubeMap.Unbind()
-
-	gl.DepthFunc(uint32(oldDepthFunc))
 
 	return err
 }

@@ -2,6 +2,7 @@ package FrameBuffer
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"gopkg.in/yaml.v3"
 )
@@ -12,15 +13,27 @@ type FrameBuffer struct {
 	fbo      uint32
 	Viewport Viewport
 	Type     Type
+
+	ColorAttachments  []IAttachment
+	DepthAttachment   IAttachment
+	StencilAttachment IAttachment
 }
 
 func NewFrameBuffer(viewport Viewport, fboType Type) FrameBuffer {
+	var maxColorAttachments int32
+	gl.GetIntegerv(gl.MAX_COLOR_ATTACHMENTS, &maxColorAttachments)
+
 	buff := FrameBuffer{
-		Viewport: viewport,
-		Type:     fboType,
+		Viewport:         viewport,
+		Type:             fboType,
+		ColorAttachments: make([]IAttachment, maxColorAttachments),
 	}
 
 	gl.GenFramebuffers(1, &buff.fbo)
+
+	//Fix Error GL_INVALID_OPERATION errors
+	buff.Bind()
+	buff.Unbind()
 
 	return buff
 }
@@ -51,8 +64,69 @@ func (buff *FrameBuffer) Unbind() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
 }
 
+func (buff *FrameBuffer) AddColorAttachment(attachment IAttachment, index uint32) {
+	switch attachment.(type) {
+	case Texture.ITexture:
+		gl.NamedFramebufferTexture(buff.GetFBO(), gl.COLOR_ATTACHMENT0+index, attachment.GetID(), 0)
+	case IAttachment:
+		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.COLOR_ATTACHMENT0+index, attachment.GetID(), 0)
+	}
+
+	buff.ColorAttachments[index] = attachment
+}
+
+func (buff *FrameBuffer) AddDepthAttachment(attachment IAttachment) {
+	switch attachment.(type) {
+	case Texture.ITexture:
+		gl.NamedFramebufferTexture(buff.GetFBO(), gl.DEPTH_ATTACHMENT, attachment.GetID(), 0)
+	case IAttachment:
+		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.DEPTH_ATTACHMENT, attachment.GetID(), 0)
+	}
+
+	buff.StencilAttachment = attachment
+}
+
+func (buff *FrameBuffer) AddDepthStencilAttachment(attachment IAttachment) {
+	switch attachment.(type) {
+	case Texture.ITexture:
+		gl.NamedFramebufferTexture(buff.GetFBO(), gl.DEPTH_STENCIL_ATTACHMENT, attachment.GetID(), 0)
+	case IAttachment:
+		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.DEPTH_STENCIL_ATTACHMENT, attachment.GetID(), 0)
+	}
+
+	buff.DepthAttachment = attachment
+	buff.StencilAttachment = attachment
+}
+
+func (buff *FrameBuffer) AddStencilAttachment(attachment IAttachment) {
+	switch attachment.(type) {
+	case Texture.ITexture:
+		gl.NamedFramebufferTexture(buff.GetFBO(), gl.STENCIL_ATTACHMENT, attachment.GetID(), 0)
+	case IAttachment:
+		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.STENCIL_ATTACHMENT, attachment.GetID(), 0)
+	}
+
+	buff.DepthAttachment = attachment
+}
+
+func (buff *FrameBuffer) Finish() error {
+	for _, colorAttachment := range buff.ColorAttachments {
+		if colorAttachment != nil {
+			return buff.CheckCompleteness()
+		}
+	}
+
+	gl.NamedFramebufferDrawBuffer(buff.GetFBO(), gl.NONE)
+	gl.NamedFramebufferReadBuffer(buff.GetFBO(), gl.NONE)
+
+	return buff.CheckCompleteness()
+}
+
 func (buff *FrameBuffer) CheckCompleteness() error {
-	if status := gl.CheckFramebufferStatus(gl.FRAMEBUFFER); status != gl.FRAMEBUFFER_COMPLETE {
+	if status := gl.CheckNamedFramebufferStatus(buff.GetFBO(), gl.FRAMEBUFFER); status != gl.FRAMEBUFFER_COMPLETE {
+		if status == 0 {
+			fmt.Println(gl.GetError())
+		}
 		return fmt.Errorf("framebuffer is not complete! current status %x", status)
 	}
 

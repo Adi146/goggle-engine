@@ -62,8 +62,8 @@ scene:
       frameBuffer:
         width: 1920
         height: 1080
-        shaders:
-          - postProcessing
+      shaders:
+        - postProcessing
     cameraControl:
       type: UI.Control.WASDControl
       keyboardSensitivity: 100
@@ -133,8 +133,8 @@ scene:
             frameBuffer:
               width: 4096
               height: 4096
-              shaders:
-                - phong
+            bindOnShaders:
+              - phong
     arena:
       type: Node.ModelNode
       file: Models/arena.obj

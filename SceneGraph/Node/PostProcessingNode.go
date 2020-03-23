@@ -24,7 +24,7 @@ type PostProcessingNode struct {
 	Scene.INode
 	Quad        Model.Mesh
 	Shader      Shader.IShaderProgram
-	FrameBuffer PostProcessing.OffScreenBuffer
+	FrameBuffer FrameBuffer.FrameBuffer
 	Kernel      *PostProcessing.Kernel
 }
 
@@ -85,9 +85,9 @@ func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	yamlConfig := struct {
-		Shader      Shader.Ptr                     `yaml:"shader"`
-		FrameBuffer PostProcessing.OffScreenBuffer `yaml:"frameBuffer"`
-		Kernel      *PostProcessing.Kernel         `yaml:",inline"`
+		Shader      Shader.Ptr              `yaml:"shader"`
+		FrameBuffer FrameBuffer.FrameBuffer `yaml:"frameBuffer"`
+		Kernel      *PostProcessing.Kernel  `yaml:",inline"`
 	}{
 		Shader: Shader.Ptr{
 			IShaderProgram: node.Shader,
@@ -96,6 +96,17 @@ func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
 		Kernel:      node.Kernel,
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
+		return err
+	}
+
+	texture, err := PostProcessing.NewOffscreenTexture(yamlConfig.FrameBuffer.Viewport.Width, yamlConfig.FrameBuffer.Viewport.Height)
+	if err != nil {
+		return err
+	}
+	yamlConfig.FrameBuffer.AddColorAttachment(texture, 0)
+	yamlConfig.FrameBuffer.AddDepthStencilAttachment(FrameBuffer.NewDepth24Stencil8Rbo(yamlConfig.FrameBuffer.Viewport.Width, yamlConfig.FrameBuffer.Viewport.Height))
+
+	if err := yamlConfig.Shader.BindObject(texture); err != nil {
 		return err
 	}
 

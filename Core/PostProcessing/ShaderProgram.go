@@ -2,7 +2,6 @@ package PostProcessing
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 
@@ -44,12 +43,6 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string)
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
-	case FrameBuffer.IFrameBuffer:
-		var errors Error.ErrorCollection
-		for _, texture := range v.GetTextures() {
-			errors.Push(program.BindObject(texture))
-		}
-		return errors.Err()
 	case Texture.ITexture:
 		switch t := v.GetType(); t {
 		case OffscreenTexture, ShadowMapping.ShadowMap:

@@ -13,12 +13,20 @@ type Texture struct {
 	Unit   *Unit
 }
 
+func (texture *Texture) GetID() uint32 {
+	return texture.ID
+}
+
 func (texture *Texture) GetUnit() *Unit {
 	return texture.Unit
 }
 
 func (texture *Texture) GetType() Type {
 	return texture.Type
+}
+
+func (texture *Texture) GetTarget() uint32 {
+	return texture.Target
 }
 
 func (texture *Texture) Bind() error {

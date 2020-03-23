@@ -22,6 +22,8 @@ const (
 
 	directionalLight_ubo_size = 192
 	DirectionalLight_ubo_type = "directionalLight"
+
+	DirectionalLight_fbo_type = "shadowMap"
 )
 
 type UBODirectionalLight struct {
@@ -30,7 +32,7 @@ type UBODirectionalLight struct {
 	ShadowMap struct {
 		CameraSection Camera.CameraSection
 		Shader        Shader.IShaderProgram
-		FrameBuffer   ShadowMapping.FrameBuffer
+		FrameBuffer   FrameBuffer.FrameBuffer
 	}
 }
 
@@ -97,9 +99,10 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	type ShadowMap struct {
-		CameraSection Camera.CameraSection      `yaml:",inline"`
-		Shader        Shader.Ptr                `yaml:"shader"`
-		FrameBuffer   ShadowMapping.FrameBuffer `yaml:"frameBuffer"`
+		CameraSection Camera.CameraSection    `yaml:",inline"`
+		Shader        Shader.Ptr              `yaml:"shader"`
+		FrameBuffer   FrameBuffer.FrameBuffer `yaml:"frameBuffer"`
+		Shaders       []Shader.Ptr            `yaml:"bindOnShaders"`
 	}
 
 	yamlConfig := struct {
@@ -127,11 +130,26 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 			Shader: Shader.Ptr{
 				IShaderProgram: light.ShadowMap.Shader,
 			},
-			FrameBuffer: light.ShadowMap.FrameBuffer,
+			FrameBuffer: FrameBuffer.FrameBuffer{
+				Type: DirectionalLight_fbo_type,
+			},
 		},
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return nil
+	}
+
+	texture, err := ShadowMapping.NewShadowMap(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height, yamlConfig.ShadowMap.FrameBuffer.Viewport.Width)
+	if err != nil {
+		return err
+	}
+	yamlConfig.ShadowMap.FrameBuffer.AddDepthAttachment(texture)
+	yamlConfig.ShadowMap.FrameBuffer.Finish()
+
+	for _, shader := range yamlConfig.Shaders {
+		if err := shader.BindObject(texture); err != nil {
+			return err
+		}
 	}
 
 	light.LightDirectionSection = yamlConfig.Light.DirectionSection

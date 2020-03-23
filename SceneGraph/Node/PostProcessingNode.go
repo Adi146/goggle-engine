@@ -105,6 +105,9 @@ func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 	yamlConfig.FrameBuffer.AddColorAttachment(texture, 0)
 	yamlConfig.FrameBuffer.AddDepthStencilAttachment(FrameBuffer.NewDepth24Stencil8Rbo(yamlConfig.FrameBuffer.Viewport.Width, yamlConfig.FrameBuffer.Viewport.Height))
+	if err := yamlConfig.FrameBuffer.Finish(); err != nil {
+		return err
+	}
 
 	if err := yamlConfig.Shader.BindObject(texture); err != nil {
 		return err

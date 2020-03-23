@@ -62,8 +62,6 @@ scene:
       frameBuffer:
         width: 1920
         height: 1080
-      shaders:
-        - postProcessing
     cameraControl:
       type: UI.Control.WASDControl
       keyboardSensitivity: 100

@@ -30,6 +30,9 @@ shadowMap:
             top: 3000
             near: -3000
             far: 3000
+    frameBuffer:
+        width: 4096
+        height: 4096
     `
 
 	if err := yaml.Unmarshal([]byte(data), &light); err != nil {

@@ -69,7 +69,7 @@ func (buff *FrameBuffer) AddColorAttachment(attachment IAttachment, index uint32
 	case Texture.ITexture:
 		gl.NamedFramebufferTexture(buff.GetFBO(), gl.COLOR_ATTACHMENT0+index, attachment.GetID(), 0)
 	case IAttachment:
-		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.COLOR_ATTACHMENT0+index, attachment.GetID(), 0)
+		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.COLOR_ATTACHMENT0+index, gl.RENDERBUFFER, attachment.GetID())
 	}
 
 	buff.ColorAttachments[index] = attachment
@@ -80,7 +80,7 @@ func (buff *FrameBuffer) AddDepthAttachment(attachment IAttachment) {
 	case Texture.ITexture:
 		gl.NamedFramebufferTexture(buff.GetFBO(), gl.DEPTH_ATTACHMENT, attachment.GetID(), 0)
 	case IAttachment:
-		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.DEPTH_ATTACHMENT, attachment.GetID(), 0)
+		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, attachment.GetID())
 	}
 
 	buff.StencilAttachment = attachment
@@ -91,7 +91,7 @@ func (buff *FrameBuffer) AddDepthStencilAttachment(attachment IAttachment) {
 	case Texture.ITexture:
 		gl.NamedFramebufferTexture(buff.GetFBO(), gl.DEPTH_STENCIL_ATTACHMENT, attachment.GetID(), 0)
 	case IAttachment:
-		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.DEPTH_STENCIL_ATTACHMENT, attachment.GetID(), 0)
+		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, attachment.GetID())
 	}
 
 	buff.DepthAttachment = attachment
@@ -103,7 +103,7 @@ func (buff *FrameBuffer) AddStencilAttachment(attachment IAttachment) {
 	case Texture.ITexture:
 		gl.NamedFramebufferTexture(buff.GetFBO(), gl.STENCIL_ATTACHMENT, attachment.GetID(), 0)
 	case IAttachment:
-		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.STENCIL_ATTACHMENT, attachment.GetID(), 0)
+		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.STENCIL_ATTACHMENT, gl.RENDERBUFFER, attachment.GetID())
 	}
 
 	buff.DepthAttachment = attachment
@@ -124,9 +124,6 @@ func (buff *FrameBuffer) Finish() error {
 
 func (buff *FrameBuffer) CheckCompleteness() error {
 	if status := gl.CheckNamedFramebufferStatus(buff.GetFBO(), gl.FRAMEBUFFER); status != gl.FRAMEBUFFER_COMPLETE {
-		if status == 0 {
-			fmt.Println(gl.GetError())
-		}
 		return fmt.Errorf("framebuffer is not complete! current status %x", status)
 	}
 

@@ -25,7 +25,7 @@ var (
 	}
 	Less = DepthFunction{
 		Enabled:  true,
-		Function: gl.LEQUAL,
+		Function: gl.LESS,
 	}
 	Equal = DepthFunction{
 		Enabled:  true,

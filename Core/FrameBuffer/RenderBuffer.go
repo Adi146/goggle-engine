@@ -13,6 +13,9 @@ func NewRenderBuffer() *RenderBuffer {
 
 	gl.GenRenderbuffers(1, &buff.rbo)
 
+	buff.Bind()
+	buff.Unbind()
+
 	return &buff
 }
 
@@ -26,4 +29,12 @@ func NewDepth24Stencil8Rbo(width int32, height int32) *RenderBuffer {
 
 func (buff *RenderBuffer) GetID() uint32 {
 	return buff.rbo
+}
+
+func (buff *RenderBuffer) Bind() {
+	gl.BindRenderbuffer(gl.RENDERBUFFER, buff.GetID())
+}
+
+func (buff *RenderBuffer) Unbind() {
+	gl.BindRenderbuffer(gl.RENDERBUFFER, 0)
 }

@@ -144,7 +144,9 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 	yamlConfig.ShadowMap.FrameBuffer.AddDepthAttachment(texture)
-	yamlConfig.ShadowMap.FrameBuffer.Finish()
+	if err := yamlConfig.ShadowMap.FrameBuffer.Finish(); err != nil {
+		return err
+	}
 
 	for _, shader := range yamlConfig.Shaders {
 		if err := shader.BindObject(texture); err != nil {

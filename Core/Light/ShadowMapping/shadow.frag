@@ -18,6 +18,7 @@ struct PointLight{
     vec3 specular;
 
     mat4 viewProjectionMatrix[6];
+    float distance;
 };
 
 layout (std140) uniform pointLight {
@@ -51,7 +52,7 @@ float calculateShadowPointLight(int pointLightIndex) {
     vec3 fragToLight = v_position - u_pointLights[pointLightIndex].position;
     float closestDepth = texture(u_shadowMapsPointLight[pointLightIndex], fragToLight).r;
 
-    closestDepth *= 3250;
+    closestDepth *=  u_pointLights[pointLightIndex].distance;
 
     float currentDepth = length(fragToLight);
 

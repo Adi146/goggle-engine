@@ -2,6 +2,7 @@ package Light
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
@@ -11,14 +12,16 @@ import (
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/Adi146/goggle-engine/Utils/Log"
 	"gopkg.in/yaml.v3"
+	"math"
 )
 
 const (
 	pointLight_offset_position = 0
 	pointLight_offset_color    = internal.Size_lightPositionSection
 	pointLight_offset_camera   = internal.Size_lightPositionSection + internal.Size_lightColorSection
+	pointLight_offset_distance = internal.Size_lightPositionSection + internal.Size_lightColorSection + 6*internal.Size_shadowCameraSection
 
-	pointLight_size_section = internal.Size_lightPositionSection + internal.Size_lightColorSection + 6*internal.Size_shadowCameraSection
+	pointLight_size_section = internal.Size_lightPositionSection + internal.Size_lightColorSection + 6*internal.Size_shadowCameraSection + internal.Size_shadowDistanceSection
 
 	pointLight_ubo_size                    = UniformBuffer.Std140_size_single + UniformBuffer.Num_elements*pointLight_size_section
 	PointLight_ubo_type UniformBuffer.Type = "pointLight"
@@ -30,10 +33,11 @@ type UBOPointLight struct {
 	internal.LightPositionSection
 	internal.LightColorSection
 	ShadowMap struct {
-		CameraSections [6]internal.ShadowCameraSection
-		Shader         Shader.IShaderProgram
-		FrameBuffer    FrameBuffer.FrameBuffer
-		Index          int
+		CameraSections  [6]internal.ShadowCameraSection
+		DistanceSection internal.ShadowDistanceSection
+		Shader          Shader.IShaderProgram
+		FrameBuffer     FrameBuffer.FrameBuffer
+		Index           int
 	}
 }
 
@@ -43,6 +47,7 @@ func (light *UBOPointLight) ForceUpdate() {
 	for i := range light.ShadowMap.CameraSections {
 		light.ShadowMap.CameraSections[i].ForceUpdate()
 	}
+	light.ShadowMap.DistanceSection.ForceUpdate()
 }
 
 func (light *UBOPointLight) SetUniformBuffer(ubo UniformBuffer.IUniformBuffer, offset int) {
@@ -51,6 +56,7 @@ func (light *UBOPointLight) SetUniformBuffer(ubo UniformBuffer.IUniformBuffer, o
 	for i := range light.ShadowMap.CameraSections {
 		light.ShadowMap.CameraSections[i].SetUniformBuffer(ubo, offset+pointLight_offset_camera+i*internal.Size_shadowCameraSection)
 	}
+	light.ShadowMap.DistanceSection.SetUniformBuffer(ubo, offset+pointLight_offset_distance)
 }
 
 func (light *UBOPointLight) GetSize() int {
@@ -117,10 +123,10 @@ func (light *UBOPointLight) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	type ShadowMap struct {
-		CameraSection internal.ShadowCameraSection `yaml:",inline"`
-		Shader        Shader.Ptr                   `yaml:"shader"`
-		FrameBuffer   FrameBuffer.FrameBuffer      `yaml:"frameBuffer"`
-		Shaders       []Shader.Ptr                 `yaml:"bindOnShaders"`
+		Distance    internal.ShadowDistanceSection `yaml:"distance"`
+		Shader      Shader.Ptr                     `yaml:"shader"`
+		FrameBuffer FrameBuffer.FrameBuffer        `yaml:"frameBuffer"`
+		Shaders     []Shader.Ptr                   `yaml:"bindOnShaders"`
 	}
 
 	yamlConfig := struct {
@@ -138,9 +144,9 @@ func (light *UBOPointLight) UnmarshalYAML(value *yaml.Node) error {
 			},
 		},
 		ShadowMap: ShadowMap{
-			CameraSection: internal.ShadowCameraSection{
-				Camera: light.ShadowMap.CameraSections[0].Camera,
-				Offset: pointLight_offset_camera,
+			Distance: internal.ShadowDistanceSection{
+				Distance: light.ShadowMap.DistanceSection.Distance,
+				Offset:   pointLight_offset_distance,
 			},
 			Shader: Shader.Ptr{
 				IShaderProgram: light.ShadowMap.Shader,
@@ -167,9 +173,14 @@ func (light *UBOPointLight) UnmarshalYAML(value *yaml.Node) error {
 	light.LightPositionSection = yamlConfig.Light.PositionSection
 	light.LightColorSection = yamlConfig.Light.ColorSection
 	for i := range light.ShadowMap.CameraSections {
-		light.ShadowMap.CameraSections[i] = yamlConfig.ShadowMap.CameraSection
-		light.ShadowMap.CameraSections[i].Offset = yamlConfig.ShadowMap.CameraSection.Offset + i*internal.Size_shadowCameraSection
+		light.ShadowMap.CameraSections[i] = internal.ShadowCameraSection{
+			Camera: Camera.Camera{
+				ProjectionMatrix: *GeometryMath.Perspective(math.Pi/2, float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width)/float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height), 1, yamlConfig.ShadowMap.Distance.Distance),
+			},
+			Offset: pointLight_offset_camera + i*internal.Size_shadowCameraSection,
+		}
 	}
+	light.ShadowMap.DistanceSection = yamlConfig.ShadowMap.Distance
 	light.ShadowMap.Shader = yamlConfig.ShadowMap.Shader.IShaderProgram
 	light.ShadowMap.FrameBuffer = yamlConfig.ShadowMap.FrameBuffer
 	index, err := uboYamlConfig.Ptr.AddElement(light)

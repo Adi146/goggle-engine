@@ -184,12 +184,7 @@ scene:
           transformation:
             - translation: [0, 300, -300]
           shadowMap:
-            projection:
-              perspective:
-                fovy: 90
-                aspect: 1
-                near: 1
-                far: 3250
+            distance: 3250
             shader: shadowMapPointLight
             frameBuffer:
               width: 1024
@@ -213,12 +208,7 @@ scene:
           transformation:
             - translation: [0, 300, 300]
           shadowMap:
-            projection:
-              perspective:
-                fovy: 90
-                aspect: 1
-                near: 1
-                far: 3250
+            distance: 3250
             shader: shadowMapPointLight
             frameBuffer:
               width: 1024

@@ -13,6 +13,7 @@ struct PointLight{
     vec3 specular;
 
     mat4 viewProjectionMatrix[6];
+    float distance;
 };
 
 layout (std140) uniform pointLight {
@@ -32,7 +33,7 @@ void main() {
 
     float lightDistance = length(FragPos.xyz - u_pointLights[u_lightIndex].position);
 
-    lightDistance = lightDistance / 3250;
+    lightDistance = lightDistance / u_pointLights[u_lightIndex].distance;
 
     gl_FragDepth = lightDistance;
 }

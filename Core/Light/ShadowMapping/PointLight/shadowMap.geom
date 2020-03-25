@@ -14,6 +14,7 @@ struct PointLight{
     vec3 specular;
 
     mat4 viewProjectionMatrix[6];
+    float distance;
 };
 
 layout (std140) uniform pointLight {

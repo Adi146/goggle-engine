@@ -45,12 +45,7 @@ lights:
           quadratic: 0.000007
       uniformBuffer: pointLight
       shadowMap:
-          projection:
-              perspective:
-                  fovy: 90
-                  aspect: 1
-                  near: 1
-                  far: 3250
+          distance: 3250
           frameBuffer:
               width: 1024
               height: 1024

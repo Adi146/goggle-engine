@@ -1,11 +1,5 @@
 #version 410 core
 
-struct MaterialColor {
-    vec4 diffuse;
-    vec3 specular;
-    vec3 emissive;
-};
-
 vec4 GetDiffuseColor();
 
 void main() {

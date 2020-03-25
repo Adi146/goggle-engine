@@ -30,10 +30,11 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	front := invTransGlobalTransformation.MulVector(&node.FrontVector).Normalize()
 	up := invTransGlobalTransformation.MulVector(&node.UpVector).Normalize()
 
+	node.Camera.SetPosition(*position)
 	node.Camera.SetViewMatrix(*GeometryMath.LookAt(position, position.Add(front), up))
 
 	if scene := node.GetScene(); scene != nil {
-		scene.CameraPosition = node.GetGlobalPosition()
+		scene.CameraPosition = position
 	}
 
 	return nil

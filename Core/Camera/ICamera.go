@@ -10,4 +10,7 @@ type ICamera interface {
 
 	GetProjectionMatrix() GeometryMath.Matrix4x4
 	SetProjectionMatrix(matrix GeometryMath.Matrix4x4)
+
+	GetPosition() GeometryMath.Vector3
+	SetPosition(pos GeometryMath.Vector3)
 }

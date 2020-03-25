@@ -24,6 +24,7 @@ var (
 			"kernel.frag",
 		},
 	}
+	geometryShaders []string
 )
 
 func TestPostprocessingCompile(t *testing.T) {
@@ -31,7 +32,7 @@ func TestPostprocessingCompile(t *testing.T) {
 	defer window.Destroy()
 
 	for _, fragmentShader := range fragmentShaders {
-		shader, err := PostProcessing.NewShaderProgram(vertexShaders, fragmentShader)
+		shader, err := PostProcessing.NewShaderProgram(vertexShaders, fragmentShader, geometryShaders)
 		if shader == nil || err != nil {
 			t.Errorf("Error while compiling postprocessing shader %s [vertexShaders: %s, fragmentShaders: %s]", err.Error(), vertexShaders, fragmentShaders)
 		}

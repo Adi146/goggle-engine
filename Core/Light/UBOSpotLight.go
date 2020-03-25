@@ -8,11 +8,11 @@ import (
 
 const (
 	spotLight_offset_position  = 0
-	spotLight_offset_color     = 32
-	spotLight_offset_direction = 80
-	spotLight_offset_cone      = 92
+	spotLight_offset_color     = internal.Size_lightPositionSection
+	spotLight_offset_direction = internal.Size_lightPositionSection + internal.Size_lightColorSection
+	spotLight_offset_cone      = internal.Size_lightPositionSection + internal.Size_lightColorSection + internal.Size_lightDirectionSection
 
-	spotLight_size_section = 112
+	spotLight_size_section = internal.Size_lightPositionSection + internal.Size_lightColorSection + internal.Size_lightDirectionSection + internal.Size_lightConeSection
 
 	spotLight_ubo_size                    = UniformBuffer.Std140_size_single + UniformBuffer.Num_elements*spotLight_size_section
 	SpotLight_ubo_type UniformBuffer.Type = "spotLight"
@@ -98,7 +98,7 @@ func (light *UBOSpotLight) UnmarshalYAML(value *yaml.Node) error {
 	light.LightColorSection = yamlConfig.Light.ColorSection
 	light.LightDirectionSection = yamlConfig.Light.DirectionSection
 	light.LightConeSection = yamlConfig.Light.ConeSection
-	if err := uboYamlConfig.Ptr.AddElement(light); err != nil {
+	if _, err := uboYamlConfig.Ptr.AddElement(light); err != nil {
 		return err
 	}
 

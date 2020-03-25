@@ -25,8 +25,8 @@ func init() {
 	Shader.Factory.AddConstructor(shader_factory_name, NewIShaderProgram)
 }
 
-func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgram, error) {
-	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles)
+func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string, geometryShaderFiles []string) (*ShaderProgram, error) {
+	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles, geometryShaderFiles)
 	if err != nil {
 		return nil, err
 	}
@@ -36,22 +36,30 @@ func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) 
 	}, nil
 }
 
-func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (Shader.IShaderProgram, error) {
-	return NewShaderProgram(vertexShaderFiles, fragmentShaderFiles)
+func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string, geometryShaderFiles []string) (Shader.IShaderProgram, error) {
+	return NewShaderProgram(vertexShaderFiles, fragmentShaderFiles, geometryShaderFiles)
 }
 
-func (program *ShaderProgram) BindObject(i interface{}) error {
+func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 	switch v := i.(type) {
 	case Texture.ITexture:
-		return program.BindUniform(v, ua_skybox)
+		return ua_skybox, nil
 	case UniformBuffer.IUniformBuffer:
 		switch t := v.GetType(); t {
 		case Camera.UBO_type:
-			return program.BindUniform(v, ua_camera)
+			return ua_camera, nil
 		default:
-			return fmt.Errorf("skybox shader does not support uniform buffers of type %s", t)
+			return "", fmt.Errorf("skybox shader does not support uniform buffers of type %s", t)
 		}
 	default:
-		return fmt.Errorf("skybox shader does not support type %T", v)
+		return "", fmt.Errorf("skybox shader does not support type %T", v)
 	}
+}
+
+func (program *ShaderProgram) BindObject(i interface{}) error {
+	uniformAddress, err := program.GetUniformAddress(i)
+	if err != nil {
+		return err
+	}
+	return program.BindUniform(i, uniformAddress)
 }

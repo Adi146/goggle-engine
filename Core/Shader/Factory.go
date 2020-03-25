@@ -6,15 +6,15 @@ import (
 
 var Factory = factory{
 	Products:     make(map[string]*Product),
-	Constructors: make(map[string]func([]string, []string) (IShaderProgram, error)),
+	Constructors: make(map[string]func([]string, []string, []string) (IShaderProgram, error)),
 }
 
 type factory struct {
 	Products     map[string]*Product `yaml:"shaders"`
-	Constructors map[string]func([]string, []string) (IShaderProgram, error)
+	Constructors map[string]func([]string, []string, []string) (IShaderProgram, error)
 }
 
-func (factory *factory) AddConstructor(key string, constructor func([]string, []string) (IShaderProgram, error)) {
+func (factory *factory) AddConstructor(key string, constructor func([]string, []string, []string) (IShaderProgram, error)) {
 	factory.Constructors[key] = constructor
 }
 

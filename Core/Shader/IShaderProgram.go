@@ -6,6 +6,8 @@ type IShaderProgram interface {
 
 	Destroy()
 
+	GetUniformAddress(i interface{}) (string, error)
+
 	BindObject(i interface{}) error
 	BindUniform(i interface{}, address string) error
 }

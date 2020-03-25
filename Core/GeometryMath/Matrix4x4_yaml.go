@@ -83,7 +83,7 @@ type perspectiveConfig struct {
 
 func (config *perspectiveConfig) decode() *Matrix4x4 {
 	return Perspective(
-		Radians(config.Fovy)/2,
+		Radians(config.Fovy),
 		config.Aspect,
 		config.Near,
 		config.Far,

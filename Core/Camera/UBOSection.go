@@ -9,8 +9,9 @@ import (
 const (
 	offset_projectionMatrix = 0
 	offset_viewMatrix       = 64
+	offset_position         = 128
 
-	Size_cameraSection = 128
+	Size_cameraSection = 144
 )
 
 type CameraSection struct {
@@ -33,13 +34,22 @@ func (section *CameraSection) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
 	}
 }
 
+func (section *CameraSection) SetPosition(pos GeometryMath.Vector3) {
+	section.Camera.SetPosition(pos)
+	if section.UniformBuffer != nil {
+		section.UniformBuffer.UpdateData(&pos[0], section.Offset+offset_position, UniformBuffer.Std140_size_vec3)
+	}
+}
+
 func (section *CameraSection) ForceUpdate() {
 	if section.UniformBuffer != nil {
 		projectionMatrix := section.ProjectionMatrix
 		viewMatrix := section.ViewMatrix
+		position := section.Position
 
 		section.UniformBuffer.UpdateData(&projectionMatrix[0][0], section.Offset+offset_projectionMatrix, UniformBuffer.Std140_size_mat4)
 		section.UniformBuffer.UpdateData(&viewMatrix[0][0], section.Offset+offset_viewMatrix, UniformBuffer.Std140_size_mat4)
+		section.UniformBuffer.UpdateData(&position[0], section.Offset+offset_position, UniformBuffer.Std140_size_vec3)
 	}
 }
 

@@ -22,7 +22,10 @@ func (buff *UniformBuffer) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	tmpBuff := NewUniformBufferBase(yamlConfig.Size, yamlConfig.Binding, yamlConfig.Type)
+	tmpBuff, err := NewUniformBufferBase(yamlConfig.Size, yamlConfig.Binding, yamlConfig.Type)
+	if err != nil {
+		return err
+	}
 	for _, shader := range yamlConfig.Shaders {
 		if err := shader.BindObject(&tmpBuff); err != nil {
 			return err

@@ -83,7 +83,7 @@ func (buff *FrameBuffer) AddDepthAttachment(attachment IAttachment) {
 		gl.NamedFramebufferRenderbuffer(buff.GetFBO(), gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, attachment.GetID())
 	}
 
-	buff.StencilAttachment = attachment
+	buff.DepthAttachment = attachment
 }
 
 func (buff *FrameBuffer) AddDepthStencilAttachment(attachment IAttachment) {

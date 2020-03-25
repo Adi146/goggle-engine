@@ -8,6 +8,7 @@ layout(location = 3) in vec3 a_tangent;
 layout (std140) uniform camera {
     mat4 u_projectionMatrix;
     mat4 u_viewMatrix;
+    vec3 u_cameraPosition;
 };
 
 out vec3 v_uv;

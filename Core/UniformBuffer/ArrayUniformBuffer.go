@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	Num_elements = 64
+	Num_elements = 32
 
 	offset_num_elements = 0
 	offset_elements     = 16
@@ -23,9 +23,10 @@ func (buff *ArrayUniformBuffer) ForceUpdate() {
 	}
 }
 
-func (buff *ArrayUniformBuffer) AddElement(elem IUniformBufferSection) error {
-	if len(buff.Elements)+1 > Num_elements {
-		return fmt.Errorf("buffer exceeded")
+func (buff *ArrayUniformBuffer) AddElement(elem IUniformBufferSection) (int, error) {
+	index := len(buff.Elements)
+	if index+1 > Num_elements {
+		return index, fmt.Errorf("buffer exceeded")
 	}
 
 	offset := offset_elements
@@ -39,7 +40,7 @@ func (buff *ArrayUniformBuffer) AddElement(elem IUniformBufferSection) error {
 	buff.Elements = append(buff.Elements, elem)
 	buff.UpdateNumElements()
 
-	return nil
+	return index, nil
 }
 
 func (buff *ArrayUniformBuffer) UpdateNumElements() {

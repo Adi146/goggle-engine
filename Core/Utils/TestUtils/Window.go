@@ -3,10 +3,13 @@ package TestUtils
 import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Window"
+	"runtime"
 	"testing"
 )
 
 func CreateTestWindow(t *testing.T) (*Window.SDLWindow, error) {
+	runtime.LockOSThread()
+
 	window, err := Window.NewSDLWindow(FrameBuffer.Viewport{
 		PosX:   0,
 		PosY:   0,

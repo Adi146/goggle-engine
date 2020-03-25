@@ -1,6 +1,7 @@
 package UniformBuffer
 
 import (
+	"fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -19,11 +20,17 @@ type UniformBuffer struct {
 	Type    Type
 }
 
-func NewUniformBufferBase(size int, binding uint32, uboType Type) UniformBuffer {
+func NewUniformBufferBase(size int, binding uint32, uboType Type) (UniformBuffer, error) {
 	buff := UniformBuffer{
 		Size:    size,
 		Binding: binding,
 		Type:    uboType,
+	}
+
+	var maxUniformBufferSize int32
+	gl.GetIntegerv(gl.MAX_UNIFORM_BLOCK_SIZE, &maxUniformBufferSize)
+	if int32(size) > maxUniformBufferSize {
+		return buff, fmt.Errorf("size of uniform buffer is bigger than max block size(ubo size %d, max block size: %d)", size, maxUniformBufferSize)
 	}
 
 	gl.GenBuffers(1, &buff.ubo)
@@ -33,7 +40,7 @@ func NewUniformBufferBase(size int, binding uint32, uboType Type) UniformBuffer 
 
 	gl.BindBufferRange(gl.UNIFORM_BUFFER, buff.Binding, buff.ubo, 0, buff.Size)
 
-	return buff
+	return buff, nil
 }
 
 func (buff *UniformBuffer) GetUBO() uint32 {

@@ -10,7 +10,8 @@ type Product struct {
 	shaderProgram   IShaderProgram
 	VertexShaders   []string
 	FragmentShaders []string
-	Constructor     func([]string, []string) (IShaderProgram, error)
+	GeometryShaders []string
+	Constructor     func([]string, []string, []string) (IShaderProgram, error)
 }
 
 func (product *Product) UnmarshalYAML(value *yaml.Node) error {
@@ -18,6 +19,7 @@ func (product *Product) UnmarshalYAML(value *yaml.Node) error {
 		Type            string   `yaml:"type"`
 		VertexShaders   []string `yaml:"vertexShaders"`
 		FragmentShaders []string `yaml:"fragmentShaders"`
+		GeometryShaders []string `yaml:"geometryShaders"`
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
@@ -30,6 +32,7 @@ func (product *Product) UnmarshalYAML(value *yaml.Node) error {
 
 	product.VertexShaders = yamlConfig.VertexShaders
 	product.FragmentShaders = yamlConfig.FragmentShaders
+	product.GeometryShaders = yamlConfig.GeometryShaders
 	product.Constructor = shaderConstructor
 
 	return nil
@@ -39,7 +42,7 @@ func (product *Product) Get() (IShaderProgram, error) {
 	var errors Error.ErrorCollection
 
 	if product.shaderProgram == nil {
-		tmpProgram, err := product.Constructor(product.VertexShaders, product.FragmentShaders)
+		tmpProgram, err := product.Constructor(product.VertexShaders, product.FragmentShaders, product.GeometryShaders)
 		if err != nil {
 			return nil, err
 		}

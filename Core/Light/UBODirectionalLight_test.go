@@ -59,13 +59,13 @@ shadowMap:
 
 	expectedBinding := uint32(1)
 
-	if light.LightDirectionSection.UniformBuffer == nil || light.LightColorSection.UniformBuffer == nil || light.ShadowMap.CameraSection.UniformBuffer == nil {
+	if light.LightDirectionSection.UniformBuffer == nil || light.LightColorSection.UniformBuffer == nil || light.ShadowMap.ShadowCameraSection.UniformBuffer == nil {
 		t.Errorf("uniform buffer is not set")
 	} else {
-		if light.LightDirectionSection.UniformBuffer.GetUBO() == 0 || light.LightColorSection.UniformBuffer.GetUBO() == 0 || light.ShadowMap.CameraSection.UniformBuffer.GetUBO() == 0 {
+		if light.LightDirectionSection.UniformBuffer.GetUBO() == 0 || light.LightColorSection.UniformBuffer.GetUBO() == 0 || light.ShadowMap.ShadowCameraSection.UniformBuffer.GetUBO() == 0 {
 			t.Errorf("uniform buffer is not initialized")
 		}
-		if light.LightDirectionSection.UniformBuffer.GetBinding() != expectedBinding || light.LightColorSection.UniformBuffer.GetBinding() != expectedBinding || light.ShadowMap.CameraSection.UniformBuffer.GetBinding() != expectedBinding {
+		if light.LightDirectionSection.UniformBuffer.GetBinding() != expectedBinding || light.LightColorSection.UniformBuffer.GetBinding() != expectedBinding || light.ShadowMap.ShadowCameraSection.UniformBuffer.GetBinding() != expectedBinding {
 			t.Errorf("uniform buffer binding is not correct")
 		}
 	}
@@ -73,10 +73,10 @@ shadowMap:
 	expectedProjectionMatrix := *GeometryMath.Orthogonal(-3000, 3000, -3000, 3000, -3000, 3000)
 	expectedViewMatrix := *GeometryMath.Identity()
 
-	if !light.ShadowMap.CameraSection.ProjectionMatrix.Equals(&expectedProjectionMatrix, 1e-5) {
-		t.Errorf("projection matrix not matching (expecting %f, got %f)", expectedProjectionMatrix, light.ShadowMap.CameraSection.ProjectionMatrix)
+	if !light.ShadowMap.ShadowCameraSection.ProjectionMatrix.Equals(&expectedProjectionMatrix, 1e-5) {
+		t.Errorf("projection matrix not matching (expecting %f, got %f)", expectedProjectionMatrix, light.ShadowMap.ShadowCameraSection.ProjectionMatrix)
 	}
-	if light.ShadowMap.CameraSection.ViewMatrix != expectedViewMatrix {
-		t.Errorf("view matrix not matching (expecting %f, got %f)", expectedViewMatrix, light.ShadowMap.CameraSection.ViewMatrix)
+	if light.ShadowMap.ShadowCameraSection.ViewMatrix != expectedViewMatrix {
+		t.Errorf("view matrix not matching (expecting %f, got %f)", expectedViewMatrix, light.ShadowMap.ShadowCameraSection.ViewMatrix)
 	}
 }

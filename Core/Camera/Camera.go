@@ -7,6 +7,7 @@ import (
 type Camera struct {
 	ProjectionMatrix GeometryMath.Matrix4x4 `yaml:"projection"`
 	ViewMatrix       GeometryMath.Matrix4x4 `yaml:"view"`
+	Position         GeometryMath.Vector3   `yaml:"position"`
 }
 
 func NewCamera(projectionMatrix GeometryMath.Matrix4x4) *Camera {
@@ -38,4 +39,11 @@ func (camera *Camera) GetProjectionMatrix() GeometryMath.Matrix4x4 {
 
 func (camera *Camera) SetProjectionMatrix(matrix GeometryMath.Matrix4x4) {
 	camera.ProjectionMatrix = matrix
+}
+
+func (camera *Camera) GetPosition() GeometryMath.Vector3 {
+	return camera.Position
+}
+func (camera *Camera) SetPosition(pos GeometryMath.Vector3) {
+	camera.Position = pos
 }

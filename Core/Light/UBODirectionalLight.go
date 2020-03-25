@@ -1,66 +1,68 @@
 package Light
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
 	"github.com/Adi146/goggle-engine/Core/Light/internal"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+	"github.com/Adi146/goggle-engine/Utils/Log"
 	"gopkg.in/yaml.v3"
 )
 
 const (
 	directionalLight_offset_direction = 0
-	directionalLight_offset_color     = 16
-	directionalLight_offset_camera    = 64
+	directionalLight_offset_color     = internal.Size_lightDirectionSection
+	directionalLight_offset_camera    = internal.Size_lightDirectionSection + internal.Size_lightColorSection
 
-	directionalLIght_size_section = directionalLight_ubo_size
+	directionalLight_size_section = internal.Size_lightDirectionSection + internal.Size_lightColorSection + internal.Size_shadowCameraSection
 
-	directionalLight_ubo_size = 192
+	directionalLight_ubo_size = directionalLight_size_section
 	DirectionalLight_ubo_type = "directionalLight"
 
-	DirectionalLight_fbo_type = "shadowMap"
+	DirectionalLight_fbo_type = "shadowMap_directionalLight"
 )
 
 type UBODirectionalLight struct {
 	internal.LightDirectionSection
 	internal.LightColorSection
 	ShadowMap struct {
-		CameraSection Camera.CameraSection
-		Shader        Shader.IShaderProgram
-		FrameBuffer   FrameBuffer.FrameBuffer
+		ShadowCameraSection internal.ShadowCameraSection
+		Shader              Shader.IShaderProgram
+		FrameBuffer         FrameBuffer.FrameBuffer
 	}
 }
 
 func (light *UBODirectionalLight) ForceUpdate() {
 	light.LightDirectionSection.ForceUpdate()
 	light.LightColorSection.ForceUpdate()
-	light.ShadowMap.CameraSection.ForceUpdate()
+	light.ShadowMap.ShadowCameraSection.ForceUpdate()
 }
 
 func (light *UBODirectionalLight) SetUniformBuffer(ubo UniformBuffer.IUniformBuffer, offset int) {
 	light.LightDirectionSection.SetUniformBuffer(ubo, offset+directionalLight_offset_direction)
 	light.LightColorSection.SetUniformBuffer(ubo, offset+directionalLight_offset_color)
-	light.ShadowMap.CameraSection.SetUniformBuffer(ubo, offset+directionalLight_offset_camera)
+	light.ShadowMap.ShadowCameraSection.SetUniformBuffer(ubo, offset+directionalLight_offset_camera)
 }
 
 func (light *UBODirectionalLight) GetSize() int {
-	return directionalLIght_size_section
+	return directionalLight_size_section
 }
 
 func (light *UBODirectionalLight) SetDirection(val GeometryMath.Vector3) {
 	light.LightDirectionSection.SetDirection(val)
-	light.ShadowMap.CameraSection.SetViewMatrix(*GeometryMath.LookAt(val.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0}))
+	light.ShadowMap.ShadowCameraSection.SetViewMatrix(*GeometryMath.LookAt(val.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0}))
 }
 
 func (light *UBODirectionalLight) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
-	if invoker == light {
+	_, isSpotLight := invoker.(IPointLight)
+	_, isDirectionalLight := invoker.(IDirectionalLight)
+	if isSpotLight || isDirectionalLight {
 		return nil
 	}
+
 	defer FrameBuffer.GetCurrentFrameBuffer().Bind()
 	defer Function.GetCurrentCullFunction().Set()
 	defer Function.GetCurrentDepthFunction().Set()
@@ -78,6 +80,8 @@ func (light *UBODirectionalLight) Draw(shader Shader.IShaderProgram, invoker cor
 	}
 
 	return scene.Draw(light.ShadowMap.Shader, light, scene)
+
+	return nil
 }
 
 func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
@@ -99,10 +103,10 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	type ShadowMap struct {
-		CameraSection Camera.CameraSection    `yaml:",inline"`
-		Shader        Shader.Ptr              `yaml:"shader"`
-		FrameBuffer   FrameBuffer.FrameBuffer `yaml:"frameBuffer"`
-		Shaders       []Shader.Ptr            `yaml:"bindOnShaders"`
+		CameraSection internal.ShadowCameraSection `yaml:",inline"`
+		Shader        Shader.Ptr                   `yaml:"shader"`
+		FrameBuffer   FrameBuffer.FrameBuffer      `yaml:"frameBuffer"`
+		Shaders       []Shader.Ptr                 `yaml:"bindOnShaders"`
 	}
 
 	yamlConfig := struct {
@@ -122,8 +126,8 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 			},
 		},
 		ShadowMap: ShadowMap{
-			CameraSection: Camera.CameraSection{
-				Camera:        light.ShadowMap.CameraSection.Camera,
+			CameraSection: internal.ShadowCameraSection{
+				Camera:        light.ShadowMap.ShadowCameraSection.Camera,
 				UniformBuffer: uboYamlConfig.UniformBuffer,
 				Offset:        directionalLight_offset_camera,
 			},
@@ -139,7 +143,7 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 		return nil
 	}
 
-	texture, err := ShadowMapping.NewShadowMap(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height, yamlConfig.ShadowMap.FrameBuffer.Viewport.Width)
+	texture, err := internal.NewShadowMap(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width, yamlConfig.ShadowMap.FrameBuffer.Viewport.Height)
 	if err != nil {
 		return err
 	}
@@ -150,15 +154,15 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 
 	for _, shader := range yamlConfig.Shaders {
 		if err := shader.BindObject(texture); err != nil {
-			return err
+			Log.Error(err, "")
 		}
 	}
 
 	light.LightDirectionSection = yamlConfig.Light.DirectionSection
 	light.LightColorSection = yamlConfig.Light.ColorSection
-	light.ShadowMap.CameraSection = yamlConfig.CameraSection
-	light.ShadowMap.Shader = yamlConfig.Shader.IShaderProgram
-	light.ShadowMap.FrameBuffer = yamlConfig.FrameBuffer
+	light.ShadowMap.ShadowCameraSection = yamlConfig.ShadowMap.CameraSection
+	light.ShadowMap.Shader = yamlConfig.ShadowMap.Shader.IShaderProgram
+	light.ShadowMap.FrameBuffer = yamlConfig.ShadowMap.FrameBuffer
 
 	return nil
 }

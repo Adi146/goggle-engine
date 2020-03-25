@@ -2,7 +2,6 @@ package PostProcessing
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -26,8 +25,8 @@ type ShaderProgram struct {
 	*Shader.ShaderProgramCore
 }
 
-func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgram, error) {
-	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles)
+func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string, geometryShaderFiles []string) (*ShaderProgram, error) {
+	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles, geometryShaderFiles)
 	if err != nil {
 		return nil, err
 	}
@@ -37,31 +36,40 @@ func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) 
 	}, nil
 }
 
-func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (Shader.IShaderProgram, error) {
-	return NewShaderProgram(vertexShaderFiles, fragmentShaderFiles)
+func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string, geometryShaderFiles []string) (Shader.IShaderProgram, error) {
+	return NewShaderProgram(vertexShaderFiles, fragmentShaderFiles, geometryShaderFiles)
 }
 
-func (program *ShaderProgram) BindObject(i interface{}) error {
+func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 	switch v := i.(type) {
 	case Texture.ITexture:
 		switch t := v.GetType(); t {
-		case OffscreenTexture, ShadowMapping.ShadowMap:
-			return program.BindUniform(v, ua_screenTexture)
+		case OffscreenTexture:
+			return ua_screenTexture, nil
 		default:
-			return fmt.Errorf("post processing shader does not support texture of type %s", t)
+			return "", fmt.Errorf("post processing shader does not support texture of type %s", t)
 		}
-	case *Kernel:
-		return program.bindKernel(v)
+	case float32:
+		return ua_kernelOffset, nil
+	case []float32:
+		return ua_kernel, nil
 	default:
-		return fmt.Errorf("post processing shader does not support type %T", v)
+		return "", fmt.Errorf("post processing shader does not support type %T", v)
 	}
 }
 
-func (program *ShaderProgram) bindKernel(kernel *Kernel) error {
-	var err Error.ErrorCollection
+func (program *ShaderProgram) BindObject(i interface{}) error {
+	kernel, isKernel := i.(*Kernel)
+	if isKernel {
+		var err Error.ErrorCollection
+		err.Push(program.BindObject(kernel.GetOffset()))
+		err.Push(program.BindObject(kernel.GetKernel()))
+		return err.Err()
+	}
 
-	err.Push(program.BindUniform(kernel.GetOffset(), ua_kernelOffset))
-	err.Push(program.BindUniform(kernel.GetKernel(), ua_kernel))
-
-	return err.Err()
+	uniformAddress, err := program.GetUniformAddress(i)
+	if err != nil {
+		return err
+	}
+	return program.BindUniform(i, uniformAddress)
 }

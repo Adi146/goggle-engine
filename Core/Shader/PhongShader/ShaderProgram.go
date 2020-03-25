@@ -3,9 +3,9 @@ package PhongShader
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
-	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
@@ -33,8 +33,8 @@ type ShaderProgram struct {
 	MaterialShader Material.ShaderProgram
 }
 
-func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgram, error) {
-	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles)
+func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string, geometryShaderFiles []string) (*ShaderProgram, error) {
+	shaderCore, err := Shader.NewShaderProgramFromFiles(vertexShaderFiles, fragmentShaderFiles, geometryShaderFiles)
 	if err != nil {
 		return nil, err
 	}
@@ -57,32 +57,47 @@ func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) 
 	}, nil
 }
 
-func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string) (Shader.IShaderProgram, error) {
-	return NewShaderProgram(vertexShaderFiles, fragmentShaderFiles)
+func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string, geometryShaderFiles []string) (Shader.IShaderProgram, error) {
+	return NewShaderProgram(vertexShaderFiles, fragmentShaderFiles, geometryShaderFiles)
+}
+
+func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
+	switch v := i.(type) {
+	case *Material.Material:
+		return program.MaterialShader.GetUniformAddress(v)
+	case *GeometryMath.Matrix4x4:
+		return ua_modelMatrix, nil
+	case Texture.ITexture:
+		return program.ShadowShader.GetUniformAddress(v)
+	case UniformBuffer.IUniformBuffer:
+		switch t := v.GetType(); t {
+		case Light.DirectionalLight_ubo_type:
+			return ua_directionalLight, nil
+		case Light.PointLight_ubo_type:
+			return ua_pointLight, nil
+		case Light.SpotLight_ubo_type:
+			return ua_spotLight, nil
+		case Camera.UBO_type:
+			return ua_camera, nil
+		default:
+			return "", fmt.Errorf("phong shader does not support uniform buffers of type %s", t)
+		}
+	default:
+		return "", fmt.Errorf("phong shader does not support type %T", v)
+	}
 }
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *Material.Material:
 		return program.MaterialShader.BindObject(v)
-	case *Model.Model:
-		return program.BindUniform(v.ModelMatrix, ua_modelMatrix)
 	case Texture.ITexture:
 		return program.ShadowShader.BindObject(v)
-	case UniformBuffer.IUniformBuffer:
-		switch t := v.GetType(); t {
-		case Light.DirectionalLight_ubo_type:
-			return program.BindUniform(v, ua_directionalLight)
-		case Light.PointLight_ubo_type:
-			return program.BindUniform(v, ua_pointLight)
-		case Light.SpotLight_ubo_type:
-			return program.BindUniform(v, ua_spotLight)
-		case Camera.UBO_type:
-			return program.BindUniform(v, ua_camera)
-		default:
-			return fmt.Errorf("phong shader does not support uniform buffers of type %s", t)
-		}
 	default:
-		return fmt.Errorf("phong shader does not support type %T", v)
+		uniformAddress, err := program.GetUniformAddress(v)
+		if err != nil {
+			return err
+		}
+		return program.BindUniform(v, uniformAddress)
 	}
 }

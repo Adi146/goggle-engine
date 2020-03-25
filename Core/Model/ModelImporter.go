@@ -107,12 +107,11 @@ func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType
 
 	numTextures := assimpMaterial.GetMaterialTextureCount(assimp.TextureType(textureType))
 	for i := 0; i < numTextures; i++ {
-		textureFile, mapping, uvIndex, blend, op, mapmode, flags, returnCode := assimpMaterial.GetMaterialTexture(assimp.TextureType(textureType), i)
+		textureFile, _, _, _, _, _, _, returnCode := assimpMaterial.GetMaterialTexture(assimp.TextureType(textureType), i)
 		if returnCode != assimp.Return_Success {
 			result.Warnings.Push(fmt.Errorf("could not get texture for material with index %d", i))
 			continue
 		}
-		fmt.Println(textureFile, mapping, uvIndex, blend, op, mapmode, flags)
 
 		if strings.HasSuffix("*/", textureFile) {
 			result.Warnings.Push(fmt.Errorf("embedded textures are not supported yet"))

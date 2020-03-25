@@ -27,6 +27,16 @@ lights:
       uniformBuffer:
           id: pointLight
           binding: 2
+      shadowMap:
+          projection:
+              perspective:
+                  fovy: 90
+                  aspect: 1
+                  near: 1
+                  far: 3250
+          frameBuffer:
+              width: 1024
+              height: 1024
     - pointLight:
           ambient: [0.0, 0.0, 0.2]
           diffuse: [0.0, 0.0, 1.0]
@@ -34,6 +44,16 @@ lights:
           linear: 0.0014
           quadratic: 0.000007
       uniformBuffer: pointLight
+      shadowMap:
+          projection:
+              perspective:
+                  fovy: 90
+                  aspect: 1
+                  near: 1
+                  far: 3250
+          frameBuffer:
+              width: 1024
+              height: 1024
     `
 
 	if err := yaml.Unmarshal([]byte(data), &lightStruct); err != nil {

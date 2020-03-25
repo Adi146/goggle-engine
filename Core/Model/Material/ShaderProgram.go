@@ -33,6 +33,10 @@ type ShaderProgram struct {
 	BindFunctions []func(program *ShaderProgram, material *Material) error
 }
 
+func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
+	return "", fmt.Errorf("not implemented")
+}
+
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case *Material:

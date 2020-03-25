@@ -13,13 +13,14 @@ var (
 	fragmentShaders = []string{
 		"skybox.frag",
 	}
+	geometryShaders []string
 )
 
 func TestSkyboxCompile(t *testing.T) {
 	window, _ := TestUtils.CreateTestWindow(t)
 	defer window.Destroy()
 
-	shader, err := Skybox.NewShaderProgram(vertexShaders, fragmentShaders)
+	shader, err := Skybox.NewShaderProgram(vertexShaders, fragmentShaders, geometryShaders)
 	if shader == nil || err != nil {
 		t.Errorf("Error while compiling skybox shader %s", err.Error())
 	}

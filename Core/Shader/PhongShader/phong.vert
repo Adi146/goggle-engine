@@ -12,13 +12,13 @@ struct DirectionalLight {
     vec3 diffuse;
     vec3 specular;
 
-    mat4 lightProjectionMatrix;
-    mat4 lightViewMatrix;
+    mat4 viewProjectionMatrix;
 };
 
 layout (std140) uniform camera {
     mat4 u_projectionMatrix;
     mat4 u_viewMatrix;
+    vec3 u_cameraPosition;
 };
 
 layout (std140) uniform directionalLight {
@@ -37,17 +37,17 @@ out vec4 v_positionLightSpace;
 void main() {
     gl_Position = vec4(a_position, 1.0) * (u_modelMatrix * u_viewMatrix * u_projectionMatrix);
 
-    mat3 invModelView = mat3(transpose(inverse(u_modelMatrix * u_viewMatrix)));
-    vec3 normal = normalize(a_normal * invModelView);
-    vec3 tangent = normalize(a_tangent * invModelView);
+    mat3 normalMatrix = mat3(transpose(inverse(u_modelMatrix)));
+    vec3 normal = normalize(a_normal * normalMatrix);
+    vec3 tangent = normalize(a_tangent * normalMatrix);
     //Reorthogonalization with Gram–Schmidt process
     tangent = normalize(tangent - dot(tangent, normal) * normal);
-    vec3 biTangent = normalize(cross(normal, tangent) * invModelView);
+    vec3 biTangent = normalize(cross(normal, tangent) * normalMatrix);
 
-    v_position = vec3(vec4(a_position, 1.0) * (u_modelMatrix * u_viewMatrix));
+    v_position = vec3(vec4(a_position, 1.0) * u_modelMatrix);
     v_normal = normal;
     v_uv = a_uv;
     v_tangent = tangent;
     v_biTangent = biTangent;
-    v_positionLightSpace = vec4(a_position, 1.0) * (u_modelMatrix * u_directionalLight.lightViewMatrix * u_directionalLight.lightProjectionMatrix);
+    v_positionLightSpace = vec4(a_position, 1.0) * (u_modelMatrix * u_directionalLight.viewProjectionMatrix);
 }

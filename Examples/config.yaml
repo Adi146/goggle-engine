@@ -26,13 +26,22 @@ shaders:
       - ../Core/Skybox/skybox.vert
     fragmentShaders:
       - ../Core/Skybox/skybox.frag
-  shadowMap:
+  shadowMapDirectionalLight:
     type: shadowMapShader
     vertexShaders:
-      - ../Core/Light/ShadowMapping/shadowMap.vert
+      - ../Core/Light/ShadowMapping/DirectionalLight/shadowMap.vert
     fragmentShaders:
-      - ../Core/Light/ShadowMapping/shadowMap.frag
+      - ../Core/Light/ShadowMapping/DirectionalLight/shadowMap.frag
       - ../Core/Model/Material/material.frag
+  shadowMapPointLight:
+    type: shadowMapShader
+    vertexShaders:
+      - ../Core/Light/ShadowMapping/PointLight/shadowMap.vert
+    fragmentShaders:
+      - ../Core/Light/ShadowMapping/PointLight/shadowMap.frag
+      - ../Core/Model/Material/material.frag
+    geometryShaders:
+      - ../Core/Light/ShadowMapping/PointLight/shadowMap.geom
 
 scene:
   window:
@@ -73,7 +82,7 @@ scene:
           type: Node.Camera
           projection:
             perspective:
-              fovy: 90
+              fovy: 45
               aspect: 0.5625
               near: 0.1
               far: 10000
@@ -117,7 +126,7 @@ scene:
             binding: 1
             shaders:
               - phong
-              - shadowMap
+              - shadowMapDirectionalLight
           shadowMap:
             projection:
               orthogonal:
@@ -127,7 +136,7 @@ scene:
                 top: 3000
                 near: -3000
                 far: 3000
-            shader: shadowMap
+            shader: shadowMapDirectionalLight
             frameBuffer:
               width: 4096
               height: 4096
@@ -173,7 +182,20 @@ scene:
             quadratic: 0.000007
           uniformBuffer: pointLight
           transformation:
-            - translation: [0, 100, -300]
+            - translation: [0, 300, -300]
+          shadowMap:
+            projection:
+              perspective:
+                fovy: 90
+                aspect: 1
+                near: 1
+                far: 3250
+            shader: shadowMapPointLight
+            frameBuffer:
+              width: 1024
+              height: 1024
+            bindOnShaders:
+              - phong
         redLight:
           type: Node.LightNode.PointLightNode
           pointLight:
@@ -187,8 +209,22 @@ scene:
             binding: 2
             shaders:
               - phong
+              - shadowMapPointLight
           transformation:
-            - translation: [0, 100, 300]
+            - translation: [0, 300, 300]
+          shadowMap:
+            projection:
+              perspective:
+                fovy: 90
+                aspect: 1
+                near: 1
+                far: 3250
+            shader: shadowMapPointLight
+            frameBuffer:
+              width: 1024
+              height: 1024
+            bindOnShaders:
+              - phong
     window1:
       type: Node.ModelNode
       file: Models/plain.fbx

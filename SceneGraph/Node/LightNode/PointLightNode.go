@@ -16,13 +16,17 @@ func init() {
 
 type PointLightNode struct {
 	Scene.INode
-	PointLight Light.IPointLight
+	Light.IPointLight
 }
 
 func (node *PointLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.PointLight.SetPosition(*node.GetGlobalPosition())
+	node.IPointLight.SetPosition(*node.GetGlobalPosition())
+
+	if scene := node.GetScene(); scene != nil {
+		scene.AddPreRenderObject(node)
+	}
 
 	return err
 }
@@ -35,10 +39,10 @@ func (node *PointLightNode) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	if node.PointLight == nil {
-		node.PointLight = &Light.UBOPointLight{}
+	if node.IPointLight == nil {
+		node.IPointLight = &Light.UBOPointLight{}
 	}
-	if err := value.Decode(node.PointLight); err != nil {
+	if err := value.Decode(node.IPointLight); err != nil {
 		return err
 	}
 

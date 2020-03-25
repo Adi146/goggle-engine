@@ -14,9 +14,10 @@ type ShaderProgramCore struct {
 	ID              uint32
 	vertexShaders   []*Shader
 	fragmentShaders []*Shader
+	geometryShaders []*Shader
 }
 
-func NewShaderProgramFromFiles(vertexShaderFiles []string, fragmentShaderFiles []string) (*ShaderProgramCore, error) {
+func NewShaderProgramFromFiles(vertexShaderFiles []string, fragmentShaderFiles []string, geometryShaderFiles []string) (*ShaderProgramCore, error) {
 	var vertexShaders []*Shader
 	for _, vertexShaderFile := range vertexShaderFiles {
 		vertexShader, err := NewShaderFromFile(vertexShaderFile, gl.VERTEX_SHADER)
@@ -35,7 +36,16 @@ func NewShaderProgramFromFiles(vertexShaderFiles []string, fragmentShaderFiles [
 		fragmentShaders = append(fragmentShaders, fragmentShader)
 	}
 
-	program, err := NewShaderProgram(vertexShaders, fragmentShaders)
+	var geometryShaders []*Shader
+	for _, geometryShaderFile := range geometryShaderFiles {
+		geometryShader, err := NewShaderFromFile(geometryShaderFile, gl.GEOMETRY_SHADER)
+		if err != nil {
+			return nil, err
+		}
+		geometryShaders = append(geometryShaders, geometryShader)
+	}
+
+	program, err := NewShaderProgram(vertexShaders, fragmentShaders, geometryShaders)
 	if err != nil {
 		return nil, err
 	}
@@ -43,11 +53,12 @@ func NewShaderProgramFromFiles(vertexShaderFiles []string, fragmentShaderFiles [
 	return program, nil
 }
 
-func NewShaderProgram(vertexShaders []*Shader, fragmentShaders []*Shader) (*ShaderProgramCore, error) {
+func NewShaderProgram(vertexShaders []*Shader, fragmentShaders []*Shader, geometryShaders []*Shader) (*ShaderProgramCore, error) {
 	program := ShaderProgramCore{
 		ID:              gl.CreateProgram(),
 		vertexShaders:   vertexShaders,
 		fragmentShaders: fragmentShaders,
+		geometryShaders: geometryShaders,
 	}
 
 	for _, vertexShader := range vertexShaders {
@@ -55,6 +66,9 @@ func NewShaderProgram(vertexShaders []*Shader, fragmentShaders []*Shader) (*Shad
 	}
 	for _, fragmentShader := range fragmentShaders {
 		gl.AttachShader(program.ID, fragmentShader.shaderId)
+	}
+	for _, geometryShader := range geometryShaders {
+		gl.AttachShader(program.ID, geometryShader.shaderId)
 	}
 
 	gl.LinkProgram(program.ID)

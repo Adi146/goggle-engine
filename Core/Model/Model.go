@@ -21,7 +21,7 @@ type Model struct {
 func (model *Model) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
 	var err Error.ErrorCollection
 
-	err.Push(shader.BindObject(model))
+	err.Push(shader.BindObject(model.ModelMatrix))
 	for _, mesh := range model.Meshes {
 		err.Push(shader.BindObject(mesh.Material))
 		mesh.Draw(shader, nil, nil)

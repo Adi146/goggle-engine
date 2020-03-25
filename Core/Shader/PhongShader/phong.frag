@@ -10,6 +10,12 @@ struct MaterialColor {
 
 layout(location = 0) out vec4 f_color;
 
+layout (std140) uniform camera {
+    mat4 u_projectionMatrix;
+    mat4 u_viewMatrix;
+    vec3 u_cameraPosition;
+};
+
 MaterialColor GetMaterialColor();
 vec3 GetNormalVector();
 float GetShininess();
@@ -24,12 +30,12 @@ void main() {
     vec3 normal = GetNormalVector();
 
     // calculate lights
-    vec3 view = normalize(-v_position);
+    vec3 view = normalize(u_cameraPosition - v_position);
     vec3 fragmentColor = vec3(0.0, 0.0, 0.0);
     fragmentColor += calculateDirectionalLight(view, normal, color, shininess);
     fragmentColor += calculatePointLight(view, normal, color, shininess);
     fragmentColor += calculateSpotLight(view, normal, color, shininess);
 
-    f_color = vec4(fragmentColor + color.emissive, color.diffuse.a) ;
+    f_color = vec4(fragmentColor + color.emissive, color.diffuse.a);
 }
 

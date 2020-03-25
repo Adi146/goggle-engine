@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ubo_size                    = 2 * UniformBuffer.Std140_size_mat4
+	ubo_size                    = Size_cameraSection
 	UBO_type UniformBuffer.Type = "camera"
 )
 
@@ -19,6 +19,10 @@ func (camera *UBOCamera) SetProjectionMatrix(matrix GeometryMath.Matrix4x4) {
 
 func (camera *UBOCamera) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
 	((*CameraSection)(camera)).SetViewMatrix(matrix)
+}
+
+func (camera *UBOCamera) SetPosition(pos GeometryMath.Vector3) {
+	((*CameraSection)(camera)).SetPosition(pos)
 }
 
 func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {

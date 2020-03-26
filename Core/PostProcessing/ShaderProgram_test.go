@@ -12,9 +12,6 @@ var (
 	}
 	fragmentShaders = [][]string{
 		{
-			"none.frag",
-		},
-		{
 			"grayscale.frag",
 		},
 		{

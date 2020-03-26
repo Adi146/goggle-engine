@@ -1,7 +1,10 @@
 #version 410 core
 #define MAX_POINT_LIGHTS 32
 
-in vec4 FragPos;
+in GS_OUT {
+    vec4 position;
+    vec2 uv;
+} fs_in;
 
 struct PointLight{
     vec3 position;
@@ -23,15 +26,15 @@ layout (std140) uniform pointLight {
 
 uniform int u_lightIndex;
 
-vec4 GetDiffuseColor();
+vec4 GetDiffuseColor(vec2 uv);
 
 void main() {
-    vec4 diffuse = GetDiffuseColor();
+    vec4 diffuse = GetDiffuseColor(fs_in.uv);
     if (diffuse.a < 0.5) {
         discard;
     }
 
-    float lightDistance = length(FragPos.xyz - u_pointLights[u_lightIndex].position);
+    float lightDistance = length(fs_in.position.xyz - u_pointLights[u_lightIndex].position);
 
     lightDistance = lightDistance / u_pointLights[u_lightIndex].distance;
 

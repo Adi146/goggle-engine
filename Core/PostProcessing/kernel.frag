@@ -1,6 +1,8 @@
 #version 410 core
 
-in vec2 v_uv;
+in VS_OUT {
+    vec2 uv;
+} fs_in;
 
 uniform sampler2D u_screenTexture;
 uniform float u_kernelOffset;
@@ -22,7 +24,7 @@ void main() {
     vec3 sampleTex[9];
     for(int i = 0; i < 9; i++)
     {
-        sampleTex[i] = vec3(texture(u_screenTexture, v_uv + offsets[i]));
+        sampleTex[i] = vec3(texture(u_screenTexture, fs_in.uv + offsets[i]));
     }
 
     vec3 color = vec3(0.0);

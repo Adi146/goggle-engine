@@ -1,13 +1,6 @@
 #version 410 core
 #define MAX_POINT_LIGHTS 32
 
-in vec3 v_position;
-in vec3 v_normal;
-in vec4 v_positionLightSpace;
-
-uniform sampler2D u_shadowMapDirectionalLight;
-uniform samplerCube u_shadowMapsPointLight[MAX_POINT_LIGHTS];
-
 struct PointLight{
     vec3 position;
     float linear;
@@ -26,8 +19,11 @@ layout (std140) uniform pointLight {
     PointLight u_pointLights[MAX_POINT_LIGHTS];
 };
 
-float calculateShadowDirectionalLight() {
-    vec3 projCoords = v_positionLightSpace.xyz / v_positionLightSpace.w;
+uniform sampler2D u_shadowMapDirectionalLight;
+uniform samplerCube u_shadowMapsPointLight[MAX_POINT_LIGHTS];
+
+float calculateShadowDirectionalLight(vec4 positionLightSpace) {
+    vec3 projCoords = positionLightSpace.xyz / positionLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
 
     float closestDepth  = texture(u_shadowMapDirectionalLight, projCoords.xy).z;
@@ -48,8 +44,8 @@ float calculateShadowDirectionalLight() {
     return shadow / 9.0;
 }
 
-float calculateShadowPointLight(int pointLightIndex) {
-    vec3 fragToLight = v_position - u_pointLights[pointLightIndex].position;
+float calculateShadowPointLight(int pointLightIndex, vec3 fragPos) {
+    vec3 fragToLight = fragPos - u_pointLights[pointLightIndex].position;
     float closestDepth = texture(u_shadowMapsPointLight[pointLightIndex], fragToLight).r;
 
     closestDepth *=  u_pointLights[pointLightIndex].distance;

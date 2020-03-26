@@ -4,6 +4,15 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices=18) out;
 
+in VS_OUT {
+    vec2 uv;
+} gs_in[3];
+
+out GS_OUT {
+    vec4 position;
+    vec2 uv;
+} gs_out;
+
 struct PointLight{
     vec3 position;
     float linear;
@@ -24,20 +33,15 @@ layout (std140) uniform pointLight {
 
 uniform int u_lightIndex;
 
-in vec2 g_uv[3];
-
-out vec4 FragPos;
-out vec2 v_uv;
-
 void main() {
     for(int face = 0; face < 6; ++face)
     {
         gl_Layer = face;
         for(int i = 0; i < 3; ++i)
         {
-            FragPos = gl_in[i].gl_Position;
-            v_uv = g_uv[i];
-            gl_Position = FragPos * u_pointLights[u_lightIndex].viewProjectionMatrix[face];
+            gs_out.position = gl_in[i].gl_Position;
+            gs_out.uv = gs_in[i].uv;
+            gl_Position = gl_in[i].gl_Position * u_pointLights[u_lightIndex].viewProjectionMatrix[face];
             EmitVertex();
         }
         EndPrimitive();

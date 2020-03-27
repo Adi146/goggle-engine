@@ -6,22 +6,20 @@ in GS_OUT {
     vec2 uv;
 } fs_in;
 
-struct PointLight{
-    vec3 position;
-    float linear;
-    float quadratic;
-
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-
-    mat4 viewProjectionMatrix[6];
-    float distance;
-};
-
 layout (std140) uniform pointLight {
     int u_numPointLights;
-    PointLight u_pointLights[MAX_POINT_LIGHTS];
+    struct {
+        vec3 position;
+        float linear;
+        float quadratic;
+
+        vec3 ambient;
+        vec3 diffuse;
+        vec3 specular;
+
+        mat4 viewProjectionMatrix[6];
+        float distance;
+    } u_pointLights[MAX_POINT_LIGHTS];
 };
 
 uniform int u_lightIndex;

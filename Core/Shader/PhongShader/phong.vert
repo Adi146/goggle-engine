@@ -10,27 +10,12 @@ out VS_OUT {
     vec3 normal;
     vec2 uv;
     mat3 tbn;
-    vec4 positionLightSpace;
 } vs_out;
-
-struct DirectionalLight {
-    vec3 direction;
-
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-
-    mat4 viewProjectionMatrix;
-};
 
 layout (std140) uniform camera {
     mat4 u_projectionMatrix;
     mat4 u_viewMatrix;
     vec3 u_cameraPosition;
-};
-
-layout (std140) uniform directionalLight {
-    DirectionalLight u_directionalLight;
 };
 
 uniform mat4 u_modelMatrix;
@@ -49,5 +34,4 @@ void main() {
     vs_out.normal = normal;
     vs_out.uv = a_uv;
     vs_out.tbn = transpose(mat3(tangent, biTangent, normal));
-    vs_out.positionLightSpace = vec4(a_position, 1.0) * (u_modelMatrix * u_directionalLight.viewProjectionMatrix);
 }

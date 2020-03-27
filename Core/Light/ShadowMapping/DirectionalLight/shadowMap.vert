@@ -9,18 +9,16 @@ out VS_OUT {
     vec2 uv;
 } vs_out;
 
-struct DirectionalLight {
-    vec3 direction;
-
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-
-    mat4 viewProjectionMatrix;
-};
-
 layout (std140) uniform directionalLight {
-    DirectionalLight u_directionalLight;
+    struct {
+        vec3 direction;
+
+        vec3 ambient;
+        vec3 diffuse;
+        vec3 specular;
+
+        mat4 viewProjectionMatrix;
+    } u_directionalLight;
 };
 
 uniform mat4 u_modelMatrix;

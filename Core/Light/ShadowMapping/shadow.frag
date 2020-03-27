@@ -1,28 +1,40 @@
 #version 410 core
 #define MAX_POINT_LIGHTS 32
 
-struct PointLight{
-    vec3 position;
-    float linear;
-    float quadratic;
+layout (std140) uniform directionalLight {
+    struct {
+        vec3 direction;
 
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
+        vec3 ambient;
+        vec3 diffuse;
+        vec3 specular;
 
-    mat4 viewProjectionMatrix[6];
-    float distance;
+        mat4 viewProjectionMatrix;
+    } u_directionalLight;
 };
 
 layout (std140) uniform pointLight {
     int u_numPointLights;
-    PointLight u_pointLights[MAX_POINT_LIGHTS];
+    struct {
+        vec3 position;
+        float linear;
+        float quadratic;
+
+        vec3 ambient;
+        vec3 diffuse;
+        vec3 specular;
+
+        mat4 viewProjectionMatrix[6];
+        float distance;
+    } u_pointLights[MAX_POINT_LIGHTS];
 };
 
 uniform sampler2D u_shadowMapDirectionalLight;
 uniform samplerCube u_shadowMapsPointLight[MAX_POINT_LIGHTS];
 
-float calculateShadowDirectionalLight(vec4 positionLightSpace) {
+float calculateShadowDirectionalLight(vec3 fragPos) {
+    vec4 positionLightSpace = vec4(fragPos, 1.0) * u_directionalLight.viewProjectionMatrix;
+
     vec3 projCoords = positionLightSpace.xyz / positionLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
 
@@ -52,7 +64,7 @@ float calculateShadowPointLight(int pointLightIndex, vec3 fragPos) {
 
     float currentDepth = length(fragToLight);
 
-    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+    float bias = 0.05;
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
     return shadow;

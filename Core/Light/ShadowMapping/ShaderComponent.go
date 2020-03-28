@@ -2,7 +2,7 @@ package ShadowMapping
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Light/internal"
+	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 )
@@ -20,9 +20,9 @@ func (program *ShaderComponent) GetUniformAddress(i interface{}) (string, error)
 	switch v := i.(type) {
 	case Texture.ITexture:
 		switch t := v.GetType(); t {
-		case internal.ShadowMapDirectionalLight:
+		case Light.ShadowMapDirectionalLight:
 			return ua_shadowMapDirectionalLight, nil
-		case internal.ShadowMapPointLight:
+		case Light.ShadowMapPointLight:
 			return ua_shadowMapsPointLight, nil
 		default:
 			return "", fmt.Errorf("shadow shader does not support textures of type %s", t)
@@ -41,9 +41,9 @@ func (program *ShaderComponent) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case Texture.ITexture:
 		switch t := v.GetType(); t {
-		case internal.ShadowMapDirectionalLight:
+		case Light.ShadowMapDirectionalLight:
 			return program.BindUniform(v, uniformAddress)
-		case internal.ShadowMapPointLight:
+		case Light.ShadowMapPointLight:
 			return fmt.Errorf("use GetUniformAddress and specify index instead")
 		}
 	}

@@ -1,6 +1,7 @@
 package Texture
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Utils"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
@@ -35,7 +36,7 @@ func NewTextureFromRGBA(img *image.RGBA, textureType Type) (*Texture2D, error) {
 	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 
-	gl.TexImage2D(texture.Target, 0, gl.RGBA8, int32(img.Bounds().Dx()), int32(img.Bounds().Dy()), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+	gl.TexImage2D(texture.Target, 0, gl.RGBA8, int32(img.Bounds().Dx()), int32(img.Bounds().Dy()), 0, gl.RGBA, gl.UNSIGNED_BYTE, Utils.GlPtr(img.Pix))
 	texture.Unbind()
 
 	return &Texture2D{

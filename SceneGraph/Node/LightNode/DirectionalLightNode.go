@@ -19,14 +19,14 @@ func init() {
 
 type DirectionalLightNode struct {
 	Scene.INode
-	Light.IDirectionalLight
+	Light.UBODirectionalLight
 	InitDirection GeometryMath.Vector3
 }
 
 func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.IDirectionalLight.SetDirection(*node.GetGlobalTransformation().MulVector(&node.InitDirection).Normalize())
+	node.UBODirectionalLight.SetDirection(*node.GetGlobalTransformation().MulVector(&node.InitDirection).Normalize())
 
 	if scene := node.GetScene(); scene != nil {
 		scene.AddPreRenderObject(node)
@@ -43,15 +43,12 @@ func (node *DirectionalLightNode) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	if node.IDirectionalLight == nil {
-		node.IDirectionalLight = &Light.UBODirectionalLight{}
-	}
-	if err := value.Decode(node.IDirectionalLight); err != nil {
+	if err := value.Decode(&node.UBODirectionalLight); err != nil {
 		return err
 	}
 
 	if node.InitDirection == (GeometryMath.Vector3{}) {
-		node.InitDirection = node.IDirectionalLight.GetDirection()
+		node.InitDirection = node.UBODirectionalLight.Direction.Get()
 	}
 
 	return nil

@@ -45,11 +45,11 @@ func (buff *ArrayUniformBuffer) AddElement(elem IUniformBufferSection) (int, err
 
 func (buff *ArrayUniformBuffer) UpdateNumElements() {
 	num := int32(len(buff.Elements))
-	buff.UpdateData(&num, offset_num_elements, Std140_size_single)
+	buff.UpdateData(&num, offset_num_elements)
 }
 
-func (buff *ArrayUniformBuffer) UpdateData(data interface{}, offset int, size int) {
+func (buff *ArrayUniformBuffer) UpdateData(data interface{}, offset int) {
 	if buff.UniformBuffer != nil {
-		buff.UniformBuffer.UpdateData(data, offset, size)
+		buff.UniformBuffer.UpdateData(data, offset)
 	}
 }

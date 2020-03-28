@@ -44,39 +44,22 @@ shadowMap:
 	expectedDiffuse := GeometryMath.Vector3{0.8, 0.8, 0.8}
 	expectedSpecular := GeometryMath.Vector3{0.8, 0.8, 0.8}
 
-	if light.Direction != expectedDirection {
-		t.Errorf("direction value not matching (expecting %f, got %f", light.Direction, expectedDirection)
+	if light.Direction.Get() != expectedDirection {
+		t.Errorf("direction value not matching (expecting %f, got %f", light.Direction.Get(), expectedDirection)
 	}
-	if light.Ambient != expectedAmbient {
-		t.Errorf("ambient value not matching (expecting %f, got %f", light.Ambient, expectedAmbient)
+	if light.Ambient.Get() != expectedAmbient {
+		t.Errorf("ambient value not matching (expecting %f, got %f", light.Ambient.Get(), expectedAmbient)
 	}
-	if light.Diffuse != expectedDiffuse {
-		t.Errorf("diffuse value not matching (expecting %f, got %f", light.Diffuse, expectedDiffuse)
+	if light.Diffuse.Get() != expectedDiffuse {
+		t.Errorf("diffuse value not matching (expecting %f, got %f", light.Diffuse.Get(), expectedDiffuse)
 	}
-	if light.Specular != expectedSpecular {
-		t.Errorf("specular value not matching (expecting %f, got %f", light.Specular, expectedSpecular)
-	}
-
-	expectedBinding := uint32(1)
-
-	if light.LightDirectionSection.UniformBuffer == nil || light.LightColorSection.UniformBuffer == nil || light.ShadowMap.ShadowCameraSection.UniformBuffer == nil {
-		t.Errorf("uniform buffer is not set")
-	} else {
-		if light.LightDirectionSection.UniformBuffer.GetUBO() == 0 || light.LightColorSection.UniformBuffer.GetUBO() == 0 || light.ShadowMap.ShadowCameraSection.UniformBuffer.GetUBO() == 0 {
-			t.Errorf("uniform buffer is not initialized")
-		}
-		if light.LightDirectionSection.UniformBuffer.GetBinding() != expectedBinding || light.LightColorSection.UniformBuffer.GetBinding() != expectedBinding || light.ShadowMap.ShadowCameraSection.UniformBuffer.GetBinding() != expectedBinding {
-			t.Errorf("uniform buffer binding is not correct")
-		}
+	if light.Specular.Get() != expectedSpecular {
+		t.Errorf("specular value not matching (expecting %f, got %f", light.Specular.Get(), expectedSpecular)
 	}
 
 	expectedProjectionMatrix := *GeometryMath.Orthogonal(-3000, 3000, -3000, 3000, -3000, 3000)
-	expectedViewMatrix := *GeometryMath.Identity()
 
-	if !light.ShadowMap.ShadowCameraSection.ProjectionMatrix.Equals(&expectedProjectionMatrix, 1e-5) {
-		t.Errorf("projection matrix not matching (expecting %f, got %f)", expectedProjectionMatrix, light.ShadowMap.ShadowCameraSection.ProjectionMatrix)
-	}
-	if light.ShadowMap.ShadowCameraSection.ViewMatrix != expectedViewMatrix {
-		t.Errorf("view matrix not matching (expecting %f, got %f)", expectedViewMatrix, light.ShadowMap.ShadowCameraSection.ViewMatrix)
+	if !light.ShadowMap.Projection.Equals(&expectedProjectionMatrix, 1e-5) {
+		t.Errorf("projection matrix not matching (expecting %f, got %f)", expectedProjectionMatrix, light.ShadowMap.Projection)
 	}
 }

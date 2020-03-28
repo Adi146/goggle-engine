@@ -1,26 +1,26 @@
 package Model
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Buffer"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
+	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type Mesh struct {
-	vertexBuffer *Buffer.VertexBuffer
-	indexBuffer  *Buffer.IndexBuffer
+	vertexBuffer *VertexBuffer.VertexBuffer
+	indexBuffer  *VertexBuffer.IndexBuffer
 }
 
-func NewMesh(vertices []Buffer.Vertex, vertexBufferAttribFunc func(), indices []uint32) (*Mesh, error) {
-	vertexBuffer, err := Buffer.NewVertexBuffer(vertices, vertexBufferAttribFunc)
+func NewMesh(vertices []VertexBuffer.Vertex, vertexBufferAttribFunc func(), indices []uint32) (*Mesh, error) {
+	vertexBuffer, err := VertexBuffer.NewVertexBuffer(vertices, vertexBufferAttribFunc)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Mesh{
 		vertexBuffer: vertexBuffer,
-		indexBuffer:  Buffer.NewIndexBuffer(indices),
+		indexBuffer:  VertexBuffer.NewIndexBuffer(indices),
 	}, nil
 }
 

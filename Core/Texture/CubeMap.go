@@ -1,6 +1,7 @@
 package Texture
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Utils"
 	"image"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -31,7 +32,7 @@ func NewCubeMapFromRGBAs(images []*image.RGBA, textureType Type) (*CubeMap, erro
 	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
 
 	for i, img := range images {
-		gl.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+uint32(i), 0, gl.RGBA8, int32(img.Bounds().Dx()), int32(img.Bounds().Dy()), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(img.Pix))
+		gl.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+uint32(i), 0, gl.RGBA8, int32(img.Bounds().Dx()), int32(img.Bounds().Dy()), 0, gl.RGBA, gl.UNSIGNED_BYTE, Utils.GlPtr(img.Pix))
 	}
 	texture.Unbind()
 

@@ -1,4 +1,4 @@
-package internal
+package Light
 
 import (
 	core "github.com/Adi146/goggle-engine/Core/Texture"

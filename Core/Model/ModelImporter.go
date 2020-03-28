@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/Adi146/assimp"
-	"github.com/Adi146/goggle-engine/Core/Buffer"
 	"github.com/Adi146/goggle-engine/Core/Texture"
+	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 )
 
 var textureTypeMap = map[assimp.TextureMapping]Texture.Type{
@@ -138,7 +138,7 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Mesh, ImportResult) {
 	assimpFaces := assimpMesh.Faces()
 	assimpTangents := assimpMesh.Tangents()
 
-	vertices := make([]Buffer.Vertex, assimpMesh.NumVertices())
+	vertices := make([]VertexBuffer.Vertex, assimpMesh.NumVertices())
 	for i := 0; i < assimpMesh.NumVertices(); i++ {
 		vertices[i].Position = GeometryMath.Vector3{assimpVertices[i].X(), assimpVertices[i].Y(), assimpVertices[i].Z()}
 		vertices[i].Normal = GeometryMath.Vector3{assimpNormals[i].X(), assimpNormals[i].Y(), assimpNormals[i].Z()}
@@ -151,7 +151,7 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Mesh, ImportResult) {
 		indices = append(indices, assimpFace.CopyIndices()...)
 	}
 
-	mesh, err := NewMesh(vertices, Buffer.RegisterVertexBufferAttributes, indices)
+	mesh, err := NewMesh(vertices, VertexBuffer.RegisterVertexBufferAttributes, indices)
 	result.Errors.Push(err)
 
 	return mesh, result

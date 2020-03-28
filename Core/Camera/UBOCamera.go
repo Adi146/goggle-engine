@@ -1,28 +1,41 @@
 package Camera
 
 import (
-	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+	"github.com/Adi146/goggle-engine/Core/UniformBuffer/UniformBufferSection"
 	"gopkg.in/yaml.v3"
 )
 
 const (
-	ubo_size                    = Size_cameraSection
-	UBO_type UniformBuffer.Type = "camera"
+	camera_offset_projectionMatrix = 0
+	camera_offset_viewMatrix       = 64
+	camera_offset_position         = 128
+
+	camera_size_section = 144
+	ubo_size            = camera_size_section
+	UBO_type            = "camera"
 )
 
-type UBOCamera CameraSection
-
-func (camera *UBOCamera) SetProjectionMatrix(matrix GeometryMath.Matrix4x4) {
-	((*CameraSection)(camera)).SetProjectionMatrix(matrix)
+type UBOCamera struct {
+	ProjectionMatrix UniformBufferSection.Matrix4x4
+	ViewMatrix       UniformBufferSection.Matrix4x4
+	Position         UniformBufferSection.Vector3
 }
 
-func (camera *UBOCamera) SetViewMatrix(matrix GeometryMath.Matrix4x4) {
-	((*CameraSection)(camera)).SetViewMatrix(matrix)
+func (camera *UBOCamera) ForceUpdate() {
+	camera.ProjectionMatrix.ForceUpdate()
+	camera.ViewMatrix.ForceUpdate()
+	camera.Position.ForceUpdate()
 }
 
-func (camera *UBOCamera) SetPosition(pos GeometryMath.Vector3) {
-	((*CameraSection)(camera)).SetPosition(pos)
+func (camera *UBOCamera) SetUniformBuffer(ubo UniformBuffer.IUniformBuffer, offset int) {
+	camera.ProjectionMatrix.SetUniformBuffer(ubo, offset+camera_offset_projectionMatrix)
+	camera.ViewMatrix.SetUniformBuffer(ubo, offset+camera_offset_viewMatrix)
+	camera.Position.SetUniformBuffer(ubo, offset+camera_offset_position)
+}
+
+func (camera *UBOCamera) GetSize() int {
+	return camera_size_section
 }
 
 func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
@@ -38,19 +51,18 @@ func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
 		return nil
 	}
 
-	yamlConfig := struct {
-		Section CameraSection `yaml:",inline"`
-	}{
-		Section: CameraSection{
-			Camera:        camera.Camera,
-			UniformBuffer: uboYamlConfig.UniformBuffer,
-			Offset:        0,
-		},
+	yamlConfig := Camera{
+		ProjectionMatrix: camera.ProjectionMatrix.Get(),
+		ViewMatrix:       camera.ViewMatrix.Get(),
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return nil
 	}
 
-	*camera = (UBOCamera)(yamlConfig.Section)
+	camera.ProjectionMatrix.Set(yamlConfig.ProjectionMatrix)
+	camera.ViewMatrix.Set(yamlConfig.ViewMatrix)
+
+	camera.SetUniformBuffer(uboYamlConfig.UniformBuffer, 0)
+
 	return nil
 }

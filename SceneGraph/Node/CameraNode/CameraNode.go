@@ -17,7 +17,7 @@ func init() {
 
 type CameraNode struct {
 	Scene.INode
-	Camera Camera.ICamera
+	Camera Camera.UBOCamera
 
 	FrontVector GeometryMath.Vector3
 	UpVector    GeometryMath.Vector3
@@ -30,8 +30,8 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	front := invTransGlobalTransformation.MulVector(&node.FrontVector).Normalize()
 	up := invTransGlobalTransformation.MulVector(&node.UpVector).Normalize()
 
-	node.Camera.SetPosition(*position)
-	node.Camera.SetViewMatrix(*GeometryMath.LookAt(position, position.Add(front), up))
+	node.Camera.Position.Set(*position)
+	node.Camera.ViewMatrix.Set(*GeometryMath.LookAt(position, position.Add(front), up))
 
 	if scene := node.GetScene(); scene != nil {
 		scene.CameraPosition = position
@@ -48,10 +48,7 @@ func (node *CameraNode) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	if node.Camera == nil {
-		node.Camera = &Camera.UBOCamera{}
-	}
-	if err := value.Decode(node.Camera); err != nil {
+	if err := value.Decode(&node.Camera); err != nil {
 		return err
 	}
 

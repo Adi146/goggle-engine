@@ -87,34 +87,23 @@ lights:
 	}
 
 	for i, light := range lightStruct.Lights {
-		if light.Position != expectedResults[i].Position {
-			t.Errorf("[light %d] position value not matching (expecting %f, got %f)", i, light.Position, expectedResults[i].Position)
+		if light.Position.Get() != expectedResults[i].Position {
+			t.Errorf("[light %d] position value not matching (expecting %f, got %f)", i, light.Position.Get(), expectedResults[i].Position)
 		}
-		if light.Ambient != expectedResults[i].Ambient {
-			t.Errorf("[light %d] ambient value not matching (expecting %f, got %f)", i, light.Ambient, expectedResults[i].Ambient)
+		if light.Ambient.Get() != expectedResults[i].Ambient {
+			t.Errorf("[light %d] ambient value not matching (expecting %f, got %f)", i, light.Ambient.Get(), expectedResults[i].Ambient)
 		}
-		if light.Diffuse != expectedResults[i].Diffuse {
-			t.Errorf("[light %d] diffuse value not matching (expecting %f, got %f)", i, light.Diffuse, expectedResults[i].Diffuse)
+		if light.Diffuse.Get() != expectedResults[i].Diffuse {
+			t.Errorf("[light %d] diffuse value not matching (expecting %f, got %f)", i, light.Diffuse.Get(), expectedResults[i].Diffuse)
 		}
-		if light.Specular != expectedResults[i].Specular {
-			t.Errorf("[light %d] specular value not matching (expecting %f, got %f)", i, light.Specular, expectedResults[i].Specular)
+		if light.Specular.Get() != expectedResults[i].Specular {
+			t.Errorf("[light %d] specular value not matching (expecting %f, got %f)", i, light.Specular.Get(), expectedResults[i].Specular)
 		}
-		if light.Linear != expectedResults[i].Linear {
-			t.Errorf("[light %d] linear value not matching (expecting %f, got %f)", i, light.Linear, expectedResults[i].Linear)
+		if light.Linear.Get() != expectedResults[i].Linear {
+			t.Errorf("[light %d] linear value not matching (expecting %f, got %f)", i, light.Linear.Get(), expectedResults[i].Linear)
 		}
-		if light.Quadratic != expectedResults[i].Quadratic {
-			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i, light.Quadratic, expectedResults[i].Quadratic)
-		}
-
-		if light.LightPositionSection.UniformBuffer == nil || light.LightColorSection.UniformBuffer == nil {
-			t.Errorf("[light %d]  uniform buffer is not set", i)
-		} else {
-			if light.LightPositionSection.UniformBuffer.GetUBO() == 0 || light.LightColorSection.UniformBuffer.GetUBO() == 0 {
-				t.Errorf("[light %d]  uniform buffer is not initialized", i)
-			}
-			if light.LightPositionSection.UniformBuffer.GetBinding() != expectedResults[i].Binding || light.LightColorSection.UniformBuffer.GetBinding() != expectedResults[i].Binding {
-				t.Errorf("[light %d]  uniform buffer binding is not correct", i)
-			}
+		if light.Quadratic.Get() != expectedResults[i].Quadratic {
+			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i, light.Quadratic.Get(), expectedResults[i].Quadratic)
 		}
 	}
 }

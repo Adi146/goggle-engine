@@ -2,6 +2,7 @@ package UniformBuffer
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Utils"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
@@ -59,9 +60,8 @@ func (buff *UniformBuffer) Unbind() {
 	gl.BindBuffer(gl.UNIFORM_BUFFER, 0)
 }
 
-func (buff *UniformBuffer) UpdateData(data interface{}, offset int, size int) {
-	ubo := buff.ubo
-	gl.NamedBufferSubData(ubo, offset, size, gl.Ptr(data))
+func (buff *UniformBuffer) UpdateData(data interface{}, offset int) {
+	gl.NamedBufferSubData(buff.ubo, offset, Utils.SizeOf(data), Utils.GlPtr(data))
 }
 
 func (buff *UniformBuffer) GetBinding() uint32 {

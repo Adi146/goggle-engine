@@ -1,8 +1,12 @@
 package Light
 
-import "github.com/Adi146/goggle-engine/Core/Light/internal"
+import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+)
 
 type DirectionalLight struct {
-	internal.LightDirection `yaml:",inline"`
-	internal.LightColor     `yaml:",inline"`
+	Direction GeometryMath.Vector3 `yaml:"direction,flow"`
+	Ambient   GeometryMath.Vector3 `yaml:"ambient,flow"`
+	Diffuse   GeometryMath.Vector3 `yaml:"diffuse,flow"`
+	Specular  GeometryMath.Vector3 `yaml:"specular,flow"`
 }

@@ -1,13 +1,13 @@
 package PostProcessing
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Buffer"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model"
+	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 )
 
 var (
-	quadVertices = []Buffer.Vertex{
+	quadVertices = []VertexBuffer.Vertex{
 		{
 			Position: GeometryMath.Vector3{-1.0, 1.0, 0.0},
 			UV:       GeometryMath.Vector2{0.0, 1.0},
@@ -32,5 +32,5 @@ var (
 )
 
 func NewQuad() (*Model.Mesh, error) {
-	return Model.NewMesh(quadVertices, Buffer.RegisterVertexBufferAttributes, quadIndices)
+	return Model.NewMesh(quadVertices, VertexBuffer.RegisterVertexBufferAttributes, quadIndices)
 }

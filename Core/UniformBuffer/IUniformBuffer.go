@@ -8,5 +8,5 @@ type IUniformBuffer interface {
 	GetUBO() uint32
 	GetType() Type
 	Bind()
-	UpdateData(data interface{}, offset int, size int)
+	UpdateData(data interface{}, offset int)
 }

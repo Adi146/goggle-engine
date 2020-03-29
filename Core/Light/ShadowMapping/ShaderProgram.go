@@ -17,6 +17,7 @@ const (
 
 	ua_directionalLight = "directionalLight"
 	ua_pointLight       = "pointLight"
+	ua_spotLight        = "spotLight"
 	ua_lightIndex       = "u_lightIndex"
 )
 
@@ -62,6 +63,8 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 			return ua_directionalLight, nil
 		case Light.PointLight_ubo_type:
 			return ua_pointLight, nil
+		case Light.SpotLight_ubo_type:
+			return ua_spotLight, nil
 		default:
 			return "", fmt.Errorf("shadow map shader does not support unifrom buffer of type %s", t)
 		}

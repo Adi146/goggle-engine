@@ -5,7 +5,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer/UniformBufferSection"
@@ -25,7 +25,7 @@ const (
 	pointLight_offset_distance  = 464
 
 	pointLight_size_section = 480
-	pointLight_ubo_size     = UniformBuffer.Std140_size_single + UniformBuffer.Num_elements*pointLight_size_section
+	pointLight_ubo_size     = UniformBuffer.ArrayUniformBuffer_offset_elements + UniformBuffer.Num_elements*pointLight_size_section
 	PointLight_ubo_type     = "pointLight"
 
 	PointLight_fbo_type = "shadowMap_pointLight"
@@ -88,10 +88,11 @@ func (light *UBOPointLight) SetPosition(pos GeometryMath.Vector3) {
 	light.ShadowMap.ViewProjection[5].Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(&pos, pos.Add(&GeometryMath.Vector3{0.0, 0.0, -1.0}), &GeometryMath.Vector3{0.0, -1.0, 0.0})))
 }
 
-func (light *UBOPointLight) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
+func (light *UBOPointLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
 	_, isPointLight := invoker.(*UBOPointLight)
 	_, isDirectionalLight := invoker.(*UBODirectionalLight)
-	if isPointLight || isDirectionalLight {
+	_, isSpotLight := invoker.(*UBOSpotLight)
+	if isPointLight || isDirectionalLight || isSpotLight {
 		return nil
 	}
 
@@ -111,7 +112,10 @@ func (light *UBOPointLight) Draw(shader Shader.IShaderProgram, invoker coreScene
 		defer shader.Bind()
 	}
 
-	light.ShadowMap.Shader.BindObject(int32(light.ShadowMap.Index))
+	if err := light.ShadowMap.Shader.BindObject(int32(light.ShadowMap.Index)); err != nil {
+		return err
+	}
+
 	return scene.Draw(light.ShadowMap.Shader, light, scene)
 }
 
@@ -164,7 +168,7 @@ func (light *UBOPointLight) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	texture, err := NewShadowCubeMap(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width, yamlConfig.ShadowMap.FrameBuffer.Viewport.Height)
+	texture, err := NewShadowCubeMap(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width, yamlConfig.ShadowMap.FrameBuffer.Viewport.Height, ShadowMapPointLight)
 	if err != nil {
 		return err
 	}
@@ -184,6 +188,7 @@ func (light *UBOPointLight) UnmarshalYAML(value *yaml.Node) error {
 	light.ShadowMap.Distance.Set(yamlConfig.ShadowMap.Distance)
 	light.ShadowMap.Shader = yamlConfig.ShadowMap.Shader.IShaderProgram
 	light.ShadowMap.FrameBuffer = yamlConfig.ShadowMap.FrameBuffer
+
 	index, err := uboYamlConfig.Ptr.AddElement(light)
 	if err != nil {
 		return err

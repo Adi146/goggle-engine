@@ -112,7 +112,7 @@ func (m1 *Matrix4x4) Inverse() *Matrix4x4 {
 func (m1 *Matrix4x4) Equals(m2 *Matrix4x4, threshold float32) bool {
 	for i, _ := range m1 {
 		for j, _ := range m1[i] {
-			if Abs(m1[i][j]-m2[i][j]) > threshold {
+			if !Equals(m1[i][j], m2[i][j], threshold) {
 				return false
 			}
 		}

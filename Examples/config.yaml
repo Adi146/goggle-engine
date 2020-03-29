@@ -42,6 +42,13 @@ shaders:
       - ../Core/Model/Material/material.frag
     geometryShaders:
       - ../Core/Light/ShadowMapping/PointLight/shadowMap.geom
+  shadowMapSpotLight:
+    type: shadowMapShader
+    vertexShaders:
+      - ../Core/Light/ShadowMapping/SpotLight/shadowMap.vert
+    fragmentShaders:
+      - ../Core/Light/ShadowMapping/SpotLight/shadowMap.frag
+      - ../Core/Model/Material/material.frag
 
 scene:
   window:
@@ -98,8 +105,8 @@ scene:
         flash_light:
           type: Node.LightNode.SpotLightNode
           spotLight:
-            innerCone: 0.80
-            outerCone: 0.95
+            innerCone: 12.5
+            outerCone: 17.5
             ambient: [0, 0.1, 0]
             diffuse: [0, 1, 0]
             specular: [0, 1, 0]
@@ -111,6 +118,20 @@ scene:
             id: spotLight
             shaders:
               - phong
+              - shadowMapSpotLight
+          shadowMap:
+            distance: 3250
+            shader: shadowMapSpotLight
+            frameBuffer:
+              width: 1024
+              height: 1024
+            bindOnShaders:
+              - phong
+          transformation:
+            - rotation:
+                angle: 180
+                axis: [0, 1, 0]
+            - translation: [20, 20, 20]
     sun:
       type: SceneGraph.Rotor
       speed: 0.05
@@ -167,7 +188,33 @@ scene:
           - Models/construction_light/Glow.png
       shader: phong
       transformation:
-        - translation: [500, 0, -500]
+        - translation: [0, 0, -500]
+      children:
+        light:
+          type: Node.LightNode.SpotLightNode
+          spotLight:
+            innerCone: 12.5
+            outerCone: 35
+            ambient: [0.05, 0.05, 0.05]
+            diffuse: [1, 1, 1]
+            specular: [1, 1, 1]
+            linear: 0.0014
+            quadratic: 0.000007
+            direction: [0, 0, 1]
+          uniformBuffer: spotLight
+          shadowMap:
+            distance: 3250
+            shader: shadowMapSpotLight
+            frameBuffer:
+              width: 2048
+              height: 2048
+            bindOnShaders:
+              - phong
+          transformation:
+            - rotation:
+                angle: 10
+                axis: [1, 0, 0]
+            - translation: [0, 150, 5]
     lightRotator:
       type: SceneGraph.Rotor
       speed: 1

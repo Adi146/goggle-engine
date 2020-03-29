@@ -4,7 +4,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer/UniformBufferSection"
@@ -64,10 +64,11 @@ func (light *UBODirectionalLight) SetDirection(val GeometryMath.Vector3) {
 	light.ShadowMap.ViewProjection.Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(val.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0})))
 }
 
-func (light *UBODirectionalLight) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
+func (light *UBODirectionalLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
 	_, isPointLight := invoker.(*UBOPointLight)
 	_, isDirectionalLight := invoker.(*UBODirectionalLight)
-	if isPointLight || isDirectionalLight {
+	_, isSpotLight := invoker.(*UBOSpotLight)
+	if isPointLight || isDirectionalLight || isSpotLight {
 		return nil
 	}
 
@@ -88,8 +89,6 @@ func (light *UBODirectionalLight) Draw(shader Shader.IShaderProgram, invoker cor
 	}
 
 	return scene.Draw(light.ShadowMap.Shader, light, scene)
-
-	return nil
 }
 
 func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
@@ -129,7 +128,7 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 		return nil
 	}
 
-	texture, err := NewShadowMap(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width, yamlConfig.ShadowMap.FrameBuffer.Viewport.Height)
+	texture, err := NewShadowMap(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width, yamlConfig.ShadowMap.FrameBuffer.Viewport.Height, ShadowMapDirectionalLight)
 	if err != nil {
 		return err
 	}
@@ -138,22 +137,21 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	for _, shader := range yamlConfig.Shaders {
-		if err := shader.BindObject(texture); err != nil {
-			Log.Error(err, "")
-		}
-	}
-
 	light.ShadowMap.Projection = yamlConfig.ShadowMap.Projection
 	light.Direction.Set(yamlConfig.DirectionalLight.Direction)
 	light.Ambient.Set(yamlConfig.DirectionalLight.Ambient)
 	light.Diffuse.Set(yamlConfig.DirectionalLight.Diffuse)
 	light.Specular.Set(yamlConfig.DirectionalLight.Specular)
-
 	light.ShadowMap.Shader = yamlConfig.ShadowMap.Shader.IShaderProgram
 	light.ShadowMap.FrameBuffer = yamlConfig.ShadowMap.FrameBuffer
 
 	light.SetUniformBuffer(uboYamlConfig.UniformBuffer, 0)
+
+	for _, shader := range yamlConfig.Shaders {
+		if err := shader.BindObject(texture); err != nil {
+			Log.Error(err, "")
+		}
+	}
 
 	return nil
 }

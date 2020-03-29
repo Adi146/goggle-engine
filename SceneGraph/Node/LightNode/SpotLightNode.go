@@ -17,15 +17,20 @@ func init() {
 
 type SpotLightNode struct {
 	Scene.INode
-	SpotLight     Light.UBOSpotLight
+	Light.UBOSpotLight
 	InitDirection GeometryMath.Vector3
 }
 
 func (node *SpotLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.SpotLight.Position.Set(*node.GetGlobalPosition())
-	node.SpotLight.Direction.Set(*node.GetGlobalTransformation().Inverse().Transpose().MulVector(&node.InitDirection).Normalize())
+	node.UBOSpotLight.Position.Set(*node.GetGlobalPosition())
+	node.UBOSpotLight.Direction.Set(*node.GetGlobalTransformation().Inverse().Transpose().MulVector(&node.InitDirection).Normalize())
+	node.UBOSpotLight.UpdateViewProjection()
+
+	if scene := node.GetScene(); scene != nil {
+		scene.AddPreRenderObject(node)
+	}
 
 	return err
 }
@@ -38,12 +43,12 @@ func (node *SpotLightNode) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	if err := value.Decode(&node.SpotLight); err != nil {
+	if err := value.Decode(&node.UBOSpotLight); err != nil {
 		return err
 	}
 
 	if node.InitDirection == (GeometryMath.Vector3{}) {
-		node.InitDirection = node.SpotLight.Direction.Get()
+		node.InitDirection = node.UBOSpotLight.Direction.Get()
 	}
 
 	return nil

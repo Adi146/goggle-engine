@@ -9,11 +9,12 @@ import (
 const (
 	ShadowMapDirectionalLight core.Type = "shadowMapDirectionalLight"
 	ShadowMapPointLight       core.Type = "shadowMapPointLight"
+	ShadowMapSpotLight        core.Type = "shadowMapSpotLight"
 )
 
-func NewShadowMap(width int32, height int32) (*core.Texture, error) {
+func NewShadowMap(width int32, height int32, textureType core.Type) (*core.Texture, error) {
 	texture := core.Texture{
-		Type:   ShadowMapDirectionalLight,
+		Type:   textureType,
 		Target: gl.TEXTURE_2D,
 	}
 
@@ -31,9 +32,9 @@ func NewShadowMap(width int32, height int32) (*core.Texture, error) {
 	return &texture, nil
 }
 
-func NewShadowCubeMap(width int32, height int32) (*core.Texture, error) {
+func NewShadowCubeMap(width int32, height int32, textureType core.Type) (*core.Texture, error) {
 	texture := core.Texture{
-		Type:   ShadowMapPointLight,
+		Type:   textureType,
 		Target: gl.TEXTURE_CUBE_MAP,
 	}
 

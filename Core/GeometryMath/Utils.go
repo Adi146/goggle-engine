@@ -37,3 +37,7 @@ func Pow(a float32, exp float32) float32 {
 func Sqrt(a float32) float32 {
 	return float32(math.Sqrt(float64(a)))
 }
+
+func Equals(f1 float32, f2 float32, threshold float32) bool {
+	return Abs(f1-f2) < threshold
+}

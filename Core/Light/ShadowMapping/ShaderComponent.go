@@ -10,6 +10,7 @@ import (
 const (
 	ua_shadowMapDirectionalLight = "u_shadowMapDirectionalLight"
 	ua_shadowMapsPointLight      = "u_shadowMapsPointLight[%d]"
+	ua_shadowMapsSpotLight       = "u_shadowMapsSpotLights[%d]"
 )
 
 type ShaderComponent struct {
@@ -24,6 +25,8 @@ func (program *ShaderComponent) GetUniformAddress(i interface{}) (string, error)
 			return ua_shadowMapDirectionalLight, nil
 		case Light.ShadowMapPointLight:
 			return ua_shadowMapsPointLight, nil
+		case Light.ShadowMapSpotLight:
+			return ua_shadowMapsSpotLight, nil
 		default:
 			return "", fmt.Errorf("shadow shader does not support textures of type %s", t)
 		}
@@ -43,7 +46,7 @@ func (program *ShaderComponent) BindObject(i interface{}) error {
 		switch t := v.GetType(); t {
 		case Light.ShadowMapDirectionalLight:
 			return program.BindUniform(v, uniformAddress)
-		case Light.ShadowMapPointLight:
+		case Light.ShadowMapPointLight, Light.ShadowMapSpotLight:
 			return fmt.Errorf("use GetUniformAddress and specify index instead")
 		}
 	}

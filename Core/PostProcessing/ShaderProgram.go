@@ -43,12 +43,7 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string,
 func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 	switch v := i.(type) {
 	case Texture.ITexture:
-		switch t := v.GetType(); t {
-		case OffscreenTexture:
-			return ua_screenTexture, nil
-		default:
-			return "", fmt.Errorf("post processing shader does not support texture of type %s", t)
-		}
+		return ua_screenTexture, nil
 	case float32:
 		return ua_kernelOffset, nil
 	case []float32:

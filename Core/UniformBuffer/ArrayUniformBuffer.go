@@ -7,8 +7,8 @@ import (
 const (
 	Num_elements = 32
 
-	offset_num_elements = 0
-	offset_elements     = 16
+	offset_num_elements                = 0
+	ArrayUniformBuffer_offset_elements = 16
 )
 
 type ArrayUniformBuffer struct {
@@ -29,7 +29,7 @@ func (buff *ArrayUniformBuffer) AddElement(elem IUniformBufferSection) (int, err
 		return index, fmt.Errorf("buffer exceeded")
 	}
 
-	offset := offset_elements
+	offset := ArrayUniformBuffer_offset_elements
 	for _, existingElement := range buff.Elements {
 		offset += existingElement.GetSize()
 	}

@@ -19,8 +19,8 @@ func TestUBOSpotLight_UnmarshalYAML(t *testing.T) {
 	var data = `
 lights:
     - spotLight:
-          innerCone: 0.80
-          outerCone: 0.95
+          innerCone: 12.5
+          outerCone: 17.5
           ambient: [0.1, 0.1, 0]
           diffuse: [1, 1, 0]
           specular: [1, 1, 0]
@@ -28,9 +28,14 @@ lights:
           quadratic: 0.000007
           direction: [1, 0, 1]
       uniformBuffer: spotLight
+      shadowMap:
+          distance: 3250
+          frameBuffer:
+              width: 1024
+              height: 1024
     - spotLight:
-          innerCone: 0.80
-          outerCone: 0.95
+          innerCone: 20
+          outerCone: 45
           ambient: [0, 0.1, 0]
           diffuse: [0, 1, 0]
           specular: [0, 1, 0]
@@ -40,6 +45,11 @@ lights:
       uniformBuffer:
           binding: 3
           id: spotLight
+      shadowMap:
+          distance: 3250
+          frameBuffer:
+              width: 1024
+              height: 1024
     `
 
 	if err := yaml.Unmarshal([]byte(data), &lightStruct); err != nil {
@@ -68,8 +78,8 @@ lights:
 			Specular:  GeometryMath.Vector3{1.0, 1.0, 0.0},
 			Linear:    0.0014,
 			Quadratic: 0.000007,
-			InnerCone: 0.80,
-			OuterCone: 0.95,
+			InnerCone: 0.976296,
+			OuterCone: 0.953717,
 			Binding:   3,
 		},
 		{
@@ -80,8 +90,8 @@ lights:
 			Specular:  GeometryMath.Vector3{0.0, 1.0, 0.0},
 			Linear:    0.0014,
 			Quadratic: 0.000007,
-			InnerCone: 0.80,
-			OuterCone: 0.95,
+			InnerCone: 0.939693,
+			OuterCone: 0.707107,
 			Binding:   3,
 		},
 	}
@@ -108,10 +118,10 @@ lights:
 		if light.Quadratic.Get() != expectedResults[i].Quadratic {
 			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i, light.Quadratic.Get(), expectedResults[i].Quadratic)
 		}
-		if light.InnerCone.Get() != expectedResults[i].InnerCone {
+		if !GeometryMath.Equals(light.InnerCone.Get(), expectedResults[i].InnerCone, 1e-5) {
 			t.Errorf("[light %d] innerCone value not matching (expecting %f, got %f)", i, light.InnerCone.Get(), expectedResults[i].InnerCone)
 		}
-		if light.OuterCone.Get() != expectedResults[i].OuterCone {
+		if !GeometryMath.Equals(light.OuterCone.Get(), expectedResults[i].OuterCone, 1e-5) {
 			t.Errorf("[light %d] outerCone value not matching (expecting %f, got %f)", i, light.OuterCone.Get(), expectedResults[i].OuterCone)
 		}
 	}

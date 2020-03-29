@@ -45,6 +45,8 @@ layout (std140) uniform spotLight {
 
         float innerCone;
         float outerCone;
+
+        mat4 viewProjectionMatrix;
     } u_spotLights[MAX_SPOT_LIGHTS];
 };
 
@@ -56,6 +58,7 @@ struct MaterialColor {
 
 float calculateShadowDirectionalLight(vec3 fragPos);
 float calculateShadowPointLight(int pointLightIndex, vec3 fragPos);
+float calculateShadowSpotLight(int spotLightIndex, vec3 fragPos);
 
 vec3 calculateDirectionalLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, MaterialColor color, float shininess) {
     vec3 lightDir = normalize(-u_directionalLight.direction);
@@ -113,13 +116,15 @@ vec3 calculateSpotLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, Materi
         float distance = length(u_spotLights[i].position - fragPos);
         float attenuation = 1.0 / ((1.0) + (u_spotLights[i].linear * distance) + (u_spotLights[i].quadratic * pow(distance, 2)));
 
-        float theta = dot(lightDir, normalize(u_spotLights[i].direction));
-        float epsilon = u_spotLights[i].outerCone - u_spotLights[i].innerCone;
+        float theta = dot(lightDir, -normalize(u_spotLights[i].direction));
+        float epsilon = u_spotLights[i].innerCone - u_spotLights[i].outerCone;
         float intensity = clamp((theta - u_spotLights[i].outerCone) / epsilon, 0.0f, 1.0f);
 
-        ambientColor += attenuation * intensity * u_spotLights[i].ambient * color.diffuse.rgb;
-        diffuseColor += attenuation * intensity * u_spotLights[i].diffuse * diff * color.diffuse.rgb;
-        specularColor += attenuation * intensity * u_spotLights[i].specular * spec* color.specular;
+        float shadow = calculateShadowSpotLight(i, fragPos);
+
+        ambientColor += attenuation * u_spotLights[i].ambient * color.diffuse.rgb;
+        diffuseColor += attenuation * intensity * (1 - shadow) * u_spotLights[i].diffuse * diff * color.diffuse.rgb;
+        specularColor += attenuation * intensity * (1 - shadow) * u_spotLights[i].specular * spec* color.specular;
     }
 
     return (ambientColor + diffuseColor + specularColor);

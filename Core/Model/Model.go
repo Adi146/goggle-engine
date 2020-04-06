@@ -1,6 +1,7 @@
 package Model
 
 import (
+	"fmt"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Scene"
@@ -42,8 +43,8 @@ func (model *Model) UnmarshalYAML(value *yaml.Node) error {
 	var importWarnings Error.ErrorCollection
 
 	var yamlConfig struct {
-		File     string            `yaml:"file"`
-		Material Material.Material `yaml:",inline"`
+		File     string             `yaml:"file"`
+		Material *Material.Material `yaml:"material"`
 	}
 	var err error
 	if value.Kind == yaml.ScalarNode {
@@ -59,11 +60,13 @@ func (model *Model) UnmarshalYAML(value *yaml.Node) error {
 	importErrors.Push(&result.Errors)
 	importWarnings.Push(&result.Warnings)
 	if result.Success() {
-		for _, mesh := range tmpModel.Meshes {
-			mesh.Textures = append(mesh.Textures, yamlConfig.Material.Textures...)
+		if yamlConfig.Material != nil {
+			for i := range tmpModel.Meshes {
+				tmpModel.Meshes[i].Material.Merge(yamlConfig.Material)
+			}
 		}
 
-		Log.Warn(&importWarnings, "import warnings")
+		Log.Warn(&importWarnings, fmt.Sprintf("import warnings: %s", yamlConfig.File))
 		*model = *tmpModel
 	}
 

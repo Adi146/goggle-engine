@@ -136,6 +136,12 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 			gl.ProgramUniform1i(program.ID, location, v)
 		case uint32:
 			gl.ProgramUniform1i(program.ID, location, int32(v))
+		case bool:
+			if v {
+				gl.ProgramUniform1i(program.ID, location, int32(1))
+			} else {
+				gl.ProgramUniform1i(program.ID, location, int32(0))
+			}
 		case Texture.ITexture:
 			if err := v.Bind(); err != nil {
 				return err

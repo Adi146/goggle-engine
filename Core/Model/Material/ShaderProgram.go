@@ -3,7 +3,6 @@ package Material
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
@@ -16,15 +15,15 @@ const (
 	ua_color_specular = ua_baseColor + ".specular"
 	ua_color_emissive = ua_baseColor + ".emissive"
 
-	ua_textures_diffuse  = ua_material + ".texturesDiffuse[%d]"
-	ua_textures_specular = ua_material + ".texturesSpecular[%d]"
-	ua_textures_emissive = ua_material + ".texturesEmissive[%d]"
-	ua_textures_normals  = ua_material + ".texturesNormals[%d]"
+	ua_texture_diffuse  = ua_material + ".textureDiffuse"
+	ua_texture_specular = ua_material + ".textureSpecular"
+	ua_texture_emissive = ua_material + ".textureEmissive"
+	ua_texture_normal   = ua_material + ".textureNormal"
 
-	ua_num_textures_diffuse  = ua_material + ".numTextureDiffuse"
-	ua_num_textures_specular = ua_material + ".numTextureSpecular"
-	ua_num_textures_emissive = ua_material + ".numTextureEmissive"
-	ua_num_textures_normals  = ua_material + ".numTextureNormals"
+	ua_has_texture_diffuse  = ua_material + ".hasTextureDiffuse"
+	ua_has_texture_specular = ua_material + ".hasTextureSpecular"
+	ua_has_texture_emissive = ua_material + ".hasTextureEmissive"
+	ua_has_texture_normal   = ua_material + ".hasTextureNormal"
 )
 
 type ShaderProgram struct {
@@ -60,15 +59,12 @@ func BindDiffuse(program *ShaderProgram, material *Material) error {
 	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(&material.DiffuseBaseColor, ua_color_diffuse))
-	var i int32
-	for _, texture := range material.Textures {
-		if texture.GetType() == Texture.DiffuseTexture {
-			err.Push(program.BindUniform(texture, fmt.Sprintf(ua_textures_diffuse, i)))
-			i++
-		}
-	}
 
-	err.Push(program.BindUniform(i, ua_num_textures_diffuse))
+	exists := material.DiffuseTexture != nil
+	if exists {
+		err.Push(program.BindUniform(material.DiffuseTexture, ua_texture_diffuse))
+	}
+	err.Push(program.BindUniform(exists, ua_has_texture_diffuse))
 
 	return err.Err()
 }
@@ -77,15 +73,12 @@ func BindSpecular(program *ShaderProgram, material *Material) error {
 	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(&material.SpecularBaseColor, ua_color_specular))
-	var i int32
-	for _, texture := range material.Textures {
-		if texture.GetType() == Texture.SpecularTexture {
-			err.Push(program.BindUniform(texture, fmt.Sprintf(ua_textures_specular, i)))
-			i++
-		}
-	}
 
-	err.Push(program.BindUniform(i, ua_num_textures_specular))
+	exists := material.SpecularTexture != nil
+	if exists {
+		err.Push(program.BindUniform(material.SpecularTexture, ua_texture_specular))
+	}
+	err.Push(program.BindUniform(exists, ua_has_texture_specular))
 
 	return err.Err()
 }
@@ -94,15 +87,12 @@ func BindEmissive(program *ShaderProgram, material *Material) error {
 	var err Error.ErrorCollection
 
 	err.Push(program.BindUniform(&material.EmissiveBaseColor, ua_color_emissive))
-	var i int32
-	for _, texture := range material.Textures {
-		if texture.GetType() == Texture.EmissiveTexture {
-			err.Push(program.BindUniform(texture, fmt.Sprintf(ua_textures_emissive, i)))
-			i++
-		}
-	}
 
-	err.Push(program.BindUniform(i, ua_num_textures_emissive))
+	exists := material.EmissiveTexture != nil
+	if exists {
+		err.Push(program.BindUniform(material.EmissiveTexture, ua_texture_emissive))
+	}
+	err.Push(program.BindUniform(exists, ua_has_texture_emissive))
 
 	return err.Err()
 }
@@ -110,15 +100,11 @@ func BindEmissive(program *ShaderProgram, material *Material) error {
 func BindNormals(program *ShaderProgram, material *Material) error {
 	var err Error.ErrorCollection
 
-	var i int32
-	for _, texture := range material.Textures {
-		if texture.GetType() == Texture.NormalsTexture {
-			err.Push(program.BindUniform(texture, fmt.Sprintf(ua_textures_normals, i)))
-			i++
-		}
+	exists := material.NormalTexture != nil
+	if exists {
+		err.Push(program.BindUniform(material.NormalTexture, ua_texture_normal))
 	}
-
-	err.Push(program.BindUniform(i, ua_num_textures_normals))
+	err.Push(program.BindUniform(exists, ua_has_texture_normal))
 
 	return err.Err()
 }

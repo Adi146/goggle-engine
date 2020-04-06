@@ -12,59 +12,41 @@ struct Material {
 
     float shininess;
 
-    sampler2D texturesDiffuse[MAX_TEXTURES];
-    sampler2D texturesSpecular[MAX_TEXTURES];
-    sampler2D texturesEmissive[MAX_TEXTURES];
-    sampler2D texturesNormals[MAX_TEXTURES];
+    sampler2D textureDiffuse;
+    sampler2D textureSpecular;
+    sampler2D textureEmissive;
+    sampler2D textureNormal;
 
-    int numTextureDiffuse;
-    int numTextureSpecular;
-    int numTextureEmissive;
-    int numTextureNormals;
+    bool hasTextureDiffuse;
+    bool hasTextureSpecular;
+    bool hasTextureEmissive;
+    bool hasTextureNormal;
 };
 
 uniform Material u_material;
 
 vec4 GetDiffuseColor(vec2 uv) {
-    vec4 baseColor = u_material.baseColor.diffuse;
-
-    if (u_material.numTextureDiffuse > 0) {
-        vec4 diffuse = vec4(0.0, 0.0, 0.0, 0.0);
-        for (int i = 0; i < u_material.numTextureDiffuse; i++){
-            diffuse += texture(u_material.texturesDiffuse[i], uv);
-        }
-        baseColor = diffuse;
+    if (u_material.hasTextureDiffuse) {
+        return texture(u_material.textureDiffuse, uv);
+    } else {
+        return u_material.baseColor.diffuse;
     }
-
-    return baseColor;
 }
 
 vec3 GetSpecularColor(vec2 uv) {
-    vec3 baseColor = u_material.baseColor.specular;
-
-    if (u_material.numTextureSpecular > 0) {
-        vec4 specular = vec4(0, 0, 0, 0);
-        for (int i = 0; i < u_material.numTextureSpecular; i++) {
-            specular += texture(u_material.texturesSpecular[i], uv);
-        }
-        baseColor = vec3(specular);
+    if (u_material.hasTextureSpecular) {
+        return texture(u_material.textureSpecular, uv).rgb;
+    } else {
+        return u_material.baseColor.specular;
     }
-
-    return baseColor;
 }
 
 vec3 GetEmissiveColor(vec2 uv) {
-    vec3 baseColor = u_material.baseColor.emissive;
-
-    if (u_material.numTextureEmissive > 0) {
-        vec4 emissive = vec4(0, 0, 0, 0);
-        for (int i = 0; i < u_material.numTextureEmissive; i++) {
-            emissive += texture(u_material.texturesEmissive[i], uv);
-        }
-        baseColor = vec3(emissive);
+    if (u_material.hasTextureEmissive) {
+        return texture(u_material.textureEmissive, uv).rgb;
+    } else {
+        return u_material.baseColor.emissive;
     }
-
-    return baseColor;
 }
 
 MaterialColor GetMaterialColor(vec2 uv) {
@@ -82,15 +64,12 @@ MaterialColor GetMaterialColor(vec2 uv) {
 }
 
 vec3 GetNormalVector (vec3 normal, vec2 uv, mat3 tbn) {
-    if (u_material.numTextureNormals > 0) {
+    if (u_material.hasTextureNormal) {
         //transpose is equal to inverse in this case
-        normal = vec3(0.0, 0.0, 0.0);
-        for (int i = 0; i < u_material.numTextureNormals; i++){
-            normal += normalize(texture(u_material.texturesNormals[i], uv).rgb * 2.0 - 1.0f);
-        }
-        normal = normalize(normal * tbn);
+        return normalize(texture(u_material.textureNormal, uv).rgb * 2.0 - 1.0f);
+    } else {
+        return normal;
     }
-    return normal;
 }
 
 float GetShininess() {

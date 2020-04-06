@@ -74,10 +74,8 @@ func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	for _, texture := range yamlConfig.Material.Textures {
-		texture.SetWrapMode(Texture.Repeat)
-		texture.GenerateMipMap(-1)
-	}
+	yamlConfig.Material.DiffuseTexture.SetWrapMode(Texture.Repeat)
+	yamlConfig.Material.DiffuseTexture.GenerateMipMap(-1)
 
 	*terrain = Terrain{
 		Meshes: []Model.MeshesWithMaterial{

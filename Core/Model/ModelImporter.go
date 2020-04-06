@@ -63,47 +63,67 @@ func ImportModel(filename string) (*Model, ImportResult) {
 
 func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Material.Material, ImportResult) {
 	var result ImportResult
+	var material Material.Material
 
-	assimpDiffuse, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorDiffuse, assimp.TextureType(assimp.TextureMapping_None), 0)
+	diffuseColor, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorDiffuse, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
 		result.Warnings.Push(fmt.Errorf("could not load diffuse color"))
+	} else {
+		material.DiffuseBaseColor = GeometryMath.Vector4{diffuseColor.R(), diffuseColor.G(), diffuseColor.B(), diffuseColor.A()}
 	}
-	assimpSpecular, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorSpecular, assimp.TextureType(assimp.TextureMapping_None), 0)
+	specularColor, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorSpecular, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
 		result.Warnings.Push(fmt.Errorf("could not load specular color"))
+	} else {
+		material.SpecularBaseColor = GeometryMath.Vector3{specularColor.R(), specularColor.G(), specularColor.B()}
 	}
-	assimpEmissive, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorEmissive, assimp.TextureType(assimp.TextureMapping_None), 0)
+	emissiveColor, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorEmissive, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
 		result.Warnings.Push(fmt.Errorf("could not load emissive color"))
+	} else {
+		material.EmissiveBaseColor = GeometryMath.Vector3{emissiveColor.R(), emissiveColor.G(), emissiveColor.B()}
 	}
-	assimpShininess, returnCode := assimpMaterial.GetMaterialFloat(assimp.MatKey_Shininess, assimp.TextureType(assimp.TextureMapping_None), 0)
+	shininess, returnCode := assimpMaterial.GetMaterialFloat(assimp.MatKey_Shininess, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
 		result.Warnings.Push(fmt.Errorf("could not load shininess"))
+	} else {
+		material.Shininess = shininess
 	}
 
-	var modelTextures []Texture.ITexture
-	for textureType, _ := range textureTypeMap {
-		textures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, textureType, modelDir)
-		result.Errors.Push(&textureResult.Errors)
-		result.Warnings.Push(&textureResult.Warnings)
-
-		modelTextures = append(modelTextures, textures...)
+	diffuseTextures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Diffuse, modelDir)
+	result.Errors.Push(&textureResult.Errors)
+	result.Warnings.Push(&textureResult.Warnings)
+	if textureResult.Success() && len(diffuseTextures) > 0 {
+		material.DiffuseTexture = diffuseTextures[0]
 	}
 
-	return &Material.Material{
-		DiffuseBaseColor:  GeometryMath.Vector4{assimpDiffuse.R(), assimpDiffuse.G(), assimpDiffuse.B(), assimpDiffuse.A()},
-		SpecularBaseColor: GeometryMath.Vector3{assimpSpecular.R(), assimpSpecular.G(), assimpSpecular.B()},
-		EmissiveBaseColor: GeometryMath.Vector3{assimpEmissive.R(), assimpEmissive.G(), assimpEmissive.B()},
+	specularTextures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Specular, modelDir)
+	result.Errors.Push(&textureResult.Errors)
+	result.Warnings.Push(&textureResult.Warnings)
+	if textureResult.Success() && len(specularTextures) > 0 {
+		material.SpecularTexture = specularTextures[0]
+	}
 
-		Shininess: assimpShininess,
+	emissiveTextures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Emissive, modelDir)
+	result.Errors.Push(&textureResult.Errors)
+	result.Warnings.Push(&textureResult.Warnings)
+	if textureResult.Success() && len(emissiveTextures) > 0 {
+		material.EmissiveTexture = emissiveTextures[0]
+	}
 
-		Textures: modelTextures,
-	}, result
+	normalTextures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Normals, modelDir)
+	result.Errors.Push(&textureResult.Errors)
+	result.Warnings.Push(&textureResult.Warnings)
+	if textureResult.Success() && len(normalTextures) > 0 {
+		material.NormalTexture = normalTextures[0]
+	}
+
+	return &material, result
 }
 
-func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]Texture.ITexture, ImportResult) {
+func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType assimp.TextureMapping, modelDir string) ([]*Texture.Texture2D, ImportResult) {
 	var result ImportResult
-	var textures []Texture.ITexture
+	var textures []*Texture.Texture2D
 
 	numTextures := assimpMaterial.GetMaterialTextureCount(assimp.TextureType(textureType))
 	for i := 0; i < numTextures; i++ {

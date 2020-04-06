@@ -25,8 +25,7 @@ func NewShadowMap(width int32, height int32, textureType core.Type) (*core.Textu
 	gl.TexImage2D(texture.Target, 0, gl.DEPTH_COMPONENT24, width, height, 0, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
 	gl.TexParameteri(texture.Target, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 	gl.TexParameteri(texture.Target, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	texture.SetWrapMode(core.ClampToEdge)
 	texture.Unbind()
 
 	return &texture, nil
@@ -47,9 +46,7 @@ func NewShadowCubeMap(width int32, height int32, textureType core.Type) (*core.T
 	}
 	gl.TexParameteri(texture.Target, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 	gl.TexParameteri(texture.Target, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-	gl.TexParameteri(texture.Target, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
+	texture.SetWrapMode(core.ClampToEdge)
 	texture.Unbind()
 
 	return &texture, nil

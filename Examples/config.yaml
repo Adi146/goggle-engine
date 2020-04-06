@@ -10,16 +10,12 @@ shaders:
       - ../Core/Shader/PhongShader/lights.frag
       - ../Core/Model/Material/material.frag
       - ../Core/Light/ShadowMapping/shadow.frag
-    frameBuffers:
-      - shadowMap
   postProcessing:
     type: postProcessingShader
     vertexShaders:
       - ../Core/PostProcessing/postProcessing.vert
     fragmentShaders:
       - ../Core/PostProcessing/kernel.frag
-    frameBuffers:
-      - offScreen
   skybox:
     type: skyboxShader
     vertexShaders:
@@ -292,3 +288,18 @@ scene:
         bottom: Models/skybox/bottom.jpg
         left: Models/skybox/left.jpg
         right: Models/skybox/right.jpg
+    terrain:
+      type: Node.Terrain
+      shader: phong
+      file: Models/terrain/heightMap.jpg
+      heightScale: 1000
+      tileSize: 10
+      uvScale: 4
+      material:
+        diffuseBaseColor: [0.8, 0.8, 0.8, 1]
+        specularBaseColor: [0.5, 0.5, 0.5]
+        emissiveBaseColor: [0, 0, 0]
+        shininess: 1
+        textures:
+          diffuse:
+            - Models/terrain/gras364.jpg

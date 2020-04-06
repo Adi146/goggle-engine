@@ -20,6 +20,19 @@ func loadRGBA(filename string) (*image.RGBA, error) {
 	return rgba, nil
 }
 
+func LoadGray(filename string) (*image.Gray, error) {
+	img, err := loadImage(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	bounds := img.Bounds()
+	gray := image.NewGray(bounds)
+	draw.Draw(gray, gray.Bounds(), img, bounds.Min, draw.Src)
+
+	return gray, nil
+}
+
 func flipRGBA(rgba *image.RGBA) *image.RGBA {
 	bounds := rgba.Bounds()
 	newRgba := image.NewRGBA(bounds)

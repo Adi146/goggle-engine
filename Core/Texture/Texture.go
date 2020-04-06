@@ -5,6 +5,14 @@ import (
 )
 
 type Type string
+type WrapMode int32
+
+const (
+	Repeat         WrapMode = gl.REPEAT
+	MirroredRepeat WrapMode = gl.MIRRORED_REPEAT
+	ClampToEdge    WrapMode = gl.CLAMP_TO_EDGE
+	ClampToBorder  WrapMode = gl.CLAMP_TO_BORDER
+)
 
 type Texture struct {
 	ID     uint32
@@ -54,4 +62,16 @@ func (texture *Texture) Unbind() {
 		texture.Unit.Texture = nil
 		texture.Unit = nil
 	}
+}
+
+func (texture *Texture) SetWrapMode(mode WrapMode) {
+	gl.TextureParameteri(texture.ID, gl.TEXTURE_WRAP_S, int32(mode))
+	gl.TextureParameteri(texture.ID, gl.TEXTURE_WRAP_T, int32(mode))
+	gl.TextureParameteri(texture.ID, gl.TEXTURE_WRAP_R, int32(mode))
+}
+
+func (texture *Texture) GenerateMipMap(lodBias float32) {
+	gl.GenerateTextureMipmap(texture.ID)
+	gl.TextureParameteri(texture.ID, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+	gl.TextureParameterf(texture.ID, gl.TEXTURE_LOD_BIAS, lodBias)
 }

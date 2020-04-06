@@ -8,4 +8,7 @@ type ITexture interface {
 
 	Bind() error
 	Unbind()
+
+	SetWrapMode(mode WrapMode)
+	GenerateMipMap(lodBias float32)
 }

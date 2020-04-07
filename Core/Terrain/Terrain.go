@@ -13,7 +13,7 @@ import (
 
 type Terrain Model.Model
 
-func GenerateTerrain(heightMap HeightMap, tileSize float32, uvScale float32) (*Model.Mesh, error) {
+func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Model.Mesh, error) {
 	vertices := make([]VertexBuffer.Vertex, heightMap.NumRows*heightMap.NumColumns)
 	indices := make([]uint32, 6*(heightMap.NumRows-1)*(heightMap.NumColumns-1))
 
@@ -29,7 +29,7 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32, uvScale float32) (*M
 					(float32(z) - offsetZ) * tileSize,
 				},
 				Normal:  heightMap.GetNormal(x, z),
-				UV:      GeometryMath.Vector2{float32(x) / uvScale, float32(z) / uvScale},
+				UV:      GeometryMath.Vector2{float32(x) / float32(heightMap.NumColumns), float32(z) / float32(heightMap.NumRows)},
 				Tangent: GeometryMath.Vector3{},
 			}
 		}
@@ -60,22 +60,23 @@ func (terrain *Terrain) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawab
 
 func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
-		HeightMap HeightMap         `yaml:",inline"`
-		TileSize  float32           `yaml:"tileSize"`
-		UvScale   float32           `yaml:"uvScale"`
-		Material  Material.Material `yaml:"material"`
+		HeightMap HeightMap              `yaml:",inline"`
+		TileSize  float32                `yaml:"tileSize"`
+		Material  Material.BlendMaterial `yaml:"material"`
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
 	}
 
-	mesh, err := GenerateTerrain(yamlConfig.HeightMap, yamlConfig.TileSize, yamlConfig.UvScale)
+	mesh, err := GenerateTerrain(yamlConfig.HeightMap, yamlConfig.TileSize)
 	if err != nil {
 		return err
 	}
 
-	yamlConfig.Material.DiffuseTexture.SetWrapMode(Texture.Repeat)
-	yamlConfig.Material.DiffuseTexture.GenerateMipMap(-1)
+	for _, material := range yamlConfig.Material.Materials {
+		material.Textures.Diffuse.SetWrapMode(Texture.Repeat)
+		material.Textures.Diffuse.GenerateMipMap(-1)
+	}
 
 	*terrain = Terrain{
 		Meshes: []Model.MeshesWithMaterial{

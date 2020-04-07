@@ -40,7 +40,7 @@ func NewShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string, 
 		ShaderProgramCore: shaderCore,
 		MaterialShader: Material.ShaderProgram{
 			ShaderProgramCore: shaderCore,
-			BindFunctions: []func(program *Material.ShaderProgram, material *Material.Material) error{
+			BindFunctions: []func(program *Material.ShaderProgram, material *Material.Material, uaMaterial string) error{
 				Material.BindDiffuse,
 			},
 		},
@@ -53,7 +53,7 @@ func NewIShaderProgram(vertexShaderFiles []string, fragmentShaderFiles []string,
 
 func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 	switch v := i.(type) {
-	case *Material.Material:
+	case *Material.Material, *Material.BlendMaterial:
 		return program.MaterialShader.GetUniformAddress(i)
 	case *GeometryMath.Matrix4x4:
 		return ua_modelMatrix, nil
@@ -77,7 +77,7 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
-	case *Material.Material:
+	case *Material.Material, *Material.BlendMaterial:
 		return program.MaterialShader.BindObject(v)
 	case Texture.ITexture:
 		return nil

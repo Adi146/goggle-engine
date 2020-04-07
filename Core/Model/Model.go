@@ -13,7 +13,7 @@ import (
 
 type MeshesWithMaterial struct {
 	*Mesh
-	*Material.Material
+	Material Material.IMaterial
 }
 
 type Model struct {
@@ -43,8 +43,8 @@ func (model *Model) UnmarshalYAML(value *yaml.Node) error {
 	var importWarnings Error.ErrorCollection
 
 	var yamlConfig struct {
-		File     string             `yaml:"file"`
-		Material *Material.Material `yaml:"material"`
+		File     string    `yaml:"file"`
+		Material yaml.Node `yaml:"material"`
 	}
 	var err error
 	if value.Kind == yaml.ScalarNode {
@@ -60,9 +60,11 @@ func (model *Model) UnmarshalYAML(value *yaml.Node) error {
 	importErrors.Push(&result.Errors)
 	importWarnings.Push(&result.Warnings)
 	if result.Success() {
-		if yamlConfig.Material != nil {
-			for i := range tmpModel.Meshes {
-				tmpModel.Meshes[i].Material.Merge(yamlConfig.Material)
+		for i := range tmpModel.Meshes {
+			if yamlConfig.Material.Kind != 0 {
+				if err := yamlConfig.Material.Decode(tmpModel.Meshes[i].Material); err != nil {
+					return err
+				}
 			}
 		}
 

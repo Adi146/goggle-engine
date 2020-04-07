@@ -63,7 +63,9 @@ func ImportModel(filename string) (*Model, ImportResult) {
 
 func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Material.Material, ImportResult) {
 	var result ImportResult
-	var material Material.Material
+	material := Material.Material{
+		UvScale: 1,
+	}
 
 	diffuseColor, returnCode := assimpMaterial.GetMaterialColor(assimp.MatKey_ColorDiffuse, assimp.TextureType(assimp.TextureMapping_None), 0)
 	if returnCode != assimp.Return_Success {
@@ -94,28 +96,28 @@ func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Ma
 	result.Errors.Push(&textureResult.Errors)
 	result.Warnings.Push(&textureResult.Warnings)
 	if textureResult.Success() && len(diffuseTextures) > 0 {
-		material.DiffuseTexture = diffuseTextures[0]
+		material.Textures.Diffuse = diffuseTextures[0]
 	}
 
 	specularTextures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Specular, modelDir)
 	result.Errors.Push(&textureResult.Errors)
 	result.Warnings.Push(&textureResult.Warnings)
 	if textureResult.Success() && len(specularTextures) > 0 {
-		material.SpecularTexture = specularTextures[0]
+		material.Textures.Specular = specularTextures[0]
 	}
 
 	emissiveTextures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Emissive, modelDir)
 	result.Errors.Push(&textureResult.Errors)
 	result.Warnings.Push(&textureResult.Warnings)
 	if textureResult.Success() && len(emissiveTextures) > 0 {
-		material.EmissiveTexture = emissiveTextures[0]
+		material.Textures.Emissive = emissiveTextures[0]
 	}
 
 	normalTextures, textureResult := importTexturesOfAssimpMaterial(assimpMaterial, assimp.TextureMapping_Normals, modelDir)
 	result.Errors.Push(&textureResult.Errors)
 	result.Warnings.Push(&textureResult.Warnings)
 	if textureResult.Success() && len(normalTextures) > 0 {
-		material.NormalTexture = normalTextures[0]
+		material.Textures.Normal = normalTextures[0]
 	}
 
 	return &material, result

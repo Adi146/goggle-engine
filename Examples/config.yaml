@@ -288,14 +288,46 @@ scene:
     terrain:
       type: Node.Terrain
       shader: phong
-      file: Models/terrain/heightMap.jpg
+      file: Models/terrain/heightmap.png
       heightScale: 1000
       tileSize: 10
-      uvScale: 4
       material:
-        diffuseBaseColor: [0.8, 0.8, 0.8, 1]
-        specularBaseColor: [0.5, 0.5, 0.5]
-        emissiveBaseColor: [0, 0, 0]
-        shininess: 1
-        textures:
-          diffuse: Models/terrain/gras364.jpg
+        blendMap: Models/terrain/blendmap.png
+        default:
+          diffuseBaseColor: [0.8, 0.8, 0.8, 1]
+          specularBaseColor: [0.5, 0.5, 0.5]
+          emissiveBaseColor: [0, 0, 0]
+          shininess: 1
+          uvScale: 100
+          textures:
+            diffuse: Models/terrain/grass_ground_d.jpg
+            normal: Models/terrain/grass_ground_n.jpg
+        red:
+          diffuseBaseColor: [0.8, 0.8, 0.8, 1]
+          specularBaseColor: [0.5, 0.5, 0.5]
+          emissiveBaseColor: [0, 0, 0]
+          shininess: 1
+          uvScale: 50
+          textures:
+            diffuse: Models/terrain/grass_rocky_d.jpg
+            specular: Models/terrain/grass_rocky_s.jpg
+            normal: Models/terrain/grass_rocky_n.jpg
+        green:
+          diffuseBaseColor: [0.8, 0.8, 0.8, 1]
+          specularBaseColor: [0.5, 0.5, 0.5]
+          emissiveBaseColor: [0, 0, 0]
+          shininess: 1
+          uvScale: 50
+          textures:
+            diffuse: Models/terrain/snow_grass3_d.jpg
+            normal: Models/terrain/snow_grass3_n.jpg
+        blue:
+          diffuseBaseColor: [0.8, 0.8, 0.8, 1]
+          specularBaseColor: [0.5, 0.5, 0.5]
+          emissiveBaseColor: [0, 0, 0]
+          shininess: 1
+          uvScale: 50
+          textures:
+            diffuse: Models/terrain/snow_mntn2_d.jpg
+            normal: Models/terrain/snow_mntn2_h.jpg
+

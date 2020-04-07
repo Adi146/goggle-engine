@@ -23,7 +23,7 @@ layout (std140) uniform camera {
 
 MaterialColor GetMaterialColor(vec2 uv);
 vec3 GetNormalVector(vec3 normal, vec2 uv, mat3 tbn);
-float GetShininess();
+float GetShininess(vec2 uv);
 
 vec3 calculateDirectionalLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, MaterialColor color, float shininess);
 vec3 calculatePointLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, MaterialColor color, float shininess);
@@ -31,7 +31,7 @@ vec3 calculateSpotLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, Materi
 
 void main() {
     MaterialColor color = GetMaterialColor(fs_in.uv);
-    float shininess = GetShininess();
+    float shininess = GetShininess(fs_in.uv);
     vec3 normal = GetNormalVector(fs_in.normal, fs_in.uv, fs_in.tbn);
 
     // calculate lights

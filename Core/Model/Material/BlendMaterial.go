@@ -21,6 +21,12 @@ func (blendMap *BlendMaterial) Unbind() {
 	}
 }
 
+func (blendMap *BlendMaterial) SetWrapMode(mode Texture.WrapMode) {
+	for _, material := range blendMap.Materials {
+		material.SetWrapMode(mode)
+	}
+}
+
 func (blendMap *BlendMaterial) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
 		BlendMap *Texture.Texture2D `yaml:"blendMap"`

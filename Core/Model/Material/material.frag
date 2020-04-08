@@ -119,7 +119,9 @@ vec3 getNormalVector(vec3 normal, vec2 uv, mat3 tbn, vec4 blendMapColor) {
     vec3 out_normal;
     for (int i = 0; i < 4; i++) {
         if (u_materials[i].hasTextureNormal) {
-            out_normal += normalize(texture(u_materials[i].textureNormal, uv * u_materials[i].uvScale).rgb * 2.0 - 1.0f) * blendMapColor[i];
+            vec3 tmp_normal = texture(u_materials[i].textureNormal, uv * u_materials[i].uvScale).rgb;
+            tmp_normal = tmp_normal * 2.0 - 1.0f;
+            out_normal += normalize(tmp_normal * tbn) * blendMapColor[i];
         } else {
             out_normal += normal * blendMapColor[i];
         }

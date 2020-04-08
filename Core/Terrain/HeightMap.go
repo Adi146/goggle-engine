@@ -58,6 +58,13 @@ func (heightMap *HeightMap) GetNormal(x int, z int) GeometryMath.Vector3 {
 	return *(&GeometryMath.Vector3{heightL - heightR, 2.0, heightD - heightU}).Normalize()
 }
 
+func (heightMap *HeightMap) GetTangent(x int, z int) GeometryMath.Vector3 {
+	right := GeometryMath.Vector3{1, 0, 0}
+	normal := heightMap.GetNormal(x, z)
+
+	return *right.Cross(&normal)
+}
+
 func (heightMap *HeightMap) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
 		File  string  `yaml:"file"`

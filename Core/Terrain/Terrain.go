@@ -30,7 +30,7 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Model.Mesh, error)
 				},
 				Normal:  heightMap.GetNormal(x, z),
 				UV:      GeometryMath.Vector2{float32(x) / float32(heightMap.NumColumns), float32(z) / float32(heightMap.NumRows)},
-				Tangent: GeometryMath.Vector3{},
+				Tangent: heightMap.GetTangent(x, z),
 			}
 		}
 	}
@@ -84,8 +84,8 @@ func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 		yamlConfig.Material.BlendMaterial.BlendMap = blendMap
 	}
 
+	yamlConfig.Material.BlendMaterial.SetWrapMode(Texture.Repeat)
 	for _, material := range yamlConfig.Material.BlendMaterial.Materials {
-		material.Textures.Diffuse.SetWrapMode(Texture.Repeat)
 		material.Textures.Diffuse.GenerateMipMap(-1)
 	}
 

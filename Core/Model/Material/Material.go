@@ -69,6 +69,24 @@ func (material *Material) Unbind() {
 	}
 }
 
+func (material *Material) SetWrapMode(mode Texture.WrapMode) {
+	if material.Textures.Diffuse != nil {
+		material.Textures.Diffuse.SetWrapMode(mode)
+	}
+
+	if material.Textures.Specular != nil {
+		material.Textures.Specular.SetWrapMode(mode)
+	}
+
+	if material.Textures.Emissive != nil {
+		material.Textures.Emissive.SetWrapMode(mode)
+	}
+
+	if material.Textures.Normal != nil {
+		material.Textures.Normal.SetWrapMode(mode)
+	}
+}
+
 func (material *Material) UnmarshalYAML(value *yaml.Node) error {
 	type yamlConfigType Material
 	yamlConfig := (yamlConfigType)(*material)

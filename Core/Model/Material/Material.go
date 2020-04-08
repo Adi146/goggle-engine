@@ -80,6 +80,8 @@ func (material *Material) UnmarshalYAML(value *yaml.Node) error {
 		yamlConfig.UvScale = 1
 	}
 
+	yamlConfig.Shininess = GeometryMath.Max(yamlConfig.Shininess, 1)
+
 	*material = (Material)(yamlConfig)
 	return nil
 }

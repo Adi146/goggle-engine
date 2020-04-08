@@ -41,3 +41,11 @@ func Sqrt(a float32) float32 {
 func Equals(f1 float32, f2 float32, threshold float32) bool {
 	return Abs(f1-f2) < threshold
 }
+
+func Min(x float32, y float32) float32 {
+	return float32(math.Min(float64(x), float64(y)))
+}
+
+func Max(x float32, y float32) float32 {
+	return float32(math.Max(float64(x), float64(y)))
+}

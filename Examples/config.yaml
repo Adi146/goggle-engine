@@ -292,29 +292,37 @@ scene:
       heightScale: 1000
       tileSize: 10
       material:
-        blendMap: Models/terrain/blendmap.png
+        blendRange:
+          r:
+            min: 20
+            max: 100
+          g:
+            min: 100
+            max: 400
+          b:
+            min: 400
+            max: 1000
         default:
           specularBaseColor: [0.5, 0.5, 0.5]
           uvScale: 50
           textures:
             diffuse: Models/terrain/grass_ground_d.jpg
             normal: Models/terrain/grass_ground_n.jpg
-        red:
+        r:
           uvScale: 50
           textures:
             diffuse: Models/terrain/grass_rocky_d.jpg
             specular: Models/terrain/grass_rocky_s.jpg
             normal: Models/terrain/grass_rocky_n.jpg
-        green:
+        g:
           specularBaseColor: [0.5, 0.5, 0.5]
           uvScale: 50
           textures:
             diffuse: Models/terrain/snow_grass3_d.jpg
             normal: Models/terrain/snow_grass3_n.jpg
-        blue:
+        b:
           specularBaseColor: [0.5, 0.5, 0.5]
           uvScale: 50
           textures:
             diffuse: Models/terrain/snow_mntn2_d.jpg
             normal: Models/terrain/snow_mntn2_h.jpg
-

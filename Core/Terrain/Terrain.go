@@ -60,9 +60,12 @@ func (terrain *Terrain) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawab
 
 func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
-		HeightMap HeightMap              `yaml:",inline"`
-		TileSize  float32                `yaml:"tileSize"`
-		Material  Material.BlendMaterial `yaml:"material"`
+		HeightMap HeightMap `yaml:",inline"`
+		TileSize  float32   `yaml:"tileSize"`
+		Material  struct {
+			BlendMaterial     Material.BlendMaterial `yaml:",inline"`
+			BlendMapGenerator BlendMapGenerator      `yaml:"blendRange"`
+		} `yaml:"material"`
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
@@ -73,7 +76,15 @@ func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	for _, material := range yamlConfig.Material.Materials {
+	if yamlConfig.Material.BlendMaterial.BlendMap == nil {
+		blendMap, err := yamlConfig.Material.BlendMapGenerator.GenerateBlendMap(&yamlConfig.HeightMap)
+		if err != nil {
+			return err
+		}
+		yamlConfig.Material.BlendMaterial.BlendMap = blendMap
+	}
+
+	for _, material := range yamlConfig.Material.BlendMaterial.Materials {
 		material.Textures.Diffuse.SetWrapMode(Texture.Repeat)
 		material.Textures.Diffuse.GenerateMipMap(-1)
 	}
@@ -82,7 +93,7 @@ func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 		Meshes: []Model.MeshesWithMaterial{
 			{
 				Mesh:     mesh,
-				Material: &yamlConfig.Material,
+				Material: &yamlConfig.Material.BlendMaterial,
 			},
 		},
 		ModelMatrix: GeometryMath.Identity(),

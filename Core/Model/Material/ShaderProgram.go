@@ -78,7 +78,7 @@ func (program *ShaderProgram) bindBlendMaterial(blendMap *BlendMaterial) error {
 	for i, material := range blendMap.Materials {
 		err.Push(program.bindMaterial(&material, i))
 	}
-	err.Push(program.BindUniform(&blendMap.BlendTexture, ua_blendMap))
+	err.Push(program.BindUniform(blendMap.BlendMap, ua_blendMap))
 	err.Push(program.BindUniform(true, ua_has_blendMap))
 
 	return err.Err()

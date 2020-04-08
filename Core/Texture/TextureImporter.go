@@ -41,7 +41,7 @@ func flipRGBA(rgba *image.RGBA) *image.RGBA {
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			newRgba.SetRGBA(x, height - y - 1, rgba.RGBAAt(x, y))
+			newRgba.SetRGBA(x, height-y-1, rgba.RGBAAt(x, y))
 		}
 	}
 

@@ -1,8 +1,8 @@
 package Window
 
 import (
+	"fmt"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/veandco/go-sdl2/sdl"
 	"gopkg.in/yaml.v3"
 
@@ -21,6 +21,12 @@ type SDLWindow struct {
 	performanceCounterFrequency uint64
 	lastCounter                 uint64
 	shouldClose                 bool
+
+	avgFps       float32
+	FpsSmoothing float32
+
+	title       string
+	TitlebarFPS bool
 }
 
 func NewSDLWindow(viewport FrameBuffer.Viewport, title string, flags Flag) (*SDLWindow, error) {
@@ -67,6 +73,8 @@ func NewSDLWindow(viewport FrameBuffer.Viewport, title string, flags Flag) (*SDL
 		mouseInput:                  NewSDLMouseInput(),
 		performanceCounterFrequency: sdl.GetPerformanceFrequency(),
 		lastCounter:                 sdl.GetPerformanceCounter(),
+		FpsSmoothing:                0.99,
+		title:                       title,
 	}, nil
 }
 
@@ -103,7 +111,13 @@ func (window *SDLWindow) GetTimeDeltaAndFPS() (float32, uint32) {
 	counterElapsed := endCounter - window.lastCounter
 	timeDelta := (float32)(counterElapsed) / (float32)(window.performanceCounterFrequency)
 	fps := (uint32)((float32)(window.performanceCounterFrequency) / (float32)(counterElapsed))
+
 	window.lastCounter = endCounter
+	window.avgFps = (window.avgFps * window.FpsSmoothing) + (float32(fps) * (1.0 - window.FpsSmoothing))
+
+	if window.TitlebarFPS {
+		window.Window.SetTitle(window.title + fmt.Sprintf(" [Average FPS: %.2f]", window.avgFps))
+	}
 
 	return timeDelta, fps
 }
@@ -120,16 +134,22 @@ func (window *SDLWindow) GetMouseInput() IMouseInput {
 	return window.mouseInput
 }
 
-func (window *SDLWindow) GetTextures() []Texture.ITexture {
-	return nil
+func (window *SDLWindow) GetTitle() string {
+	return window.title
+}
+
+func (window *SDLWindow) SetTitle(title string) {
+	window.title = title
+	window.Window.SetTitle(title)
 }
 
 func (window *SDLWindow) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
-		Viewport FrameBuffer.Viewport `yaml:",inline"`
-		Title    string               `yaml:"title"`
-		Sync     SyncInterval         `yaml:"sync"`
-		Flags    Flag                 `yaml:"flags"`
+		Viewport    FrameBuffer.Viewport `yaml:",inline"`
+		Title       string               `yaml:"title"`
+		TitlebarFPS bool                 `yaml:"titlebarFPS"`
+		Sync        SyncInterval         `yaml:"sync"`
+		Flags       Flag                 `yaml:"flags"`
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
@@ -139,6 +159,8 @@ func (window *SDLWindow) UnmarshalYAML(value *yaml.Node) error {
 	if err != nil {
 		return err
 	}
+
+	sdlWindow.TitlebarFPS = yamlConfig.TitlebarFPS
 
 	*window = *sdlWindow
 	sdl.GLSetSwapInterval((int)(yamlConfig.Sync))

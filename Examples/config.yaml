@@ -48,9 +48,10 @@ shaders:
 
 scene:
   window:
-    title: "YamlConfig Example (FPS: %d)"
+    title: "YamlConfig Example"
+    titlebarFPS: true
     type: window
-    sync: adaptive
+    sync: false
     width: 1920
     height: 1080
   depthTest: true

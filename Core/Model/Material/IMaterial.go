@@ -6,4 +6,5 @@ type IMaterial interface {
 	Unbind()
 
 	SetWrapMode(mode Texture.WrapMode)
+	GenerateMibMaps(lodBias float32)
 }

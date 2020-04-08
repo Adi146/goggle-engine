@@ -87,6 +87,24 @@ func (material *Material) SetWrapMode(mode Texture.WrapMode) {
 	}
 }
 
+func (material *Material) GenerateMibMaps(lodBias float32) {
+	if material.Textures.Diffuse != nil {
+		material.Textures.Diffuse.GenerateMipMap(lodBias)
+	}
+
+	if material.Textures.Specular != nil {
+		material.Textures.Specular.GenerateMipMap(lodBias)
+	}
+
+	if material.Textures.Emissive != nil {
+		material.Textures.Emissive.GenerateMipMap(lodBias)
+	}
+
+	if material.Textures.Normal != nil {
+		material.Textures.Normal.GenerateMipMap(lodBias)
+	}
+}
+
 func (material *Material) UnmarshalYAML(value *yaml.Node) error {
 	type yamlConfigType Material
 	yamlConfig := (yamlConfigType)(*material)

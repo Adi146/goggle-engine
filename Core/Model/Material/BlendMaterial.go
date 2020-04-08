@@ -27,6 +27,12 @@ func (blendMap *BlendMaterial) SetWrapMode(mode Texture.WrapMode) {
 	}
 }
 
+func (blendMap *BlendMaterial) GenerateMibMaps(lodBias float32) {
+	for _, material := range blendMap.Materials {
+		material.GenerateMibMaps(lodBias)
+	}
+}
+
 func (blendMap *BlendMaterial) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
 		BlendMap *Texture.Texture2D `yaml:"blendMap"`

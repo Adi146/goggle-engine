@@ -34,12 +34,14 @@ func LoadGray(filename string) (*image.Gray, error) {
 }
 
 func flipRGBA(rgba *image.RGBA) *image.RGBA {
-	bounds := rgba.Bounds()
-	newRgba := image.NewRGBA(bounds)
+	newRgba := image.NewRGBA(rgba.Bounds())
 
-	for y := 0; y < bounds.Dy(); y++ {
-		for x := 0; x < bounds.Dx(); x++ {
-			newRgba.SetRGBA(x, bounds.Dy()-y, rgba.RGBAAt(x, y))
+	width := rgba.Bounds().Dx()
+	height := rgba.Bounds().Dy()
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			newRgba.SetRGBA(x, height - y - 1, rgba.RGBAAt(x, y))
 		}
 	}
 

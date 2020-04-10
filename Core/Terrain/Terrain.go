@@ -31,6 +31,7 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Model.Mesh, error)
 				Normal:  heightMap.GetNormal(x, z),
 				UV:      GeometryMath.Vector2{float32(x) / float32(heightMap.NumColumns), float32(z) / float32(heightMap.NumRows)},
 				Tangent: heightMap.GetTangent(x, z),
+				BiTangent: heightMap.GetBiTangent(x, z),
 			}
 		}
 	}

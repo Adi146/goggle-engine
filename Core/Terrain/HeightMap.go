@@ -65,6 +65,13 @@ func (heightMap *HeightMap) GetTangent(x int, z int) GeometryMath.Vector3 {
 	return *right.Cross(&normal)
 }
 
+func (heightMap *HeightMap) GetBiTangent(x int, z int) GeometryMath.Vector3 {
+	normal := heightMap.GetNormal(x, z)
+	tangent := heightMap.GetTangent(x, z)
+
+	return *tangent.Cross(&normal)
+}
+
 func (heightMap *HeightMap) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
 		File  string  `yaml:"file"`

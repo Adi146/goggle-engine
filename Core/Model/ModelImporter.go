@@ -157,13 +157,17 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Mesh, ImportResult) {
 	assimpUVs := assimpMesh.TextureCoords(0)
 	assimpFaces := assimpMesh.Faces()
 	assimpTangents := assimpMesh.Tangents()
+	assimpBiTangents := assimpMesh.Bitangents()
 
 	vertices := make([]VertexBuffer.Vertex, assimpMesh.NumVertices())
 	for i := 0; i < assimpMesh.NumVertices(); i++ {
-		vertices[i].Position = GeometryMath.Vector3{assimpVertices[i].X(), assimpVertices[i].Y(), assimpVertices[i].Z()}
-		vertices[i].Normal = GeometryMath.Vector3{assimpNormals[i].X(), assimpNormals[i].Y(), assimpNormals[i].Z()}
-		vertices[i].UV = GeometryMath.Vector2{assimpUVs[i].X(), assimpUVs[i].Y()}
-		vertices[i].Tangent = GeometryMath.Vector3{assimpTangents[i].X(), assimpTangents[i].Y(), assimpTangents[i].Z()}
+		vertices[i] = VertexBuffer.Vertex{
+			Position:  GeometryMath.Vector3{assimpVertices[i].X(), assimpVertices[i].Y(), assimpVertices[i].Z()},
+			UV:        GeometryMath.Vector2{assimpUVs[i].X(), assimpUVs[i].Y()},
+			Normal:    GeometryMath.Vector3{assimpNormals[i].X(), assimpNormals[i].Y(), assimpNormals[i].Z()},
+			Tangent:   GeometryMath.Vector3{assimpTangents[i].X(), assimpTangents[i].Y(), assimpTangents[i].Z()},
+			BiTangent: GeometryMath.Vector3{assimpBiTangents[i].X(), assimpBiTangents[i].Y(), assimpBiTangents[i].Z()},
+		}
 	}
 
 	var indices []uint32

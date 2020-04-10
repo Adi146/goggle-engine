@@ -10,6 +10,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 )
 
 const (
@@ -96,6 +97,13 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.MaterialShader.BindObject(v)
 	case Texture.ITexture:
 		return program.ShadowShader.BindObject(v)
+	case *VertexBuffer.VertexBuffer:
+		v.Bind()
+		v.EnableUVAttribute()
+		v.EnableNormalAttribute()
+		v.EnableTangentAttribute()
+		v.EnableBiTangentAttribute()
+		return nil
 	default:
 		uniformAddress, err := program.GetUniformAddress(v)
 		if err != nil {

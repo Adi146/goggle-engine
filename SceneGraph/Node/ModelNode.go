@@ -47,7 +47,7 @@ func (node *ModelNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDra
 		shader = node.Shader
 	}
 
-	return node.Model.Draw(shader, nil, nil)
+	return node.Model.Draw(shader, invoker, scene)
 }
 
 func (node *ModelNode) UnmarshalYAML(value *yaml.Node) error {

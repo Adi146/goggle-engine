@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
+	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
@@ -57,9 +58,15 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 }
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
-	uniformAddress, err := program.GetUniformAddress(i)
-	if err != nil {
-		return err
+	switch v := i.(type) {
+	case *VertexBuffer.VertexBuffer:
+		v.Bind()
+		return nil
+	default:
+		uniformAddress, err := program.GetUniformAddress(i)
+		if err != nil {
+			return err
+		}
+		return program.BindUniform(i, uniformAddress)
 	}
-	return program.BindUniform(i, uniformAddress)
 }

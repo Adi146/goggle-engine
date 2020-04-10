@@ -32,5 +32,5 @@ var (
 )
 
 func NewQuad() (*Model.Mesh, error) {
-	return Model.NewMesh(quadVertices, VertexBuffer.RegisterVertexBufferAttributes, quadIndices)
+	return Model.NewMesh(quadVertices, quadIndices)
 }

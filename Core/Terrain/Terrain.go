@@ -52,7 +52,7 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Model.Mesh, error)
 		}
 	}
 
-	return Model.NewMesh(vertices, VertexBuffer.RegisterVertexBufferAttributes, indices)
+	return Model.NewMesh(vertices, indices)
 }
 
 func (terrain *Terrain) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {

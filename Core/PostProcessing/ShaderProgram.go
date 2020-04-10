@@ -3,6 +3,7 @@ package PostProcessing
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Texture"
+	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
@@ -54,17 +55,21 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 }
 
 func (program *ShaderProgram) BindObject(i interface{}) error {
-	kernel, isKernel := i.(*Kernel)
-	if isKernel {
+	switch v := i.(type) {
+	case *Kernel:
 		var err Error.ErrorCollection
-		err.Push(program.BindObject(kernel.GetOffset()))
-		err.Push(program.BindObject(kernel.GetKernel()))
+		err.Push(program.BindObject(v.GetOffset()))
+		err.Push(program.BindObject(v.GetKernel()))
 		return err.Err()
+	case *VertexBuffer.VertexBuffer:
+		v.Bind()
+		v.EnableUVAttribute()
+		return nil
+	default:
+		uniformAddress, err := program.GetUniformAddress(i)
+		if err != nil {
+			return err
+		}
+		return program.BindUniform(i, uniformAddress)
 	}
-
-	uniformAddress, err := program.GetUniformAddress(i)
-	if err != nil {
-		return err
-	}
-	return program.BindUniform(i, uniformAddress)
 }

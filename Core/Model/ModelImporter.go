@@ -175,7 +175,7 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Mesh, ImportResult) {
 		indices = append(indices, assimpFace.CopyIndices()...)
 	}
 
-	mesh, err := NewMesh(vertices, VertexBuffer.RegisterVertexBufferAttributes, indices)
+	mesh, err := NewMesh(vertices, indices)
 	result.Errors.Push(err)
 
 	return mesh, result

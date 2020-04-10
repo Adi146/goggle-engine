@@ -81,6 +81,8 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.MaterialShader.BindObject(v)
 	case Texture.ITexture:
 		return nil
+	case *GeometryMath.Matrix3x3:
+		return nil
 	default:
 		uniformAddress, err := program.GetUniformAddress(v)
 		if err != nil {

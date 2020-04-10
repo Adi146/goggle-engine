@@ -124,6 +124,8 @@ func (program *ShaderProgramCore) BindUniform(i interface{}, uniformAddress stri
 		switch v := i.(type) {
 		case *GeometryMath.Matrix4x4:
 			gl.ProgramUniformMatrix4fv(program.ID, location, 1, false, &v[0][0])
+		case *GeometryMath.Matrix3x3:
+			gl.ProgramUniformMatrix3fv(program.ID, location, 1, false, &v[0][0])
 		case *GeometryMath.Vector3:
 			gl.ProgramUniform3fv(program.ID, location, 1, &v[0])
 		case *GeometryMath.Vector4:

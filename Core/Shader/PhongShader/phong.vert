@@ -19,16 +19,16 @@ layout (std140) uniform camera {
 };
 
 uniform mat4 u_modelMatrix;
+uniform mat3 u_normalMatrix;
 
 void main() {
     gl_Position = vec4(a_position, 1.0) * (u_modelMatrix * u_viewMatrix * u_projectionMatrix);
 
-    mat3 normalMatrix = mat3(transpose(inverse(u_modelMatrix)));
-    vec3 normal = normalize(a_normal * normalMatrix);
-    vec3 tangent = normalize(a_tangent * normalMatrix);
+    vec3 normal = normalize(a_normal * u_normalMatrix);
+    vec3 tangent = normalize(a_tangent * u_normalMatrix);
     //Reorthogonalization with Gram–Schmidt process
     tangent = normalize(tangent - dot(tangent, normal) * normal);
-    vec3 biTangent = normalize(cross(normal, tangent) * normalMatrix);
+    vec3 biTangent = normalize(cross(normal, tangent) * u_normalMatrix);
 
     vs_out.position = vec3(vec4(a_position, 1.0) * u_modelMatrix);
     vs_out.normal = normal;

@@ -17,14 +17,16 @@ type MeshesWithMaterial struct {
 }
 
 type Model struct {
-	Meshes      []MeshesWithMaterial
-	ModelMatrix *GeometryMath.Matrix4x4
+	Meshes       []MeshesWithMaterial
+	ModelMatrix  *GeometryMath.Matrix4x4
+	NormalMatrix *GeometryMath.Matrix3x3
 }
 
 func (model *Model) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
 	var err Error.ErrorCollection
 
 	err.Push(shader.BindObject(model.ModelMatrix))
+	err.Push(shader.BindObject(model.NormalMatrix))
 	for _, mesh := range model.Meshes {
 		err.Push(shader.BindObject(mesh.Material))
 		mesh.Draw(shader, nil, nil)

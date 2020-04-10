@@ -15,7 +15,8 @@ import (
 const (
 	shader_factory_name = "phongShader"
 
-	ua_modelMatrix = "u_modelMatrix"
+	ua_modelMatrix  = "u_modelMatrix"
+	ua_normalMatrix = "u_normalMatrix"
 
 	ua_camera           = "camera"
 	ua_directionalLight = "directionalLight"
@@ -67,6 +68,8 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 		return program.MaterialShader.GetUniformAddress(v)
 	case *GeometryMath.Matrix4x4:
 		return ua_modelMatrix, nil
+	case *GeometryMath.Matrix3x3:
+		return ua_normalMatrix, nil
 	case Texture.ITexture:
 		return program.ShadowShader.GetUniformAddress(v)
 	case UniformBuffer.IUniformBuffer:

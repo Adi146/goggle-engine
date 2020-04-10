@@ -19,15 +19,7 @@ func init() {
 type TerrainNode ModelNode
 
 func (node *TerrainNode) Tick(timeDelta float32) error {
-	err := node.INode.Tick(timeDelta)
-
-	node.ModelMatrix = node.GetGlobalTransformation()
-
-	if scene := node.GetScene(); scene != nil {
-		scene.AddOpaqueObject(node)
-	}
-
-	return err
+	return (*ModelNode)(node).Tick(timeDelta)
 }
 
 func (node *TerrainNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {

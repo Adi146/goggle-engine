@@ -27,6 +27,7 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
 	node.ModelMatrix = node.GetGlobalTransformation()
+	node.NormalMatrix = node.ModelMatrix.Inverse().Transpose().ToMatrix3x3()
 
 	if scene := node.GetScene(); scene != nil {
 		if node.IsTransparent {

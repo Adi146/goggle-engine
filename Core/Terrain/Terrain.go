@@ -88,14 +88,10 @@ func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 	yamlConfig.Material.BlendMaterial.GenerateMibMaps(-1)
 
 	*terrain = Terrain{
-		Meshes: []Model.MeshesWithMaterial{
-			{
-				Mesh:     mesh,
-				Material: &yamlConfig.Material.BlendMaterial,
-			},
-		},
-		ModelMatrix: GeometryMath.Identity(),
+		Mesh:     *mesh,
+		Material: &yamlConfig.Material.BlendMaterial,
 	}
+	(*Model.Model)(terrain).SetModelMatrix(GeometryMath.Identity())
 
 	return nil
 }

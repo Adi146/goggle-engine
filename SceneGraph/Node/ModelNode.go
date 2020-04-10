@@ -26,8 +26,7 @@ type ModelNode struct {
 func (node *ModelNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.ModelMatrix = node.GetGlobalTransformation()
-	node.NormalMatrix = node.ModelMatrix.Inverse().Transpose().ToMatrix3x3()
+	node.SetModelMatrix(node.GetGlobalTransformation())
 
 	if scene := node.GetScene(); scene != nil {
 		if node.IsTransparent {

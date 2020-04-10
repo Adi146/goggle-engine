@@ -11,33 +11,32 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type MeshesWithMaterial struct {
-	*Mesh
-	Material Material.IMaterial
-}
-
 type Model struct {
-	Meshes       []MeshesWithMaterial
-	ModelMatrix  *GeometryMath.Matrix4x4
-	NormalMatrix *GeometryMath.Matrix3x3
+	Mesh         Mesh
+	Material     Material.IMaterial
+	modelMatrix  GeometryMath.Matrix4x4
+	normalMatrix GeometryMath.Matrix3x3
 }
 
 func (model *Model) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
 	var err Error.ErrorCollection
 
-	err.Push(shader.BindObject(model.ModelMatrix))
-	err.Push(shader.BindObject(model.NormalMatrix))
-	for _, mesh := range model.Meshes {
-		err.Push(shader.BindObject(mesh.Material))
-		mesh.Draw(shader, nil, nil)
-		mesh.Material.Unbind()
-	}
+	err.Push(shader.BindObject(&model.modelMatrix))
+	err.Push(shader.BindObject(&model.normalMatrix))
+	err.Push(shader.BindObject(model.Material))
+	err.Push(model.Mesh.Draw(shader, invoker, scene))
+	model.Material.Unbind()
 
 	return err.Err()
 }
 
+func (model *Model) SetModelMatrix(mat *GeometryMath.Matrix4x4) {
+	model.modelMatrix = *mat
+	model.normalMatrix = *mat.Inverse().Transpose().ToMatrix3x3()
+}
+
 func (model *Model) GetPosition() *GeometryMath.Vector3 {
-	return model.ModelMatrix.MulVector(&GeometryMath.Vector3{0, 0, 0})
+	return model.modelMatrix.MulVector(&GeometryMath.Vector3{0, 0, 0})
 }
 
 func (model *Model) UnmarshalYAML(value *yaml.Node) error {
@@ -46,6 +45,7 @@ func (model *Model) UnmarshalYAML(value *yaml.Node) error {
 
 	var yamlConfig struct {
 		File     string    `yaml:"file"`
+		Index    int       `yaml:"index"`
 		Material yaml.Node `yaml:"material"`
 	}
 	var err error
@@ -58,15 +58,13 @@ func (model *Model) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	tmpModel, result := ImportModel(yamlConfig.File)
+	tmpModel, result := ImportModel(yamlConfig.File, yamlConfig.Index)
 	importErrors.Push(&result.Errors)
 	importWarnings.Push(&result.Warnings)
 	if result.Success() {
-		for i := range tmpModel.Meshes {
-			if yamlConfig.Material.Kind != 0 {
-				if err := yamlConfig.Material.Decode(tmpModel.Meshes[i].Material); err != nil {
-					return err
-				}
+		if yamlConfig.Material.Kind != 0 {
+			if err := yamlConfig.Material.Decode(tmpModel.Material); err != nil {
+				return err
 			}
 		}
 

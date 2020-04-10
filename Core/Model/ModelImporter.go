@@ -19,7 +19,7 @@ var textureTypeMap = map[assimp.TextureMapping]Texture.Type{
 	assimp.TextureMapping_Normals:  Texture.NormalsTexture,
 }
 
-func ImportModel(filename string) (*Model, ImportResult) {
+func ImportModel(filename string, index int) (*Model, ImportResult) {
 	var result ImportResult
 
 	assimpScene := assimp.ImportFile(filename, 0)
@@ -35,7 +35,7 @@ func ImportModel(filename string) (*Model, ImportResult) {
 	)
 
 	materials := make([]*Material.Material, assimpScene.NumMaterials())
-	meshes := make([]MeshesWithMaterial, assimpScene.NumMeshes())
+	models := make([]Model, assimpScene.NumMeshes())
 
 	for i, assimpMaterial := range assimpScene.Materials() {
 		material, materialResult := importAssimpMaterial(assimpMaterial, path.Dir(filename))
@@ -51,14 +51,12 @@ func ImportModel(filename string) (*Model, ImportResult) {
 		if !result.Success() {
 			continue
 		}
-		meshes[i].Mesh = mesh
-		meshes[i].Material = materials[assimpMesh.MaterialIndex()]
+		models[i].Mesh = *mesh
+		models[i].Material = materials[assimpMesh.MaterialIndex()]
+		models[i].SetModelMatrix(GeometryMath.Identity())
 	}
 
-	return &Model{
-		Meshes:      meshes,
-		ModelMatrix: GeometryMath.Identity(),
-	}, result
+	return &models[index], result
 }
 
 func importAssimpMaterial(assimpMaterial *assimp.Material, modelDir string) (*Material.Material, ImportResult) {

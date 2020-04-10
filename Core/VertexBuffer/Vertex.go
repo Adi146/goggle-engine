@@ -6,9 +6,9 @@ import (
 
 type Vertex struct {
 	Position GeometryMath.Vector3
-	UV      GeometryMath.Vector2
+	UV       GeometryMath.Vector2
 
-	Normal   GeometryMath.Vector3
-	Tangent GeometryMath.Vector3
+	Normal    GeometryMath.Vector3
+	Tangent   GeometryMath.Vector3
 	BiTangent GeometryMath.Vector3
 }

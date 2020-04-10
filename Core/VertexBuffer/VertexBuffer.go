@@ -35,16 +35,16 @@ func NewVertexBuffer(vertices []Vertex) (*VertexBuffer, error) {
 	gl.VertexAttribPointer(index_position, int32(len(vertex.Position)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.Position)))
 	// Texture coordinates
 	buff.EnableUVAttribute()
-	gl.VertexAttribPointer(index_uv,  int32(len(vertex.UV)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.UV)))
+	gl.VertexAttribPointer(index_uv, int32(len(vertex.UV)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.UV)))
 	// normal vector
 	buff.EnableNormalAttribute()
-	gl.VertexAttribPointer(index_normal,  int32(len(vertex.Normal)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.Normal)))
+	gl.VertexAttribPointer(index_normal, int32(len(vertex.Normal)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.Normal)))
 	// tangent
 	buff.EnableTangentAttribute()
-	gl.VertexAttribPointer(index_tangent,  int32(len(vertex.Tangent)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.Tangent)))
+	gl.VertexAttribPointer(index_tangent, int32(len(vertex.Tangent)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.Tangent)))
 	// bitangent
 	buff.EnableBiTangentAttribute()
-	gl.VertexAttribPointer(index_bitangent,  int32(len(vertex.BiTangent)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.BiTangent)))
+	gl.VertexAttribPointer(index_bitangent, int32(len(vertex.BiTangent)), gl.FLOAT, false, int32(unsafe.Sizeof(vertex)), unsafe.Pointer(unsafe.Offsetof(vertex.BiTangent)))
 
 	gl.BindVertexArray(0)
 

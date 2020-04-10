@@ -13,8 +13,8 @@ const (
 	yaml_key_translation = "translation"
 )
 
-type iMatrixConfig interface {
-	decode() *Matrix4x4
+type IMatrixConfig interface {
+	Decode() *Matrix4x4
 }
 
 type tmpConfig map[string]yaml.Node
@@ -31,18 +31,18 @@ func (m1 *Matrix4x4) UnmarshalYAML(value *yaml.Node) error {
 		}
 
 		tmpValue.Decode(config)
-		*m1 = *m1.Mul(config.decode())
+		*m1 = *m1.Mul(config.Decode())
 	}
 
 	return nil
 }
 
-func getMatrixConfig(yamlKey string) (iMatrixConfig, error) {
+func getMatrixConfig(yamlKey string) (IMatrixConfig, error) {
 	switch yamlKey {
 	case yaml_key_orthogonal:
 		return new(orthogonalConfig), nil
 	case yaml_key_perspective:
-		return new(perspectiveConfig), nil
+		return new(PerspectiveConfig), nil
 	case yaml_key_rotation:
 		return new(rotationConfig), nil
 	case yaml_key_scale:
@@ -63,7 +63,7 @@ type orthogonalConfig struct {
 	Far    float32 `yaml:"far"`
 }
 
-func (config *orthogonalConfig) decode() *Matrix4x4 {
+func (config *orthogonalConfig) Decode() *Matrix4x4 {
 	return Orthogonal(
 		config.Left,
 		config.Right,
@@ -74,14 +74,14 @@ func (config *orthogonalConfig) decode() *Matrix4x4 {
 	)
 }
 
-type perspectiveConfig struct {
+type PerspectiveConfig struct {
 	Fovy   float32 `yaml:"fovy"`
 	Aspect float32 `yaml:"aspect"`
 	Near   float32 `yaml:"near"`
 	Far    float32 `yaml:"far"`
 }
 
-func (config *perspectiveConfig) decode() *Matrix4x4 {
+func (config *PerspectiveConfig) Decode() *Matrix4x4 {
 	return Perspective(
 		Radians(config.Fovy),
 		config.Aspect,
@@ -95,18 +95,18 @@ type rotationConfig struct {
 	Angle  float32 `yaml:"angle"`
 }
 
-func (config *rotationConfig) decode() *Matrix4x4 {
+func (config *rotationConfig) Decode() *Matrix4x4 {
 	return Rotate(Radians(config.Angle), &config.Vector)
 }
 
 type scaleConfig float32
 
-func (config *scaleConfig) decode() *Matrix4x4 {
+func (config *scaleConfig) Decode() *Matrix4x4 {
 	return Scale(float32(*config))
 }
 
 type translationConfig Vector3
 
-func (config *translationConfig) decode() *Matrix4x4 {
+func (config *translationConfig) Decode() *Matrix4x4 {
 	return Translate((*Vector3)(config))
 }

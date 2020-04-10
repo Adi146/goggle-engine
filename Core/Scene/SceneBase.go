@@ -1,8 +1,8 @@
 package Scene
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/Function"
-	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Log"
 	"gopkg.in/yaml.v3"
@@ -13,12 +13,13 @@ import (
 )
 
 type SceneBase struct {
-	Window        Window.IWindow
-	CullFunction  Function.CullFunction
-	DepthFunction Function.DepthFunction
-	BlendFunction Function.BlendFunction
+	Window Window.SDLWindow `yaml:"window"`
+	Camera Camera.UBOCamera `yaml:"camera"`
 
-	CameraPosition     *GeometryMath.Vector3
+	CullFunction  Function.CullFunction  `yaml:"culling"`
+	DepthFunction Function.DepthFunction `yaml:"blend"`
+	BlendFunction Function.BlendFunction `yaml:"depthTest"`
+
 	preRenderObjects   []IDrawable
 	opaqueObjects      []IDrawable
 	transparentObjects []ITransparentDrawable
@@ -101,12 +102,13 @@ func (scene *SceneBase) drawOpaqueObjects(shader Shader.IShaderProgram, invoker 
 
 func (scene *SceneBase) drawTransparentObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
 	var err Error.ErrorCollection
+	cameraPosition := scene.Camera.GetPosition()
 
 	transparentDrawables := make([]transparentObject, len(scene.transparentObjects))
 	for i, drawable := range scene.transparentObjects {
 		transparentDrawables[i] = transparentObject{
 			IDrawable:      drawable,
-			CameraDistance: scene.CameraPosition.Sub(drawable.GetPosition()).Length(),
+			CameraDistance: cameraPosition.Sub(drawable.GetPosition()).Length(),
 		}
 	}
 	sort.Sort(byDistance(transparentDrawables))
@@ -118,34 +120,23 @@ func (scene *SceneBase) drawTransparentObjects(shader Shader.IShaderProgram, inv
 }
 
 func (scene *SceneBase) GetWindow() Window.IWindow {
-	return scene.Window
+	return &scene.Window
 }
 
 func (scene *SceneBase) UnmarshalYAML(value *yaml.Node) error {
-	yamlConfig := struct {
-		WindowConfig  yaml.Node              `yaml:"window"`
-		CullFunction  Function.CullFunction  `yaml:"culling"`
-		DepthFunction Function.DepthFunction `yaml:"blend"`
-		BlendFunction Function.BlendFunction `yaml:"depthTest"`
-	}{
-		CullFunction:  scene.CullFunction,
-		DepthFunction: scene.DepthFunction,
-		BlendFunction: scene.BlendFunction,
-	}
+	type yamlConfigType SceneBase
+	yamlConfig := (yamlConfigType)(*scene)
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
 	}
 
-	scene.CullFunction = yamlConfig.CullFunction
-	scene.DepthFunction = yamlConfig.DepthFunction
-	scene.BlendFunction = yamlConfig.BlendFunction
+	width, height := yamlConfig.Window.GetSize()
 
-	if scene.Window == nil {
-		scene.Window = &Window.SDLWindow{}
-	}
-	if err := yamlConfig.WindowConfig.Decode(scene.Window); err != nil {
-		return err
-	}
+	projectionConfig := yamlConfig.Camera.GetProjection()
+	projectionConfig.Aspect = float32(height) / float32(width)
+	yamlConfig.Camera.SetProjection(projectionConfig)
+
+	*scene = (SceneBase)(yamlConfig)
 
 	return nil
 }

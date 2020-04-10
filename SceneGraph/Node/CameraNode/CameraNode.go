@@ -5,7 +5,6 @@ import (
 	"gopkg.in/yaml.v3"
 	"reflect"
 
-	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
@@ -17,7 +16,6 @@ func init() {
 
 type CameraNode struct {
 	Scene.INode
-	Camera Camera.UBOCamera
 
 	FrontVector GeometryMath.Vector3
 	UpVector    GeometryMath.Vector3
@@ -30,11 +28,8 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	front := invTransGlobalTransformation.MulVector(&node.FrontVector).Normalize()
 	up := invTransGlobalTransformation.MulVector(&node.UpVector).Normalize()
 
-	node.Camera.Position.Set(*position)
-	node.Camera.ViewMatrix.Set(*GeometryMath.LookAt(position, position.Add(front), up))
-
 	if scene := node.GetScene(); scene != nil {
-		scene.CameraPosition = position
+		scene.Camera.Update(*position, *front, *up)
 	}
 
 	return nil
@@ -45,10 +40,6 @@ func (node *CameraNode) UnmarshalYAML(value *yaml.Node) error {
 		node.INode = &Scene.Node{}
 	}
 	if err := value.Decode(node.INode); err != nil {
-		return err
-	}
-
-	if err := value.Decode(&node.Camera); err != nil {
 		return err
 	}
 

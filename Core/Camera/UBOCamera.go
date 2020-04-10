@@ -1,6 +1,7 @@
 package Camera
 
 import (
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer/UniformBufferSection"
 	"gopkg.in/yaml.v3"
@@ -17,25 +18,67 @@ const (
 )
 
 type UBOCamera struct {
-	ProjectionMatrix UniformBufferSection.Matrix4x4
-	ViewMatrix       UniformBufferSection.Matrix4x4
-	Position         UniformBufferSection.Vector3
+	projectionMatrix UniformBufferSection.Matrix4x4
+	viewMatrix       UniformBufferSection.Matrix4x4
+	position         UniformBufferSection.Vector3
+
+	front GeometryMath.Vector3
+	up    GeometryMath.Vector3
+
+	projectionConfig GeometryMath.PerspectiveConfig
 }
 
 func (camera *UBOCamera) ForceUpdate() {
-	camera.ProjectionMatrix.ForceUpdate()
-	camera.ViewMatrix.ForceUpdate()
-	camera.Position.ForceUpdate()
+	camera.projectionMatrix.ForceUpdate()
+	camera.viewMatrix.ForceUpdate()
+	camera.position.ForceUpdate()
 }
 
 func (camera *UBOCamera) SetUniformBuffer(ubo UniformBuffer.IUniformBuffer, offset int) {
-	camera.ProjectionMatrix.SetUniformBuffer(ubo, offset+camera_offset_projectionMatrix)
-	camera.ViewMatrix.SetUniformBuffer(ubo, offset+camera_offset_viewMatrix)
-	camera.Position.SetUniformBuffer(ubo, offset+camera_offset_position)
+	camera.projectionMatrix.SetUniformBuffer(ubo, offset+camera_offset_projectionMatrix)
+	camera.viewMatrix.SetUniformBuffer(ubo, offset+camera_offset_viewMatrix)
+	camera.position.SetUniformBuffer(ubo, offset+camera_offset_position)
 }
 
 func (camera *UBOCamera) GetSize() int {
 	return camera_size_section
+}
+
+func (camera *UBOCamera) Update(position GeometryMath.Vector3, front GeometryMath.Vector3, up GeometryMath.Vector3) {
+	camera.position.Set(position)
+	camera.viewMatrix.Set(*GeometryMath.LookAt(&position, position.Add(&front), &up))
+
+	camera.front = front
+	camera.up = up
+}
+
+func (camera *UBOCamera) GetViewMatrix() GeometryMath.Matrix4x4 {
+	return camera.viewMatrix.Get()
+}
+
+func (camera *UBOCamera) GetPosition() GeometryMath.Vector3 {
+	return camera.position.Get()
+}
+
+func (camera *UBOCamera) GetFront() GeometryMath.Vector3 {
+	return camera.front
+}
+
+func (camera *UBOCamera) GetUp() GeometryMath.Vector3 {
+	return camera.up
+}
+
+func (camera *UBOCamera) SetProjection(projection GeometryMath.PerspectiveConfig) {
+	camera.projectionMatrix.Set(*projection.Decode())
+	camera.projectionConfig = projection
+}
+
+func (camera *UBOCamera) GetProjection() GeometryMath.PerspectiveConfig {
+	return camera.projectionConfig
+}
+
+func (camera *UBOCamera) GetProjectionMatrix() GeometryMath.Matrix4x4 {
+	return camera.projectionMatrix.Get()
 }
 
 func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
@@ -51,16 +94,13 @@ func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
 		return nil
 	}
 
-	yamlConfig := Camera{
-		ProjectionMatrix: camera.ProjectionMatrix.Get(),
-		ViewMatrix:       camera.ViewMatrix.Get(),
-	}
+	var yamlConfig GeometryMath.PerspectiveConfig
 	if err := value.Decode(&yamlConfig); err != nil {
 		return nil
 	}
 
-	camera.ProjectionMatrix.Set(yamlConfig.ProjectionMatrix)
-	camera.ViewMatrix.Set(yamlConfig.ViewMatrix)
+	camera.SetProjection(yamlConfig)
+	camera.viewMatrix.Set(*GeometryMath.Identity())
 
 	camera.SetUniformBuffer(uboYamlConfig.UniformBuffer, 0)
 

@@ -1,6 +1,9 @@
 package Scene
 
-import "github.com/Adi146/goggle-engine/Core/Window"
+import (
+	"github.com/Adi146/goggle-engine/Core/Camera"
+	"github.com/Adi146/goggle-engine/Core/Window"
+)
 
 type IScene interface {
 	IDrawable
@@ -13,4 +16,5 @@ type IScene interface {
 	AddTransparentObject(obj ITransparentDrawable)
 
 	GetWindow() Window.IWindow
+	GetCamera() Camera.ICamera
 }

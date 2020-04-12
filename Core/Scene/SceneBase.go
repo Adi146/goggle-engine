@@ -123,6 +123,10 @@ func (scene *SceneBase) GetWindow() Window.IWindow {
 	return &scene.Window
 }
 
+func (scene *SceneBase) GetCamera() Camera.ICamera {
+	return &scene.Camera
+}
+
 func (scene *SceneBase) UnmarshalYAML(value *yaml.Node) error {
 	type yamlConfigType SceneBase
 	yamlConfig := (yamlConfigType)(*scene)

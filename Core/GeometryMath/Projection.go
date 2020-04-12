@@ -1,14 +1,14 @@
 package GeometryMath
 
-func Orthogonal(left float32, right float32, bottom float32, top float32, near float32, far float32) *Matrix4x4 {
+func Orthographic(left float32, right float32, bottom float32, top float32, near float32, far float32) *Matrix4x4 {
 	rml := right - left
 	tmb := top - bottom
 	fmn := far - near
 
 	return &Matrix4x4{
-		{2 / rml, 0, 0, -((right + left) / rml)},
-		{0, 2 / tmb, 0, -((top + bottom) / tmb)},
-		{0, 0, -2 / fmn, -((far + near) / fmn)},
+		{2 / rml, 0, 0, 0},
+		{0, 2 / tmb, 0, 0},
+		{0, 0, -2 / fmn, 0},
 		{0, 0, 0, 1},
 	}
 }

@@ -16,6 +16,9 @@ layout (std140) uniform directionalLight {
         vec3 specular;
 
         mat4 viewProjectionMatrix;
+
+        float distance;
+        float transitionDistance;
     } u_directionalLight;
 };
 

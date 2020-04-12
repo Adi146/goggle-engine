@@ -57,7 +57,7 @@ scene:
   camera:
     fovy: 45
     near: 0.1
-    far: 10000
+    far: 1000
     uniformBuffer:
       binding: 0
       shaders:
@@ -86,10 +86,10 @@ scene:
         height: 1080
     cameraControl:
       type: UI.Control.WASDControl
-      keyboardSensitivity: 100
-      mouseSensitivity: 0.5
+      keyboardSensitivity: 10
+      mouseSensitivity: 0.05
       transformation:
-        - translation: [0, 100, 1000]
+        - translation: [0, 10, 100]
       children:
         camera:
           type: Node.Camera
@@ -105,8 +105,8 @@ scene:
             ambient: [0, 0.1, 0]
             diffuse: [0, 1, 0]
             specular: [0, 1, 0]
-            linear: 0.0014
-            quadratic: 0.000007
+            linear: 0.014
+            quadratic: 0.0007
             direction: [0, 0, 1]
           uniformBuffer:
             binding: 3
@@ -115,7 +115,7 @@ scene:
               - phong
               - shadowMapSpotLight
           shadowMap:
-            distance: 3250
+            distance: 325
             shader: shadowMapSpotLight
             frameBuffer:
               width: 1024
@@ -144,31 +144,20 @@ scene:
               - phong
               - shadowMapDirectionalLight
           shadowMap:
-            projection:
-              orthogonal:
-                left: -3000
-                right: 3000
-                bottom: -3000
-                top: 3000
-                near: -3000
-                far: 3000
+            distance: 200
+            transitionDistance: 20
             shader: shadowMapDirectionalLight
             frameBuffer:
               width: 4096
               height: 4096
             bindOnShaders:
               - phong
-    arena:
-      type: Node.ModelNode
-      file: Models/arena.obj
-      shader: phong
-      transformation:
-        - translation: [0, -20, 0]
-        - scale: 100
     fern:
       type: Node.ModelNode
       file: Models/fern/fern.fbx
       shader: phong
+      transformation:
+        - scale: 0.1
     construction_light:
       type: Node.ModelNode
       file: Models/construction_light/Construction_Light.fbx
@@ -180,7 +169,8 @@ scene:
           normal: Models/construction_light/Normal.png
       shader: phong
       transformation:
-        - translation: [0, 0, -500]
+        - translation: [0, 0, -50]
+        - scale: 0.1
       children:
         light:
           type: Node.LightNode.SpotLightNode
@@ -190,12 +180,12 @@ scene:
             ambient: [0.05, 0.05, 0.05]
             diffuse: [1, 1, 1]
             specular: [1, 1, 1]
-            linear: 0.0014
-            quadratic: 0.000007
+            linear: 0.014
+            quadratic: 0.0007
             direction: [0, 0, 1]
           uniformBuffer: spotLight
           shadowMap:
-            distance: 3250
+            distance: 325
             shader: shadowMapSpotLight
             frameBuffer:
               width: 2048
@@ -217,13 +207,13 @@ scene:
             ambient: [0.0, 0.0, 0.2]
             diffuse: [0.0, 0.0, 1.0]
             specular: [0.0, 0.0, 1.0]
-            linear: 0.0014
-            quadratic: 0.000007
+            linear: 0.014
+            quadratic: 0.0007
           uniformBuffer: pointLight
           transformation:
-            - translation: [0, 300, -300]
+            - translation: [0, 30, -30]
           shadowMap:
-            distance: 3250
+            distance: 325
             shader: shadowMapPointLight
             frameBuffer:
               width: 1024
@@ -236,8 +226,8 @@ scene:
             ambient: [0.2, 0.0, 0.0]
             diffuse: [1.0, 0.0, 0.0]
             specular: [1.0, 0.0, 0.0]
-            linear: 0.0014
-            quadratic: 0.000007
+            linear: 0.014
+            quadratic: 0.0007
           uniformBuffer:
             id: pointLight
             binding: 2
@@ -245,9 +235,9 @@ scene:
               - phong
               - shadowMapPointLight
           transformation:
-            - translation: [0, 300, 300]
+            - translation: [0, 30, 30]
           shadowMap:
-            distance: 3250
+            distance: 325
             shader: shadowMapPointLight
             frameBuffer:
               width: 1024
@@ -263,7 +253,8 @@ scene:
       isTransparent: true
       shader: phong
       transformation:
-        - translation: [0, 0, 500]
+        - translation: [0, 0, 50]
+        - scale: 0.1
     window2:
       type: Node.ModelNode
       file: Models/plain.fbx
@@ -273,7 +264,8 @@ scene:
       isTransparent: true
       shader: phong
       transformation:
-        - translation: [0, 0, 300]
+        - translation: [0, 0, 30]
+        - scale: 0.1
     skybox:
       type: Node.Skybox
       shader: skybox
@@ -288,8 +280,8 @@ scene:
       type: Node.Terrain
       shader: phong
       file: Models/terrain/heightmap.png
-      heightScale: 1000
-      tileSize: 10
+      heightScale: 100
+      tileSize: 1
       material:
         blendRange:
           r:

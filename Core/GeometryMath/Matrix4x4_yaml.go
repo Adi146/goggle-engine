@@ -64,7 +64,7 @@ type orthogonalConfig struct {
 }
 
 func (config *orthogonalConfig) Decode() *Matrix4x4 {
-	return Orthogonal(
+	return Orthographic(
 		config.Left,
 		config.Right,
 		config.Bottom,

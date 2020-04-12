@@ -26,6 +26,7 @@ func NewShadowMap(width int32, height int32, textureType core.Type) (*core.Textu
 	gl.TexParameteri(texture.Target, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 	gl.TexParameteri(texture.Target, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 	texture.SetWrapMode(core.ClampToEdge)
+
 	texture.Unbind()
 
 	return &texture, nil

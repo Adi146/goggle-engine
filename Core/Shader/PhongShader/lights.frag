@@ -59,24 +59,32 @@ struct MaterialColor {
     vec3 emissive;
 };
 
+uniform bool u_directionalLightIsSet;
+uniform bool u_pointLightIsSet;
+uniform bool u_spotLightIsSet;
+
 float calculateShadowDirectionalLight(vec3 fragPos);
 float calculateShadowPointLight(int pointLightIndex, vec3 fragPos);
 float calculateShadowSpotLight(int spotLightIndex, vec3 fragPos);
 
 vec3 calculateDirectionalLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, MaterialColor color, float shininess) {
-    vec3 lightDir = normalize(-u_directionalLight.direction);
-    float diff = max(dot(normalVector, lightDir), 0.0);
+    if (u_directionalLightIsSet) {
+        vec3 lightDir = normalize(-u_directionalLight.direction);
+        float diff = max(dot(normalVector, lightDir), 0.0);
 
-    vec3 reflectDir = reflect(-lightDir, normalVector);
-    float spec = pow(max(dot(viewVector, reflectDir), 0.0), shininess);
+        vec3 reflectDir = reflect(-lightDir, normalVector);
+        float spec = pow(max(dot(viewVector, reflectDir), 0.0), shininess);
 
-    vec3 ambientColor = u_directionalLight.ambient * color.diffuse.rgb;
-    vec3 diffuseColor = u_directionalLight.diffuse * diff * color.diffuse.rgb;
-    vec3 specularColor = u_directionalLight.specular * spec * color.specular;
+        vec3 ambientColor = u_directionalLight.ambient * color.diffuse.rgb;
+        vec3 diffuseColor = u_directionalLight.diffuse * diff * color.diffuse.rgb;
+        vec3 specularColor = u_directionalLight.specular * spec * color.specular;
 
-    float shadow = calculateShadowDirectionalLight(fragPos);
+        float shadow = calculateShadowDirectionalLight(fragPos);
 
-    return (ambientColor + ((1.0 - shadow) * diffuseColor + specularColor));
+        return (ambientColor + ((1.0 - shadow) * diffuseColor + specularColor));
+    }
+
+    return vec3(0, 0, 0);
 }
 
 vec3 calculatePointLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, MaterialColor color, float shininess) {
@@ -84,21 +92,23 @@ vec3 calculatePointLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, Mater
     vec3 diffuseColor = vec3(0.0, 0.0, 0.0);
     vec3 specularColor = vec3(0.0, 0.0, 0.0);
 
-    for (int i = 0; i < u_numPointLights; i++){
-        vec3 lightDir = normalize(u_pointLights[i].position - fragPos);
-        float diff = max(dot(normalVector, lightDir), 0.0);
+    if (u_pointLightIsSet) {
+        for (int i = 0; i < u_numPointLights; i++){
+            vec3 lightDir = normalize(u_pointLights[i].position - fragPos);
+            float diff = max(dot(normalVector, lightDir), 0.0);
 
-        vec3 reflectDir = reflect(-lightDir, normalVector);
-        float spec = pow(max(dot(viewVector, reflectDir), 0.0), shininess);
+            vec3 reflectDir = reflect(-lightDir, normalVector);
+            float spec = pow(max(dot(viewVector, reflectDir), 0.0), shininess);
 
-        float distance = length(u_pointLights[i].position - fragPos);
-        float attenuation = 1.0 / ((1.0) + (u_pointLights[i].linear * distance) + (u_pointLights[i].quadratic * pow(distance, 2)));
+            float distance = length(u_pointLights[i].position - fragPos);
+            float attenuation = 1.0 / ((1.0) + (u_pointLights[i].linear * distance) + (u_pointLights[i].quadratic * pow(distance, 2)));
 
-        float shadow = calculateShadowPointLight(i, fragPos);
+            float shadow = calculateShadowPointLight(i, fragPos);
 
-        ambientColor += attenuation *  u_pointLights[i].ambient * color.diffuse.rgb;
-        diffuseColor += attenuation * (1 - shadow) * u_pointLights[i].diffuse.rgb * diff * color.diffuse.rgb;
-        specularColor += attenuation * (1 - shadow) * u_pointLights[i].specular * spec * color.specular;
+            ambientColor += attenuation *  u_pointLights[i].ambient * color.diffuse.rgb;
+            diffuseColor += attenuation * (1 - shadow) * u_pointLights[i].diffuse.rgb * diff * color.diffuse.rgb;
+            specularColor += attenuation * (1 - shadow) * u_pointLights[i].specular * spec * color.specular;
+        }
     }
 
     return (ambientColor + diffuseColor + specularColor);
@@ -109,25 +119,27 @@ vec3 calculateSpotLight(vec3 fragPos, vec3 viewVector, vec3 normalVector, Materi
     vec3 diffuseColor = vec3(0.0, 0.0, 0.0);
     vec3 specularColor = vec3(0.0, 0.0, 0.0);
 
-    for (int i = 0; i < u_numSpotLights; i++){
-        vec3 lightDir = normalize(u_spotLights[i].position - fragPos);
-        float diff = max(dot(normalVector, lightDir), 0.0);
+    if (u_spotLightIsSet) {
+        for (int i = 0; i < u_numSpotLights; i++){
+            vec3 lightDir = normalize(u_spotLights[i].position - fragPos);
+            float diff = max(dot(normalVector, lightDir), 0.0);
 
-        vec3 reflectDir = reflect(-lightDir, normalVector);
-        float spec = pow(max(dot(viewVector, reflectDir), 0.0), shininess);
+            vec3 reflectDir = reflect(-lightDir, normalVector);
+            float spec = pow(max(dot(viewVector, reflectDir), 0.0), shininess);
 
-        float distance = length(u_spotLights[i].position - fragPos);
-        float attenuation = 1.0 / ((1.0) + (u_spotLights[i].linear * distance) + (u_spotLights[i].quadratic * pow(distance, 2)));
+            float distance = length(u_spotLights[i].position - fragPos);
+            float attenuation = 1.0 / ((1.0) + (u_spotLights[i].linear * distance) + (u_spotLights[i].quadratic * pow(distance, 2)));
 
-        float theta = dot(lightDir, -normalize(u_spotLights[i].direction));
-        float epsilon = u_spotLights[i].innerCone - u_spotLights[i].outerCone;
-        float intensity = clamp((theta - u_spotLights[i].outerCone) / epsilon, 0.0f, 1.0f);
+            float theta = dot(lightDir, -normalize(u_spotLights[i].direction));
+            float epsilon = u_spotLights[i].innerCone - u_spotLights[i].outerCone;
+            float intensity = clamp((theta - u_spotLights[i].outerCone) / epsilon, 0.0f, 1.0f);
 
-        float shadow = calculateShadowSpotLight(i, fragPos);
+            float shadow = calculateShadowSpotLight(i, fragPos);
 
-        ambientColor += attenuation * u_spotLights[i].ambient * color.diffuse.rgb;
-        diffuseColor += attenuation * intensity * (1 - shadow) * u_spotLights[i].diffuse * diff * color.diffuse.rgb;
-        specularColor += attenuation * intensity * (1 - shadow) * u_spotLights[i].specular * spec* color.specular;
+            ambientColor += attenuation * u_spotLights[i].ambient * color.diffuse.rgb;
+            diffuseColor += attenuation * intensity * (1 - shadow) * u_spotLights[i].diffuse * diff * color.diffuse.rgb;
+            specularColor += attenuation * intensity * (1 - shadow) * u_spotLights[i].specular * spec* color.specular;
+        }
     }
 
     return (ambientColor + diffuseColor + specularColor);

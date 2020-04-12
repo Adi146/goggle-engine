@@ -1,5 +1,9 @@
 package Scene
 
+import (
+	"github.com/Adi146/goggle-engine/Utils/Log"
+)
+
 func RunRenderLoop(scene IScene) {
 	for !scene.GetWindow().ShouldClose() {
 		scene.GetWindow().PollEvents()
@@ -7,7 +11,7 @@ func RunRenderLoop(scene IScene) {
 		timeDelta, _ := scene.GetWindow().GetTimeDeltaAndFPS()
 		scene.Tick(timeDelta)
 
-		scene.Draw(nil, nil, nil)
+		Log.Error(scene.Draw(nil, nil, nil), "Render Error")
 
 		scene.GetWindow().SwapWindow()
 	}

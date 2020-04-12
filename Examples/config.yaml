@@ -126,7 +126,7 @@ scene:
             - rotation:
                 angle: 180
                 axis: [0, 1, 0]
-            - translation: [20, 20, 20]
+            - translation: [2, 2, 2]
     sun:
       type: SceneGraph.Rotor
       speed: 0.05

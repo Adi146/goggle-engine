@@ -55,9 +55,9 @@ shadowMap:
 	expectedTransitionDistance := float32(20)
 
 	if light.ShadowMap.Distance.Get() != expectedDistance {
-		t.Errorf("distance value not matching (expecting %f, got %f)",expectedDistance , light.ShadowMap.Distance.Get())
+		t.Errorf("distance value not matching (expecting %f, got %f)", expectedDistance, light.ShadowMap.Distance.Get())
 	}
 	if light.ShadowMap.TransitionDistance.Get() != expectedTransitionDistance {
-		t.Errorf("transition distance value not matching (expecting %f, got %f)",expectedTransitionDistance , light.ShadowMap.TransitionDistance.Get())
+		t.Errorf("transition distance value not matching (expecting %f, got %f)", expectedTransitionDistance, light.ShadowMap.TransitionDistance.Get())
 	}
 }

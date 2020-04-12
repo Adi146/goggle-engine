@@ -11,6 +11,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 const (
@@ -23,6 +24,10 @@ const (
 	ua_directionalLight = "directionalLight"
 	ua_pointLight       = "pointLight"
 	ua_spotLight        = "spotLight"
+
+	ua_directionalLightIsSet = "u_directionalLightIsSet"
+	ua_pointLightIsSet       = "u_pointLightIsSet"
+	ua_spotLightIsSet        = "u_spotLightIsSet"
 )
 
 func init() {
@@ -73,21 +78,8 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 		return ua_normalMatrix, nil
 	case Texture.ITexture:
 		return program.ShadowShader.GetUniformAddress(v)
-	case UniformBuffer.IUniformBuffer:
-		switch t := v.GetType(); t {
-		case Light.DirectionalLight_ubo_type:
-			return ua_directionalLight, nil
-		case Light.PointLight_ubo_type:
-			return ua_pointLight, nil
-		case Light.SpotLight_ubo_type:
-			return ua_spotLight, nil
-		case Camera.UBO_type:
-			return ua_camera, nil
-		default:
-			return "", fmt.Errorf("phong shader does not support uniform buffers of type %s", t)
-		}
 	default:
-		return "", fmt.Errorf("phong shader does not support type %T", v)
+		return "", fmt.Errorf("GetUniformAddress of phong shader does not support type %T, try to use BindObject instead", v)
 	}
 }
 
@@ -104,6 +96,24 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		v.EnableTangentAttribute()
 		v.EnableBiTangentAttribute()
 		return nil
+	case UniformBuffer.IUniformBuffer:
+		var err Error.ErrorCollection
+		switch t := v.GetType(); t {
+		case Light.DirectionalLight_ubo_type:
+			err.Push(program.BindUniform(v, ua_directionalLight))
+			err.Push(program.BindUniform(true, ua_directionalLightIsSet))
+		case Light.PointLight_ubo_type:
+			err.Push(program.BindUniform(v, ua_pointLight))
+			err.Push(program.BindUniform(true, ua_pointLightIsSet))
+		case Light.SpotLight_ubo_type:
+			err.Push(program.BindUniform(v, ua_spotLight))
+			err.Push(program.BindUniform(true, ua_spotLightIsSet))
+		case Camera.UBO_type:
+			err.Push(program.BindUniform(v, ua_camera))
+		default:
+			return fmt.Errorf("phong shader does not support uniform buffers of type %s", t)
+		}
+		return err.Err()
 	default:
 		uniformAddress, err := program.GetUniformAddress(v)
 		if err != nil {

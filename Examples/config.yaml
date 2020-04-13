@@ -86,7 +86,7 @@ scene:
         height: 1080
     cameraControl:
       type: UI.Control.WASDControl
-      keyboardSensitivity: 10
+      keyboardSensitivity: 40
       mouseSensitivity: 0.05
       transformation:
         - translation: [0, 10, 100]
@@ -152,51 +152,6 @@ scene:
               height: 4096
             bindOnShaders:
               - phong
-    fern:
-      type: Node.ModelNode
-      file: Models/fern/fern.fbx
-      shader: phong
-      transformation:
-        - scale: 0.1
-    construction_light:
-      type: Node.ModelNode
-      file: Models/construction_light/Construction_Light.fbx
-      material:
-        textures:
-          diffuse: Models/construction_light/DiffuseMap.png
-          specular: Models/construction_light/Specular.png
-          emissive: Models/construction_light/Glow.png
-          normal: Models/construction_light/Normal.png
-      shader: phong
-      transformation:
-        - translation: [0, 0, -50]
-        - scale: 0.1
-      children:
-        light:
-          type: Node.LightNode.SpotLightNode
-          spotLight:
-            innerCone: 12.5
-            outerCone: 35
-            ambient: [0.05, 0.05, 0.05]
-            diffuse: [1, 1, 1]
-            specular: [1, 1, 1]
-            linear: 0.014
-            quadratic: 0.0007
-            direction: [0, 0, 1]
-          uniformBuffer: spotLight
-          shadowMap:
-            distance: 325
-            shader: shadowMapSpotLight
-            frameBuffer:
-              width: 2048
-              height: 2048
-            bindOnShaders:
-              - phong
-          transformation:
-            - rotation:
-                angle: 10
-                axis: [1, 0, 0]
-            - translation: [0, 150, 5]
     lightRotator:
       type: SceneGraph.Rotor
       speed: 1
@@ -244,28 +199,6 @@ scene:
               height: 1024
             bindOnShaders:
               - phong
-    window1:
-      type: Node.ModelNode
-      file: Models/plain.fbx
-      material:
-        textures:
-          diffuse: Models/blending_transparent_window.png
-      isTransparent: true
-      shader: phong
-      transformation:
-        - translation: [0, 0, 50]
-        - scale: 0.1
-    window2:
-      type: Node.ModelNode
-      file: Models/plain.fbx
-      material:
-        textures:
-          diffuse: Models/blending_transparent_window.png
-      isTransparent: true
-      shader: phong
-      transformation:
-        - translation: [0, 0, 30]
-        - scale: 0.1
     skybox:
       type: Node.Skybox
       shader: skybox
@@ -317,3 +250,72 @@ scene:
           textures:
             diffuse: Models/terrain/snow_mntn2_d.jpg
             normal: Models/terrain/snow_mntn2_h.jpg
+      children:
+        fern:
+          type: Node.ModelNode
+          file: Models/fern/fern.fbx
+          shader: phong
+          transformation:
+            - scale: 0.1
+        window1:
+          type: Node.ModelNode
+          file: Models/plain.fbx
+          material:
+            textures:
+              diffuse: Models/blending_transparent_window.png
+          isTransparent: true
+          shader: phong
+          transformation:
+            - translation: [0, 0, 50]
+            - scale: 0.1
+        window2:
+          type: Node.ModelNode
+          file: Models/plain.fbx
+          material:
+            textures:
+              diffuse: Models/blending_transparent_window.png
+          isTransparent: true
+          shader: phong
+          transformation:
+            - translation: [0, 0, 30]
+            - scale: 0.1
+        construction_light:
+          type: Node.ModelNode
+          baseType: Node.Terrain.Anchor
+          file: Models/construction_light/Construction_Light.fbx
+          material:
+            textures:
+              diffuse: Models/construction_light/DiffuseMap.png
+              specular: Models/construction_light/Specular.png
+              emissive: Models/construction_light/Glow.png
+              normal: Models/construction_light/Normal.png
+          shader: phong
+          transformation:
+            - translation: [0, 0, -50]
+            - scale: 0.1
+          children:
+            light:
+              type: Node.LightNode.SpotLightNode
+              spotLight:
+                innerCone: 12.5
+                outerCone: 35
+                ambient: [0.05, 0.05, 0.05]
+                diffuse: [1, 1, 1]
+                specular: [1, 1, 1]
+                linear: 0.014
+                quadratic: 0.0007
+                direction: [0, 0, 1]
+              uniformBuffer: spotLight
+              shadowMap:
+                distance: 325
+                shader: shadowMapSpotLight
+                frameBuffer:
+                  width: 2048
+                  height: 2048
+                bindOnShaders:
+                  - phong
+              transformation:
+                - rotation:
+                    angle: 10
+                    axis: [1, 0, 0]
+                - translation: [0, 150, 5]

@@ -35,11 +35,12 @@ func (node *SpotLightNode) Tick(timeDelta float32) error {
 	return err
 }
 
+func (node *SpotLightNode) SetBase(base Scene.INode) {
+	node.INode = base
+}
+
 func (node *SpotLightNode) UnmarshalYAML(value *yaml.Node) error {
-	if node.INode == nil {
-		node.INode = &Scene.Node{}
-	}
-	if err := value.Decode(node.INode); err != nil {
+	if err := Scene.UnmarshalBase(value, node); err != nil {
 		return err
 	}
 
@@ -51,5 +52,5 @@ func (node *SpotLightNode) UnmarshalYAML(value *yaml.Node) error {
 		node.InitDirection = node.UBOSpotLight.Direction.Get()
 	}
 
-	return nil
+	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
 }

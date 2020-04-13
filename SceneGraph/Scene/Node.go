@@ -3,7 +3,17 @@ package Scene
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Utils/Error"
+	"gopkg.in/yaml.v3"
+	"reflect"
 )
+
+const (
+	NodeFactoryName = "Scene.Node"
+)
+
+func init() {
+	NodeFactory.AddType(NodeFactoryName, reflect.TypeOf((*Node)(nil)).Elem())
+}
 
 type Node struct {
 	scene          *Scene
@@ -15,7 +25,6 @@ type Node struct {
 
 func (node *Node) AddChild(child INode) {
 	node.children = append(node.children, child)
-	child.setParent(node)
 }
 
 func (node *Node) GetChildren() []INode {
@@ -26,12 +35,12 @@ func (node *Node) GetParent() INode {
 	return node.parent
 }
 
-func (node *Node) setParent(parent INode) {
+func (node *Node) SetParent(parent INode) {
 	node.parent = parent
 	if parent != nil {
-		node.setScene(parent.GetScene())
+		node.SetScene(parent.GetScene())
 	} else {
-		node.setScene(nil)
+		node.SetScene(nil)
 	}
 }
 
@@ -39,11 +48,11 @@ func (node *Node) GetScene() *Scene {
 	return node.scene
 }
 
-func (node *Node) setScene(scene *Scene) {
+func (node *Node) SetScene(scene *Scene) {
 	node.scene = scene
 
 	for _, child := range node.children {
-		child.setScene(scene)
+		child.SetScene(scene)
 	}
 }
 
@@ -87,4 +96,26 @@ func (node *Node) Tick(timeDelta float32) error {
 	}
 
 	return err.Err()
+}
+
+func (node *Node) GetBase() INode {
+	return node
+}
+
+func (node *Node) UnmarshalYAML(value *yaml.Node) error {
+	var yamlConfig struct {
+		Transformation []GeometryMath.Matrix4x4 `yaml:"transformation"`
+	}
+	if err := value.Decode(&yamlConfig); err != nil {
+		return err
+	}
+
+	if len(yamlConfig.Transformation) >= 1 || node.Transformation == nil || *node.Transformation == (GeometryMath.Matrix4x4{}) {
+		node.SetLocalTransformation(GeometryMath.Identity())
+		for _, transformation := range yamlConfig.Transformation {
+			node.SetLocalTransformation(node.GetLocalTransformation().Mul(&transformation))
+		}
+	}
+
+	return nil
 }

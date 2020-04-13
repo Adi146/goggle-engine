@@ -19,7 +19,7 @@ func (scene *Scene) Tick(timeDelta float32) {
 }
 
 func (scene *Scene) SetRoot(node INode) {
-	node.setScene(scene)
+	node.SetScene(scene)
 	scene.Root = node
 }
 
@@ -36,5 +36,5 @@ func (scene *Scene) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	return nil
+	return UnmarshalChildren(value, scene.Root, NodeFactoryName)
 }

@@ -50,11 +50,12 @@ func (node *ModelNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDra
 	return node.Model.Draw(shader, invoker, scene)
 }
 
+func (node *ModelNode) SetBase(base Scene.INode) {
+	node.INode = base
+}
+
 func (node *ModelNode) UnmarshalYAML(value *yaml.Node) error {
-	if node.INode == nil {
-		node.INode = &Scene.Node{}
-	}
-	if err := value.Decode(node.INode); err != nil {
+	if err := Scene.UnmarshalBase(value, node); err != nil {
 		return err
 	}
 
@@ -77,5 +78,5 @@ func (node *ModelNode) UnmarshalYAML(value *yaml.Node) error {
 	node.IsTransparent = yamlConfig.IsTransparent
 	node.Shader = yamlConfig.Shader
 
-	return nil
+	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
 }

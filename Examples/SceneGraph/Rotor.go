@@ -27,11 +27,12 @@ func (node *Rotor) Tick(timeDelta float32) error {
 	return err
 }
 
+func (node *Rotor) SetBase(base Scene.INode) {
+	node.INode = base
+}
+
 func (node *Rotor) UnmarshalYAML(value *yaml.Node) error {
-	if node.INode == nil {
-		node.INode = &Scene.Node{}
-	}
-	if err := value.Decode(node.INode); err != nil {
+	if err := Scene.UnmarshalBase(value, node); err != nil {
 		return err
 	}
 
@@ -46,5 +47,5 @@ func (node *Rotor) UnmarshalYAML(value *yaml.Node) error {
 
 	node.Speed = yamlConfig.Speed
 
-	return nil
+	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
 }

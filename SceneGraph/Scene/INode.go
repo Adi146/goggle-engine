@@ -9,10 +9,10 @@ type INode interface {
 	GetChildren() []INode
 
 	GetParent() INode
-	setParent(parent INode)
+	SetParent(parent INode)
 
 	GetScene() *Scene
-	setScene(*Scene)
+	SetScene(*Scene)
 
 	GetLocalTransformation() *GeometryMath.Matrix4x4
 	SetLocalTransformation(*GeometryMath.Matrix4x4)
@@ -26,4 +26,5 @@ type INode interface {
 	GetGlobalPosition() *GeometryMath.Vector3
 
 	Tick(timeDelta float32) error
+	GetBase() INode
 }

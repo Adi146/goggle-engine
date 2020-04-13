@@ -76,11 +76,12 @@ func (node *PostProcessingNode) Draw(shader Shader.IShaderProgram, invoker coreS
 	return node.Quad.Draw(node.Shader, node, scene)
 }
 
+func (node *PostProcessingNode) SetBase(base Scene.INode) {
+	node.INode = base
+}
+
 func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
-	if node.INode == nil {
-		node.INode = &Scene.Node{}
-	}
-	if err := value.Decode(node.INode); err != nil {
+	if err := Scene.UnmarshalBase(value, node); err != nil {
 		return err
 	}
 
@@ -124,5 +125,5 @@ func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
 
 	node.Quad = *quad
 
-	return nil
+	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
 }

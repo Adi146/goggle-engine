@@ -77,11 +77,12 @@ func (node *WASDControl) Rotate(x float32, y float32) {
 	node.SetLocalTransformation(node.GetLocalTransformation().Mul(GeometryMath.RotateX(node.pitch)))
 }
 
+func (node *WASDControl) SetBase(base Scene.INode) {
+	node.INode = base
+}
+
 func (node *WASDControl) UnmarshalYAML(value *yaml.Node) error {
-	if node.INode == nil {
-		node.INode = &Scene.Node{}
-	}
-	if err := value.Decode(node.INode); err != nil {
+	if err := Scene.UnmarshalBase(value, node); err != nil {
 		return err
 	}
 
@@ -99,5 +100,5 @@ func (node *WASDControl) UnmarshalYAML(value *yaml.Node) error {
 	node.KeyboardSensitivity = yamlConfig.KeyboardSensitivity
 	node.MouseSensitivity = yamlConfig.MouseSensitivity
 
-	return nil
+	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
 }

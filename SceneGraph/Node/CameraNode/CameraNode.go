@@ -35,11 +35,12 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	return nil
 }
 
+func (node *CameraNode) SetBase(base Scene.INode) {
+	node.INode = base
+}
+
 func (node *CameraNode) UnmarshalYAML(value *yaml.Node) error {
-	if node.INode == nil {
-		node.INode = &Scene.Node{}
-	}
-	if err := value.Decode(node.INode); err != nil {
+	if err := Scene.UnmarshalBase(value, node); err != nil {
 		return err
 	}
 
@@ -65,5 +66,5 @@ func (node *CameraNode) UnmarshalYAML(value *yaml.Node) error {
 		node.UpVector = GeometryMath.Vector3{0, 1, 0}
 	}
 
-	return nil
+	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
 }

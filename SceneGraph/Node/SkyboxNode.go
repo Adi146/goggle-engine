@@ -42,11 +42,12 @@ func (node *SkyboxNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDr
 	return node.Skybox.Draw(shader, nil, nil)
 }
 
+func (node *SkyboxNode) SetBase(base Scene.INode) {
+	node.INode = base
+}
+
 func (node *SkyboxNode) UnmarshalYAML(value *yaml.Node) error {
-	if node.INode == nil {
-		node.INode = &Scene.Node{}
-	}
-	if err := value.Decode(node.INode); err != nil {
+	if err := Scene.UnmarshalBase(value, node); err != nil {
 		return err
 	}
 
@@ -66,5 +67,5 @@ func (node *SkyboxNode) UnmarshalYAML(value *yaml.Node) error {
 	node.Skybox = yamlConfig.Skybox
 	node.Shader = yamlConfig.Shader
 
-	return nil
+	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
 }

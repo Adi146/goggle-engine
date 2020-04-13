@@ -1,7 +1,6 @@
-package Node
+package Terrain
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Model"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Terrain"
@@ -16,10 +15,22 @@ func init() {
 	Scene.NodeFactory.AddType(TerrainNodeFactoryName, reflect.TypeOf((*TerrainNode)(nil)).Elem())
 }
 
-type TerrainNode ModelNode
+type TerrainNode struct {
+	Scene.INode
+	Terrain.Terrain
+	Shader Shader.IShaderProgram
+}
 
 func (node *TerrainNode) Tick(timeDelta float32) error {
-	return (*ModelNode)(node).Tick(timeDelta)
+	err := node.INode.Tick(timeDelta)
+
+	node.SetModelMatrix(node.GetGlobalTransformation())
+
+	if scene := node.GetScene(); scene != nil {
+		scene.AddOpaqueObject(node)
+	}
+
+	return err
 }
 
 func (node *TerrainNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
@@ -33,11 +44,12 @@ func (node *TerrainNode) Draw(shader Shader.IShaderProgram, invoker coreScene.ID
 	return node.Model.Draw(shader, invoker, scene)
 }
 
+func (node *TerrainNode) SetBase(base Scene.INode) {
+	node.INode = base
+}
+
 func (node *TerrainNode) UnmarshalYAML(value *yaml.Node) error {
-	if node.INode == nil {
-		node.INode = &Scene.Node{}
-	}
-	if err := value.Decode(node.INode); err != nil {
+	if err := Scene.UnmarshalBase(value, node); err != nil {
 		return err
 	}
 
@@ -53,8 +65,8 @@ func (node *TerrainNode) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	node.Model = (Model.Model)(yamlConfig.Terrain)
+	node.Terrain = yamlConfig.Terrain
 	node.Shader = yamlConfig.Shader
 
-	return nil
+	return Scene.UnmarshalChildren(value, node, AnchorNodeFactoryName)
 }

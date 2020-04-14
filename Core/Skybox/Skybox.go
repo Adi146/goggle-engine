@@ -3,15 +3,14 @@ package Skybox
 import (
 	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/Core/Model"
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 )
 
 var (
-	vertices = []VertexBuffer.Vertex{
+	vertices = []Mesh.Vertex{
 		{Position: GeometryMath.Vector3{-1.0, 1.0, 1.0}},
 		{Position: GeometryMath.Vector3{-1.0, 1.0, -1.0}},
 		{Position: GeometryMath.Vector3{-1.0, -1.0, 1.0}},
@@ -44,18 +43,13 @@ var (
 )
 
 type Skybox struct {
-	*Model.Mesh
+	*Mesh.Mesh
 	*Texture.CubeMap
 }
 
 func NewSkybox(texture *Texture.CubeMap) (*Skybox, error) {
-	mesh, err := Model.NewMesh(vertices, indices)
-	if err != nil {
-		return nil, err
-	}
-
 	return &Skybox{
-		Mesh:    mesh,
+		Mesh:    Mesh.NewMesh(vertices, indices),
 		CubeMap: texture,
 	}, nil
 }

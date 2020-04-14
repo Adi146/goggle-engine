@@ -1,4 +1,4 @@
-package VertexBuffer
+package Mesh
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Utils"

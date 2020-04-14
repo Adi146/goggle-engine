@@ -6,11 +6,11 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
@@ -89,7 +89,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.MaterialShader.BindObject(v)
 	case Texture.ITexture:
 		return program.ShadowShader.BindObject(v)
-	case *VertexBuffer.VertexBuffer:
+	case Mesh.IVertexArray:
 		v.Bind()
 		v.EnableUVAttribute()
 		v.EnableNormalAttribute()

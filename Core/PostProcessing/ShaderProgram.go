@@ -2,8 +2,8 @@ package PostProcessing
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
@@ -61,7 +61,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		err.Push(program.BindObject(v.GetOffset()))
 		err.Push(program.BindObject(v.GetKernel()))
 		return err.Err()
-	case *VertexBuffer.VertexBuffer:
+	case Mesh.VertexArray:
 		v.Bind()
 		v.EnableUVAttribute()
 		return nil

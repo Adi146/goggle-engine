@@ -1,34 +1,32 @@
-package Model
+package Mesh
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type Mesh struct {
-	VertexBuffer *VertexBuffer.VertexBuffer
-	IndexBuffer  *VertexBuffer.IndexBuffer
+	VertexBuffer ArrayBuffer
+	VertexArray  VertexArray
+	IndexBuffer  *IndexBuffer
 }
 
-func NewMesh(vertices []VertexBuffer.Vertex, indices []uint32) (*Mesh, error) {
-	vertexBuffer, err := VertexBuffer.NewVertexBuffer(vertices)
-	if err != nil {
-		return nil, err
-	}
+func NewMesh(vertices []Vertex, indices []uint32) *Mesh {
+	vbo := NewVertexBuffer(vertices)
 
 	return &Mesh{
-		VertexBuffer: vertexBuffer,
-		IndexBuffer:  VertexBuffer.NewIndexBuffer(indices),
-	}, nil
+		VertexBuffer: vbo,
+		VertexArray:  NewVertexArray(vbo),
+		IndexBuffer:  NewIndexBuffer(indices),
+	}
 }
 
 func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
 	var err Error.ErrorCollection
 
-	err.Push(shader.BindObject(mesh.VertexBuffer))
+	err.Push(shader.BindObject(mesh.VertexArray))
 	mesh.IndexBuffer.Bind()
 	gl.DrawElements(gl.TRIANGLES, mesh.IndexBuffer.Length, gl.UNSIGNED_INT, nil)
 	mesh.IndexBuffer.Unbind()

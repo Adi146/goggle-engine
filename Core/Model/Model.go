@@ -12,7 +12,7 @@ import (
 )
 
 type Model struct {
-	Mesh         Mesh
+	Mesh         Scene.IDrawable
 	Material     Material.IMaterial
 	modelMatrix  GeometryMath.Matrix4x4
 	normalMatrix GeometryMath.Matrix3x3

@@ -2,10 +2,10 @@ package Terrain
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 	"gopkg.in/yaml.v3"
 )
 
@@ -19,7 +19,7 @@ type Terrain struct {
 }
 
 func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
-	vertices := make([]VertexBuffer.Vertex, heightMap.NumRows*heightMap.NumColumns)
+	vertices := make([]Mesh.Vertex, heightMap.NumRows*heightMap.NumColumns)
 	indices := make([]uint32, 6*(heightMap.NumRows-1)*(heightMap.NumColumns-1))
 
 	offsetX := float32(heightMap.NumColumns)/2 - 0.5
@@ -27,7 +27,7 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
 
 	for z := 0; z < heightMap.NumRows; z++ {
 		for x := 0; x < heightMap.NumColumns; x++ {
-			vertices[z*heightMap.NumColumns+x] = VertexBuffer.Vertex{
+			vertices[z*heightMap.NumColumns+x] = Mesh.Vertex{
 				Position: GeometryMath.Vector3{
 					(float32(x) - offsetX) * tileSize,
 					heightMap.GetHeight(x, z),
@@ -57,14 +57,9 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
 		}
 	}
 
-	mesh, err := Model.NewMesh(vertices, indices)
-	if err != nil {
-		return nil, err
-	}
-
 	return &Terrain{
 		Model: Model.Model{
-			Mesh:     *mesh,
+			Mesh:     Mesh.NewMesh(vertices, indices),
 			Material: nil,
 		},
 		TileSize:  tileSize,

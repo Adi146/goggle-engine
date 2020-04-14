@@ -3,7 +3,7 @@ package Node
 import (
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Function"
-	"github.com/Adi146/goggle-engine/Core/Model"
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/PostProcessing"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -22,7 +22,7 @@ func init() {
 
 type PostProcessingNode struct {
 	Scene.INode
-	Quad        Model.Mesh
+	Quad        Mesh.Mesh
 	Shader      Shader.IShaderProgram
 	FrameBuffer FrameBuffer.FrameBuffer
 	Kernel      *PostProcessing.Kernel
@@ -118,12 +118,7 @@ func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
 	node.FrameBuffer = yamlConfig.FrameBuffer
 	node.Kernel = yamlConfig.Kernel
 
-	quad, err := PostProcessing.NewQuad()
-	if err != nil {
-		return err
-	}
-
-	node.Quad = *quad
+	node.Quad = *PostProcessing.NewQuad()
 
 	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
 }

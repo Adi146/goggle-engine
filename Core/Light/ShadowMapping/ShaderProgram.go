@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Light"
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 )
 
 const (
@@ -84,7 +84,7 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return nil
 	case *GeometryMath.Matrix3x3:
 		return nil
-	case *VertexBuffer.VertexBuffer:
+	case Mesh.IVertexArray:
 		v.Bind()
 		v.EnableUVAttribute()
 		return nil

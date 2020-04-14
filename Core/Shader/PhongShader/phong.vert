@@ -5,6 +5,7 @@ layout(location = 1) in vec2 a_uv;
 layout(location = 2) in vec3 a_normal;
 layout(location = 3) in vec3 a_tangent;
 layout(location = 4) in vec3 a_biTangent;
+layout(location = 5) in mat4 a_instanceMatrix;
 
 out VS_OUT {
     vec3 position;
@@ -23,7 +24,7 @@ uniform mat4 u_modelMatrix;
 uniform mat3 u_normalMatrix;
 
 void main() {
-    gl_Position = vec4(a_position, 1.0) * (u_modelMatrix * u_viewMatrix * u_projectionMatrix);
+    gl_Position = vec4(a_position, 1.0) * (u_modelMatrix * a_instanceMatrix * u_viewMatrix * u_projectionMatrix);
 
     vec3 normal = normalize(a_normal * u_normalMatrix);
     vec3 tangent = normalize(a_tangent * u_normalMatrix);

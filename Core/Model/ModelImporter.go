@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
+	"github.com/Adi146/goggle-engine/Core/Scene"
 	"path"
 	"strings"
 
 	"github.com/Adi146/assimp"
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/Core/VertexBuffer"
 )
 
 var textureTypeMap = map[assimp.TextureMapping]Texture.Type{
@@ -45,13 +46,7 @@ func ImportModel(filename string, index int) (*Model, ImportResult) {
 	}
 
 	for i, assimpMesh := range assimpScene.Meshes() {
-		mesh, meshResult := importAssimpMesh(assimpMesh)
-		result.Errors.Push(&meshResult.Errors)
-		result.Warnings.Push(&meshResult.Warnings)
-		if !result.Success() {
-			continue
-		}
-		models[i].Mesh = *mesh
+		models[i].Mesh = importAssimpMesh(assimpMesh)
 		models[i].Material = materials[assimpMesh.MaterialIndex()]
 		models[i].SetModelMatrix(GeometryMath.Identity())
 	}
@@ -149,9 +144,7 @@ func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType
 	return textures, result
 }
 
-func importAssimpMesh(assimpMesh *assimp.Mesh) (*Mesh, ImportResult) {
-	var result ImportResult
-
+func importAssimpMesh(assimpMesh *assimp.Mesh) Scene.IDrawable {
 	assimpVertices := assimpMesh.Vertices()
 	assimpNormals := assimpMesh.Normals()
 	assimpUVs := assimpMesh.TextureCoords(0)
@@ -159,9 +152,9 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Mesh, ImportResult) {
 	assimpTangents := assimpMesh.Tangents()
 	assimpBiTangents := assimpMesh.Bitangents()
 
-	vertices := make([]VertexBuffer.Vertex, assimpMesh.NumVertices())
+	vertices := make([]Mesh.Vertex, assimpMesh.NumVertices())
 	for i := 0; i < assimpMesh.NumVertices(); i++ {
-		vertices[i] = VertexBuffer.Vertex{
+		vertices[i] = Mesh.Vertex{
 			Position:  GeometryMath.Vector3{assimpVertices[i].X(), assimpVertices[i].Y(), assimpVertices[i].Z()},
 			UV:        GeometryMath.Vector2{assimpUVs[i].X(), assimpUVs[i].Y()},
 			Normal:    GeometryMath.Vector3{assimpNormals[i].X(), assimpNormals[i].Y(), assimpNormals[i].Z()},
@@ -175,8 +168,5 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) (*Mesh, ImportResult) {
 		indices = append(indices, assimpFace.CopyIndices()...)
 	}
 
-	mesh, err := NewMesh(vertices, indices)
-	result.Errors.Push(err)
-
-	return mesh, result
+	return Mesh.NewMesh(vertices, indices)
 }

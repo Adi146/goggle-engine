@@ -1,4 +1,4 @@
-package Terrain
+package TerrainNode
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
@@ -7,18 +7,18 @@ import (
 	"reflect"
 )
 
-const AnchorNodeFactoryName = "Node.Terrain.Anchor"
+const AnchorNodeFactoryName = "Node.TerrainNode.AnchorNode"
 
 func init() {
-	Scene.NodeFactory.AddType(AnchorNodeFactoryName, reflect.TypeOf((*Anchor)(nil)).Elem())
+	Scene.NodeFactory.AddType(AnchorNodeFactoryName, reflect.TypeOf((*AnchorNode)(nil)).Elem())
 }
 
-type Anchor struct {
+type AnchorNode struct {
 	Scene.Node
 	Terrain Terrain.ITerrain
 }
 
-func (node *Anchor) GetGlobalTransformation() *GeometryMath.Matrix4x4 {
+func (node *AnchorNode) GetGlobalTransformation() *GeometryMath.Matrix4x4 {
 	if node.Terrain != nil {
 		terrainHeight := node.Terrain.GetHeightAt(*node.GetLocalPosition())
 		return GeometryMath.Translate(&GeometryMath.Vector3{0, terrainHeight, 0}).Mul(node.Node.GetGlobalTransformation())
@@ -27,19 +27,19 @@ func (node *Anchor) GetGlobalTransformation() *GeometryMath.Matrix4x4 {
 	}
 }
 
-func (node *Anchor) GetGlobalRotation() []GeometryMath.EulerAngles {
+func (node *AnchorNode) GetGlobalRotation() []GeometryMath.EulerAngles {
 	return GeometryMath.ExtractFromMatrix(node.GetGlobalTransformation())
 }
 
-func (node *Anchor) GetGlobalPosition() *GeometryMath.Vector3 {
+func (node *AnchorNode) GetGlobalPosition() *GeometryMath.Vector3 {
 	return node.GetGlobalTransformation().MulVector(&GeometryMath.Vector3{0, 0, 0})
 }
 
-func (node *Anchor) GetBase() Scene.INode {
+func (node *AnchorNode) GetBase() Scene.INode {
 	return node
 }
 
-func (node *Anchor) SetParent(parent Scene.INode) {
+func (node *AnchorNode) SetParent(parent Scene.INode) {
 	node.Node.SetParent(parent)
 
 	if asTerrain, isTerrain := parent.(Terrain.ITerrain); isTerrain {

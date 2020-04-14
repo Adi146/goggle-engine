@@ -1,4 +1,4 @@
-package Terrain
+package TerrainNode
 
 import (
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-const TerrainNodeFactoryName = "Node.Terrain"
+const TerrainNodeFactoryName = "Node.TerrainNode"
 
 func init() {
 	Scene.NodeFactory.AddType(TerrainNodeFactoryName, reflect.TypeOf((*TerrainNode)(nil)).Elem())

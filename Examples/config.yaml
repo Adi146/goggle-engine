@@ -128,7 +128,7 @@ scene:
                 axis: [0, 1, 0]
             - translation: [2, 2, 2]
     sun:
-      type: SceneGraph.Rotor
+      type: Node.UtilNode.RotorNode
       speed: 0.05
       children:
         sunLight:
@@ -153,7 +153,7 @@ scene:
             bindOnShaders:
               - phong
     lightRotator:
-      type: SceneGraph.Rotor
+      type: Node.UtilNode.RotorNode
       speed: 1
       children:
         blueLight:
@@ -210,7 +210,7 @@ scene:
         left: Models/skybox/left.jpg
         right: Models/skybox/right.jpg
     terrain:
-      type: Node.Terrain
+      type: Node.TerrainNode
       shader: phong
       file: Models/terrain/heightmap.png
       heightScale: 100
@@ -281,7 +281,6 @@ scene:
             - scale: 0.1
         construction_light:
           type: Node.ModelNode
-          baseType: Node.Terrain.Anchor
           file: Models/construction_light/Construction_Light.fbx
           material:
             textures:

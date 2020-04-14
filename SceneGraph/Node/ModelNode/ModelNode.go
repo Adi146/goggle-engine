@@ -1,13 +1,14 @@
-package Node
+package ModelNode
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Model"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
+	_ "github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
+	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
+
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"gopkg.in/yaml.v3"
 	"reflect"
-
-	"github.com/Adi146/goggle-engine/Core/Model"
-	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
 )
 
 const ModelNodeFactoryName = "Node.ModelNode"

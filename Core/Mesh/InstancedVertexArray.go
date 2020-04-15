@@ -6,21 +6,17 @@ import (
 	"unsafe"
 )
 
-type InstancedVertexArray struct {
-	VertexArray
-}
-
-func NewInstancedVertexArray(vbo, mbo ArrayBuffer) InstancedVertexArray {
-	matrix := *GeometryMath.Identity()
-	vao := InstancedVertexArray{
-		VertexArray: NewVertexArray(vbo),
-	}
+func NewInstancedVertexArray(vao VertexArray, mbo ArrayBuffer) VertexArray {
+	matrix := GeometryMath.Matrix4x4{}
 
 	mbo.Bind()
 	defer mbo.Unbind()
 
 	vao.Bind()
-	vao.enableInstanceMatrix()
+	gl.EnableVertexArrayAttrib(uint32(vao), index_modelMatrix_1)
+	gl.EnableVertexArrayAttrib(uint32(vao), index_modelMatrix_2)
+	gl.EnableVertexArrayAttrib(uint32(vao), index_modelMatrix_3)
+	gl.EnableVertexArrayAttrib(uint32(vao), index_modelMatrix_4)
 
 	gl.VertexAttribPointer(index_modelMatrix_1, int32(len(matrix[0])), gl.FLOAT, false, int32(unsafe.Sizeof(matrix)), unsafe.Pointer(0*unsafe.Sizeof(matrix[0])))
 	gl.VertexAttribPointer(index_modelMatrix_2, int32(len(matrix[1])), gl.FLOAT, false, int32(unsafe.Sizeof(matrix)), unsafe.Pointer(1*unsafe.Sizeof(matrix[0])))
@@ -33,18 +29,4 @@ func NewInstancedVertexArray(vbo, mbo ArrayBuffer) InstancedVertexArray {
 	gl.VertexAttribDivisor(index_modelMatrix_4, 1)
 
 	return vao
-}
-
-func (vao InstancedVertexArray) enableInstanceMatrix() {
-	gl.EnableVertexArrayAttrib(uint32(vao.VertexArray), index_modelMatrix_1)
-	gl.EnableVertexArrayAttrib(uint32(vao.VertexArray), index_modelMatrix_2)
-	gl.EnableVertexArrayAttrib(uint32(vao.VertexArray), index_modelMatrix_3)
-	gl.EnableVertexArrayAttrib(uint32(vao.VertexArray), index_modelMatrix_4)
-}
-
-func (vao InstancedVertexArray) disableInstanceMatrix() {
-	gl.DisableVertexArrayAttrib(uint32(vao.VertexArray), index_modelMatrix_1)
-	gl.DisableVertexArrayAttrib(uint32(vao.VertexArray), index_modelMatrix_2)
-	gl.DisableVertexArrayAttrib(uint32(vao.VertexArray), index_modelMatrix_3)
-	gl.DisableVertexArrayAttrib(uint32(vao.VertexArray), index_modelMatrix_4)
 }

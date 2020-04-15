@@ -17,21 +17,35 @@ type IMatrixConfig interface {
 	Decode() *Matrix4x4
 }
 
-type tmpConfig map[string]yaml.Node
-
 func (m1 *Matrix4x4) UnmarshalYAML(value *yaml.Node) error {
-	var tmpConfig tmpConfig
-	value.Decode(&tmpConfig)
-
-	*m1 = *Identity()
-	for yamlKey, tmpValue := range tmpConfig {
-		config, err := getMatrixConfig(yamlKey)
-		if err != nil {
+	if value.Kind == yaml.SequenceNode {
+		var yamlConfig []Matrix4x4
+		if err := value.Decode(&yamlConfig); err != nil {
 			return err
 		}
 
-		tmpValue.Decode(config)
-		*m1 = *m1.Mul(config.Decode())
+		*m1 = *Identity()
+		for _, matrix := range yamlConfig {
+			*m1 = *m1.Mul(&matrix)
+		}
+	} else {
+		var yamlConfig map[string]yaml.Node
+		if err := value.Decode(&yamlConfig); err != nil {
+			return err
+		}
+
+		*m1 = *Identity()
+		for yamlKey, tmpValue := range yamlConfig {
+			config, err := getMatrixConfig(yamlKey)
+			if err != nil {
+				return err
+			}
+
+			if err := tmpValue.Decode(config); err != nil {
+				return err
+			}
+			*m1 = *m1.Mul(config.Decode())
+		}
 	}
 
 	return nil

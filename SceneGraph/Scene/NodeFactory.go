@@ -37,7 +37,7 @@ func UnmarshalChildren(value *yaml.Node, node INode, baseTypeKey string) error {
 		return err
 	}
 
-	for _, childValue := range yamlConfig.Children {
+	for id, childValue := range yamlConfig.Children {
 		var childYamlConfig ChildConfig
 		if err := childValue.Decode(&childYamlConfig); err != nil {
 			return err
@@ -61,7 +61,7 @@ func UnmarshalChildren(value *yaml.Node, node INode, baseTypeKey string) error {
 			return err
 		}
 
-		AddChild(node, child)
+		AddChild(node, child, id)
 	}
 
 	return nil
@@ -98,7 +98,7 @@ func UnmarshalBase(value *yaml.Node, node ISubNode) error {
 	return nil
 }
 
-func AddChild(parent INode, child INode) {
-	parent.AddChild(child)
+func AddChild(parent INode, child INode, childID string) {
+	parent.AddChild(child, childID)
 	child.SetParent(parent)
 }

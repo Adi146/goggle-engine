@@ -5,6 +5,7 @@ import (
 	"github.com/Adi146/goggle-engine/Utils/Error"
 	"gopkg.in/yaml.v3"
 	"reflect"
+	"strings"
 )
 
 const (
@@ -19,16 +20,39 @@ type Node struct {
 	scene          *Scene
 	Transformation *GeometryMath.Matrix4x4
 
-	children []INode
+	children map[string]INode
 	parent   INode
 }
 
-func (node *Node) AddChild(child INode) {
-	node.children = append(node.children, child)
+func (node *Node) AddChild(child INode, id string) {
+	if node.children == nil {
+		node.children = map[string]INode{}
+	}
+
+	node.children[id] = child
 }
 
-func (node *Node) GetChildren() []INode {
+func (node *Node) GetChildren() map[string]INode {
 	return node.children
+
+}
+
+func (node *Node) GetGrandChildById(id string) INode {
+	if id == "" {
+		return node
+	}
+
+	split := strings.SplitN(id, ".", 2)
+	child := node.GetChildren()[split[0]]
+	if child != nil {
+		if len(split) == 1 {
+			return child
+		} else {
+			return child.GetGrandChildById(split[1])
+		}
+	}
+
+	return nil
 }
 
 func (node *Node) GetParent() INode {
@@ -51,7 +75,7 @@ func (node *Node) GetScene() *Scene {
 func (node *Node) SetScene(scene *Scene) {
 	node.scene = scene
 
-	for _, child := range node.children {
+	for _, child := range node.GetChildren() {
 		child.SetScene(scene)
 	}
 }
@@ -104,17 +128,14 @@ func (node *Node) GetBase() INode {
 
 func (node *Node) UnmarshalYAML(value *yaml.Node) error {
 	var yamlConfig struct {
-		Transformation []GeometryMath.Matrix4x4 `yaml:"transformation"`
+		Transformation GeometryMath.Matrix4x4 `yaml:"transformation"`
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
 	}
-
-	if len(yamlConfig.Transformation) >= 1 || node.Transformation == nil || *node.Transformation == (GeometryMath.Matrix4x4{}) {
+	node.SetLocalTransformation(&yamlConfig.Transformation)
+	if *node.GetLocalTransformation() == (GeometryMath.Matrix4x4{}) {
 		node.SetLocalTransformation(GeometryMath.Identity())
-		for _, transformation := range yamlConfig.Transformation {
-			node.SetLocalTransformation(node.GetLocalTransformation().Mul(&transformation))
-		}
 	}
 
 	return nil

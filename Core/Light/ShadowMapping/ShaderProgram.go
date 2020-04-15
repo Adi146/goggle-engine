@@ -82,8 +82,6 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		return program.MaterialShader.BindObject(v)
 	case Texture.ITexture:
 		return nil
-	case *GeometryMath.Matrix3x3:
-		return nil
 	case Mesh.IVertexArray:
 		v.Bind()
 		v.EnableUVAttribute()

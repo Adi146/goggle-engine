@@ -3,6 +3,7 @@ package Model
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -12,31 +13,23 @@ import (
 )
 
 type Model struct {
-	Mesh         Scene.IDrawable
-	Material     Material.IMaterial
-	modelMatrix  GeometryMath.Matrix4x4
-	normalMatrix GeometryMath.Matrix3x3
+	Mesh.IMesh
+	Material Material.IMaterial
 }
 
 func (model *Model) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
 	var err Error.ErrorCollection
 
-	err.Push(shader.BindObject(&model.modelMatrix))
-	err.Push(shader.BindObject(&model.normalMatrix))
 	err.Push(shader.BindObject(model.Material))
-	err.Push(model.Mesh.Draw(shader, invoker, scene))
+	err.Push(model.IMesh.Draw(shader, invoker, scene))
 	model.Material.Unbind()
 
 	return err.Err()
 }
 
-func (model *Model) SetModelMatrix(mat *GeometryMath.Matrix4x4) {
-	model.modelMatrix = *mat
-	model.normalMatrix = *mat.Inverse().Transpose().ToMatrix3x3()
-}
-
 func (model *Model) GetPosition() *GeometryMath.Vector3 {
-	return model.modelMatrix.MulVector(&GeometryMath.Vector3{0, 0, 0})
+	modelMatrix := model.GetModelMatrix()
+	return modelMatrix.MulVector(&GeometryMath.Vector3{0, 0, 0})
 }
 
 func (model *Model) UnmarshalYAML(value *yaml.Node) error {

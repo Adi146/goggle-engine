@@ -2,6 +2,7 @@ package PostProcessing
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 
@@ -64,6 +65,8 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	case Mesh.VertexArray:
 		v.Bind()
 		v.EnableUVAttribute()
+		return nil
+	case *GeometryMath.Matrix4x4:
 		return nil
 	default:
 		uniformAddress, err := program.GetUniformAddress(i)

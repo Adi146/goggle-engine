@@ -251,11 +251,18 @@ scene:
             diffuse: Models/terrain/snow_mntn2_d.jpg
             normal: Models/terrain/snow_mntn2_h.jpg
       children:
-        fern:
+        fern1:
           type: Node.ModelNode
           file: Models/fern/fern.fbx
+          isTransparent: true
           shader: phong
           transformation:
+            - scale: 0.1
+        fern2:
+          type: Node.ModelNode.ModelSlaveNode
+          masterID: terrain.fern1
+          transformation:
+            - translation: [40, 0, 0]
             - scale: 0.1
         window1:
           type: Node.ModelNode

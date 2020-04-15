@@ -34,3 +34,7 @@ func Warn(err error, msg string) {
 		logrus.WithError(v).Warn(msg)
 	}
 }
+
+func Info(msg string) {
+	logrus.Info(msg)
+}

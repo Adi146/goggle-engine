@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
-	"github.com/Adi146/goggle-engine/Core/Scene"
 	"path"
 	"strings"
 
@@ -46,9 +45,8 @@ func ImportModel(filename string, index int) (*Model, ImportResult) {
 	}
 
 	for i, assimpMesh := range assimpScene.Meshes() {
-		models[i].Mesh = importAssimpMesh(assimpMesh)
+		models[i].IMesh = importAssimpMesh(assimpMesh)
 		models[i].Material = materials[assimpMesh.MaterialIndex()]
-		models[i].SetModelMatrix(GeometryMath.Identity())
 	}
 
 	return &models[index], result
@@ -144,7 +142,7 @@ func importTexturesOfAssimpMaterial(assimpMaterial *assimp.Material, textureType
 	return textures, result
 }
 
-func importAssimpMesh(assimpMesh *assimp.Mesh) Scene.IDrawable {
+func importAssimpMesh(assimpMesh *assimp.Mesh) Mesh.IMesh {
 	assimpVertices := assimpMesh.Vertices()
 	assimpNormals := assimpMesh.Normals()
 	assimpUVs := assimpMesh.TextureCoords(0)

@@ -1,10 +1,12 @@
 package ModelNode
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	_ "github.com/Adi146/goggle-engine/Core/Shader/PhongShader"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
+	"github.com/Adi146/goggle-engine/Utils/Log"
 
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"gopkg.in/yaml.v3"
@@ -27,7 +29,7 @@ type ModelNode struct {
 func (node *ModelNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.SetModelMatrix(node.GetGlobalTransformation())
+	node.SetModelMatrix(*node.GetGlobalTransformation())
 
 	if scene := node.GetScene(); scene != nil {
 		if node.IsTransparent {
@@ -53,6 +55,21 @@ func (node *ModelNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDra
 
 func (node *ModelNode) SetBase(base Scene.INode) {
 	node.INode = base
+}
+
+func (node *ModelNode) AddSlave(slave *ModelSlaveNode) error {
+	instancedMeshes, err := Mesh.NewInstancedMeshes(node.IMesh, *slave.GetGlobalTransformation())
+	if err != nil {
+		return err
+	}
+
+	node.IMesh = instancedMeshes[0]
+	slave.IMesh = instancedMeshes[1]
+	slave.Master = node
+
+	Log.Info("new slave found")
+
+	return nil
 }
 
 func (node *ModelNode) UnmarshalYAML(value *yaml.Node) error {

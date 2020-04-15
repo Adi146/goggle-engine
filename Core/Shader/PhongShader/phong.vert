@@ -21,14 +21,14 @@ layout (std140) uniform camera {
 };
 
 uniform mat4 u_modelMatrix;
-uniform mat3 u_normalMatrix;
 
 void main() {
     gl_Position = vec4(a_position, 1.0) * (u_modelMatrix * a_instanceMatrix * u_viewMatrix * u_projectionMatrix);
 
-    vec3 normal = normalize(a_normal * u_normalMatrix);
-    vec3 tangent = normalize(a_tangent * u_normalMatrix);
-    vec3 biTangent = normalize(a_biTangent * u_normalMatrix);
+    mat3 normalMatrix = mat3(transpose(inverse(u_modelMatrix)));
+    vec3 normal = normalize(a_normal * normalMatrix);
+    vec3 tangent = normalize(a_tangent * normalMatrix);
+    vec3 biTangent = normalize(a_biTangent * normalMatrix);
 
     vs_out.position = vec3(vec4(a_position, 1.0) * u_modelMatrix);
     vs_out.normal = normal;

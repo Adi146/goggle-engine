@@ -59,7 +59,7 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
 
 	return &Terrain{
 		Model: Model.Model{
-			Mesh:     Mesh.NewMesh(vertices, indices),
+			IMesh:    Mesh.NewMesh(vertices, indices),
 			Material: nil,
 		},
 		TileSize:  tileSize,
@@ -140,7 +140,6 @@ func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 
 	*terrain = *tmpTerrain
 	terrain.Material = &yamlConfig.Material.BlendMaterial
-	terrain.SetModelMatrix(GeometryMath.Identity())
 
 	return nil
 }

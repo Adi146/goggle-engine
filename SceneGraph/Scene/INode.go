@@ -5,8 +5,9 @@ import (
 )
 
 type INode interface {
-	AddChild(child INode)
-	GetChildren() []INode
+	AddChild(child INode, id string)
+	GetChildren() map[string]INode
+	GetGrandChildById(id string) INode
 
 	GetParent() INode
 	SetParent(parent INode)

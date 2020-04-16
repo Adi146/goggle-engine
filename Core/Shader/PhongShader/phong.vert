@@ -30,7 +30,7 @@ void main() {
     vec3 tangent = normalize(a_tangent * normalMatrix);
     vec3 biTangent = normalize(a_biTangent * normalMatrix);
 
-    vs_out.position = vec3(vec4(a_position, 1.0) * u_modelMatrix);
+    vs_out.position = vec3(vec4(a_position, 1.0) * u_modelMatrix * a_instanceMatrix);
     vs_out.normal = normal;
     vs_out.uv = a_uv;
     vs_out.tbn = transpose(mat3(tangent, biTangent, normal));

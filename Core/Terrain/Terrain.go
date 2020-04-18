@@ -136,7 +136,6 @@ func (terrain *Terrain) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	yamlConfig.Material.BlendMaterial.SetWrapMode(Texture.Repeat)
-	yamlConfig.Material.BlendMaterial.GenerateMibMaps(-1)
 
 	*terrain = *tmpTerrain
 	terrain.Material = &yamlConfig.Material.BlendMaterial

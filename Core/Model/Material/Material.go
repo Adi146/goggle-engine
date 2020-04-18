@@ -21,6 +21,7 @@ type Material struct {
 	} `yaml:"textures"`
 
 	UvScale float32 `yaml:"uvScale"`
+	LodBias float32 `yaml:"lodBias"`
 }
 
 func (material *Material) Bind() error {
@@ -103,6 +104,8 @@ func (material *Material) GenerateMibMaps(lodBias float32) {
 	if material.Textures.Normal != nil {
 		material.Textures.Normal.GenerateMipMap(lodBias)
 	}
+
+	material.LodBias = lodBias
 }
 
 func (material *Material) UnmarshalYAML(value *yaml.Node) error {
@@ -117,6 +120,9 @@ func (material *Material) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	yamlConfig.Shininess = GeometryMath.Max(yamlConfig.Shininess, 1)
+	if yamlConfig.LodBias != 0 {
+		(*Material)(&yamlConfig).GenerateMibMaps(yamlConfig.LodBias)
+	}
 
 	*material = (Material)(yamlConfig)
 	return nil

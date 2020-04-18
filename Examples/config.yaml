@@ -235,24 +235,28 @@ scene:
           textures:
             diffuse: Models/terrain/grass_ground_d.jpg
             normal: Models/terrain/grass_ground_n.jpg
+          lodBias: -1
         r:
           uvScale: 50
           textures:
             diffuse: Models/terrain/grass_rocky_d.jpg
             specular: Models/terrain/grass_rocky_s.jpg
             normal: Models/terrain/grass_rocky_n.jpg
+          lodBias: -1
         g:
           specularBaseColor: [0.5, 0.5, 0.5]
           uvScale: 50
           textures:
             diffuse: Models/terrain/snow_grass3_d.jpg
             normal: Models/terrain/snow_grass3_n.jpg
+          lodBias: -1
         b:
           specularBaseColor: [0.5, 0.5, 0.5]
           uvScale: 50
           textures:
             diffuse: Models/terrain/snow_mntn2_d.jpg
             normal: Models/terrain/snow_mntn2_h.jpg
+          lodBias: -1
       children:
         modelPlacements:
           type: Node.ModelNode.ModelPlacementNode
@@ -265,6 +269,7 @@ scene:
                 specular: Models/construction_light/Specular.png
                 emissive: Models/construction_light/Glow.png
                 normal: Models/construction_light/Normal.png
+              lodBias: -0.7
             shader: phong
             masterMatrix:
               - scale: 0.1
@@ -276,6 +281,8 @@ scene:
           shader: phong
           transformation:
             - scale: 0.1
+          material:
+            lodBias: -0.2
         fern2:
           type: Node.ModelNode.ModelSlaveNode
           masterID: terrain.fern1

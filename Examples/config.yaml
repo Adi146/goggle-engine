@@ -218,14 +218,17 @@ scene:
       material:
         blendRange:
           r:
-            min: 20
-            max: 100
+            height: 0.45
+            opaqueRange: 0.25
+            blendRange: 0.3
           g:
-            min: 100
-            max: 400
+            height: 0.75
+            opaqueRange: 0.05
+            blendRange: 0.3
           b:
-            min: 400
-            max: 1000
+            height: 0.9
+            opaqueRange: 0.1
+            blendRange: 0.5
         default:
           specularBaseColor: [0.5, 0.5, 0.5]
           uvScale: 50

@@ -127,7 +127,7 @@ func (node *ModelPlacementNode) AddSlavesToSceneGraph() {
 func (node *ModelPlacementNode) UnmarshalYAML(value *yaml.Node) error {
 	yamlConfig := struct {
 		PlacementMap Terrain.PlacementMap `yaml:"placementMap"`
-		ModelNode    ModelNode  `yaml:"model"`
+		ModelNode    ModelNode            `yaml:"model"`
 		Seed         int64                `yaml:"seed"`
 		AddToParent  bool                 `yaml:"addToParent"`
 	}{

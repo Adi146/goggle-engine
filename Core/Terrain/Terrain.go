@@ -70,8 +70,8 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
 }
 
 func (terrain *Terrain) GetHeightAt(terrainPos GeometryMath.Vector3) float32 {
-	terrainPos[0] += terrain.OffsetX
-	terrainPos[2] += terrain.OffsetZ
+	terrainPos[0] += terrain.OffsetX * terrain.TileSize
+	terrainPos[2] += terrain.OffsetZ * terrain.TileSize
 
 	gridX := int(GeometryMath.Floor(terrainPos.X() / terrain.TileSize))
 	gridZ := int(GeometryMath.Floor(terrainPos.Z() / terrain.TileSize))

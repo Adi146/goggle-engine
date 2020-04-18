@@ -14,16 +14,16 @@ func init() {
 }
 
 type AnchorNode struct {
-	Scene.Node
+	Scene.INode
 	Terrain Terrain.ITerrain
 }
 
-func (node *AnchorNode) GetGlobalTransformation() *GeometryMath.Matrix4x4 {
+func (node *AnchorNode) GetGlobalTransformation() GeometryMath.Matrix4x4 {
 	if node.Terrain != nil {
-		terrainHeight := node.Terrain.GetHeightAt(*node.GetLocalPosition())
-		return GeometryMath.Translate(&GeometryMath.Vector3{0, terrainHeight, 0}).Mul(node.Node.GetGlobalTransformation())
+		terrainHeight := node.Terrain.GetHeightAt(node.GetLocalPosition())
+		return GeometryMath.Translate(GeometryMath.Vector3{0, terrainHeight, 0}).Mul(node.INode.GetGlobalTransformation())
 	} else {
-		return node.Node.GetGlobalTransformation()
+		return node.INode.GetGlobalTransformation()
 	}
 }
 
@@ -31,16 +31,16 @@ func (node *AnchorNode) GetGlobalRotation() []GeometryMath.EulerAngles {
 	return GeometryMath.ExtractFromMatrix(node.GetGlobalTransformation())
 }
 
-func (node *AnchorNode) GetGlobalPosition() *GeometryMath.Vector3 {
-	return node.GetGlobalTransformation().MulVector(&GeometryMath.Vector3{0, 0, 0})
+func (node *AnchorNode) GetGlobalPosition() GeometryMath.Vector3 {
+	return node.GetGlobalTransformation().MulVector(GeometryMath.Vector3{0, 0, 0})
 }
 
 func (node *AnchorNode) GetBase() Scene.INode {
 	return node
 }
 
-func (node *AnchorNode) SetParent(parent Scene.INode) {
-	node.Node.SetParent(parent)
+func (node *AnchorNode) SetParent(parent Scene.INode, childID string) {
+	node.INode.SetParent(parent, childID)
 
 	if asTerrain, isTerrain := parent.(Terrain.ITerrain); isTerrain {
 		node.Terrain = asTerrain

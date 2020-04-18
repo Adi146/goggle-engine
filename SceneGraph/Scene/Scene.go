@@ -36,5 +36,5 @@ func (scene *Scene) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	return UnmarshalChildren(value, scene.Root, NodeFactoryName)
+	return UnmarshalChildren(value, scene.Root)
 }

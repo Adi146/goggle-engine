@@ -25,11 +25,11 @@ func (node *CameraNode) Tick(timeDelta float32) error {
 	position := node.GetGlobalPosition()
 
 	invTransGlobalTransformation := node.GetGlobalTransformation().Inverse().Transpose()
-	front := invTransGlobalTransformation.MulVector(&node.FrontVector).Normalize()
-	up := invTransGlobalTransformation.MulVector(&node.UpVector).Normalize()
+	front := invTransGlobalTransformation.MulVector(node.FrontVector).Normalize()
+	up := invTransGlobalTransformation.MulVector(node.UpVector).Normalize()
 
 	if scene := node.GetScene(); scene != nil {
-		scene.Camera.Update(*position, *front, *up)
+		scene.Camera.Update(position, front, up)
 	}
 
 	return nil
@@ -40,10 +40,6 @@ func (node *CameraNode) SetBase(base Scene.INode) {
 }
 
 func (node *CameraNode) UnmarshalYAML(value *yaml.Node) error {
-	if err := Scene.UnmarshalBase(value, node); err != nil {
-		return err
-	}
-
 	yamlConfig := struct {
 		FrontVector GeometryMath.Vector3 `yaml:"front"`
 		UpVector    GeometryMath.Vector3 `yaml:"up"`
@@ -66,5 +62,5 @@ func (node *CameraNode) UnmarshalYAML(value *yaml.Node) error {
 		node.UpVector = GeometryMath.Vector3{0, 1, 0}
 	}
 
-	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
+	return Scene.UnmarshalChildren(value, node)
 }

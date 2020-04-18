@@ -46,7 +46,7 @@ func (camera *UBOCamera) GetSize() int {
 
 func (camera *UBOCamera) Update(position GeometryMath.Vector3, front GeometryMath.Vector3, up GeometryMath.Vector3) {
 	camera.position.Set(position)
-	camera.viewMatrix.Set(*GeometryMath.LookAt(&position, position.Add(&front), &up))
+	camera.viewMatrix.Set(GeometryMath.LookAt(position, position.Add(front), up))
 
 	camera.front = front
 	camera.up = up
@@ -69,7 +69,7 @@ func (camera *UBOCamera) GetUp() GeometryMath.Vector3 {
 }
 
 func (camera *UBOCamera) SetProjection(projection GeometryMath.PerspectiveConfig) {
-	camera.projectionMatrix.Set(*projection.Decode())
+	camera.projectionMatrix.Set(projection.Decode())
 	camera.projectionConfig = projection
 }
 
@@ -100,7 +100,7 @@ func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	camera.SetProjection(yamlConfig)
-	camera.viewMatrix.Set(*GeometryMath.Identity())
+	camera.viewMatrix.Set(GeometryMath.Identity())
 
 	camera.SetUniformBuffer(uboYamlConfig.UniformBuffer, 0)
 

@@ -80,12 +80,12 @@ func (light *UBOPointLight) GetSize() int {
 
 func (light *UBOPointLight) SetPosition(pos GeometryMath.Vector3) {
 	light.Position.Set(pos)
-	light.ShadowMap.ViewProjection[0].Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(&pos, pos.Add(&GeometryMath.Vector3{1.0, 0.0, 0.0}), &GeometryMath.Vector3{0.0, -1.0, 0.0})))
-	light.ShadowMap.ViewProjection[1].Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(&pos, pos.Add(&GeometryMath.Vector3{-1.0, 0.0, 0.0}), &GeometryMath.Vector3{0.0, -1.0, 0.0})))
-	light.ShadowMap.ViewProjection[2].Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(&pos, pos.Add(&GeometryMath.Vector3{0.0, 1.0, 0.0}), &GeometryMath.Vector3{0.0, 0.0, 1.0})))
-	light.ShadowMap.ViewProjection[3].Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(&pos, pos.Add(&GeometryMath.Vector3{0.0, -1.0, 0.0}), &GeometryMath.Vector3{0.0, 0.0, -1.0})))
-	light.ShadowMap.ViewProjection[4].Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(&pos, pos.Add(&GeometryMath.Vector3{0.0, 0.0, 1.0}), &GeometryMath.Vector3{0.0, -1.0, 0.0})))
-	light.ShadowMap.ViewProjection[5].Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(&pos, pos.Add(&GeometryMath.Vector3{0.0, 0.0, -1.0}), &GeometryMath.Vector3{0.0, -1.0, 0.0})))
+	light.ShadowMap.ViewProjection[0].Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(GeometryMath.Vector3{1.0, 0.0, 0.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
+	light.ShadowMap.ViewProjection[1].Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(GeometryMath.Vector3{-1.0, 0.0, 0.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
+	light.ShadowMap.ViewProjection[2].Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(GeometryMath.Vector3{0.0, 1.0, 0.0}), GeometryMath.Vector3{0.0, 0.0, 1.0})))
+	light.ShadowMap.ViewProjection[3].Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(GeometryMath.Vector3{0.0, -1.0, 0.0}), GeometryMath.Vector3{0.0, 0.0, -1.0})))
+	light.ShadowMap.ViewProjection[4].Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(GeometryMath.Vector3{0.0, 0.0, 1.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
+	light.ShadowMap.ViewProjection[5].Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(GeometryMath.Vector3{0.0, 0.0, -1.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
 }
 
 func (light *UBOPointLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
@@ -178,7 +178,7 @@ func (light *UBOPointLight) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	light.ShadowMap.Projection = *GeometryMath.Perspective(math.Pi/2, float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width)/float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height), 1, yamlConfig.ShadowMap.Distance)
+	light.ShadowMap.Projection = GeometryMath.Perspective(math.Pi/2, float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width)/float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height), 1, yamlConfig.ShadowMap.Distance)
 	light.Position.Set(yamlConfig.PointLight.Position)
 	light.Linear.Set(yamlConfig.PointLight.Linear)
 	light.Quadratic.Set(yamlConfig.PointLight.Quadratic)

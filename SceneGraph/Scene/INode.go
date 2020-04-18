@@ -9,22 +9,25 @@ type INode interface {
 	GetChildren() map[string]INode
 	GetGrandChildById(id string) INode
 
+	SetID(id string)
+	GetID() string
+
 	GetParent() INode
-	SetParent(parent INode)
+	SetParent(parent INode, childID string)
 
 	GetScene() *Scene
 	SetScene(*Scene)
 
-	GetLocalTransformation() *GeometryMath.Matrix4x4
-	SetLocalTransformation(*GeometryMath.Matrix4x4)
+	GetLocalTransformation() GeometryMath.Matrix4x4
+	SetLocalTransformation(GeometryMath.Matrix4x4)
 
 	GetLocalRotation() []GeometryMath.EulerAngles
-	GetLocalPosition() *GeometryMath.Vector3
+	GetLocalPosition() GeometryMath.Vector3
 
-	GetGlobalTransformation() *GeometryMath.Matrix4x4
+	GetGlobalTransformation() GeometryMath.Matrix4x4
 
 	GetGlobalRotation() []GeometryMath.EulerAngles
-	GetGlobalPosition() *GeometryMath.Vector3
+	GetGlobalPosition() GeometryMath.Vector3
 
 	Tick(timeDelta float32) error
 	GetBase() INode

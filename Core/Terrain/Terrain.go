@@ -30,7 +30,7 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
 			vertices[z*heightMap.NumColumns+x] = Mesh.Vertex{
 				Position: GeometryMath.Vector3{
 					(float32(x) - offsetX) * tileSize,
-					heightMap.GetHeight(x, z),
+					heightMap.GetHeightScaled(x, z),
 					(float32(z) - offsetZ) * tileSize,
 				},
 				Normal:    heightMap.GetNormal(x, z),
@@ -86,15 +86,15 @@ func (terrain *Terrain) GetHeightAt(terrainPos GeometryMath.Vector3) float32 {
 	var answer float32
 	if xCoordOnTile <= 1-zCoordOnTile {
 		answer = barryCentric(
-			GeometryMath.Vector3{0, terrain.HeightMap.GetHeight(gridX, gridZ), 0},
-			GeometryMath.Vector3{1, terrain.HeightMap.GetHeight(gridX+1, gridZ), 0},
-			GeometryMath.Vector3{0, terrain.HeightMap.GetHeight(gridX, gridZ+1), 1},
+			GeometryMath.Vector3{0, terrain.HeightMap.GetHeightScaled(gridX, gridZ), 0},
+			GeometryMath.Vector3{1, terrain.HeightMap.GetHeightScaled(gridX+1, gridZ), 0},
+			GeometryMath.Vector3{0, terrain.HeightMap.GetHeightScaled(gridX, gridZ+1), 1},
 			GeometryMath.Vector2{xCoordOnTile, zCoordOnTile})
 	} else {
 		answer = barryCentric(
-			GeometryMath.Vector3{1, terrain.HeightMap.GetHeight(gridX+1, gridZ), 0},
-			GeometryMath.Vector3{1, terrain.HeightMap.GetHeight(gridX+1, gridZ+1), 1},
-			GeometryMath.Vector3{0, terrain.HeightMap.GetHeight(gridX, gridZ+1), 1},
+			GeometryMath.Vector3{1, terrain.HeightMap.GetHeightScaled(gridX+1, gridZ), 0},
+			GeometryMath.Vector3{1, terrain.HeightMap.GetHeightScaled(gridX+1, gridZ+1), 1},
+			GeometryMath.Vector3{0, terrain.HeightMap.GetHeightScaled(gridX, gridZ+1), 1},
 			GeometryMath.Vector2{xCoordOnTile, zCoordOnTile})
 	}
 

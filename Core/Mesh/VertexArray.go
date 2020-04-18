@@ -23,7 +23,7 @@ type VertexArray uint32
 
 func NewVertexArray(vbo ArrayBuffer) VertexArray {
 	vertex := Vertex{}
-	identity := *GeometryMath.Identity()
+	identity := GeometryMath.Identity()
 
 	var vao VertexArray
 	gl.GenVertexArrays(1, (*uint32)(&vao))

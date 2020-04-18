@@ -24,8 +24,8 @@ type SpotLightNode struct {
 func (node *SpotLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.UBOSpotLight.Position.Set(*node.GetGlobalPosition())
-	node.UBOSpotLight.Direction.Set(*node.GetGlobalTransformation().Inverse().Transpose().MulVector(&node.InitDirection).Normalize())
+	node.UBOSpotLight.Position.Set(node.GetGlobalPosition())
+	node.UBOSpotLight.Direction.Set(node.GetGlobalTransformation().Inverse().Transpose().MulVector(node.InitDirection).Normalize())
 	node.UBOSpotLight.UpdateViewProjection()
 
 	if scene := node.GetScene(); scene != nil {
@@ -40,10 +40,6 @@ func (node *SpotLightNode) SetBase(base Scene.INode) {
 }
 
 func (node *SpotLightNode) UnmarshalYAML(value *yaml.Node) error {
-	if err := Scene.UnmarshalBase(value, node); err != nil {
-		return err
-	}
-
 	if err := value.Decode(&node.UBOSpotLight); err != nil {
 		return err
 	}
@@ -52,5 +48,5 @@ func (node *SpotLightNode) UnmarshalYAML(value *yaml.Node) error {
 		node.InitDirection = node.UBOSpotLight.Direction.Get()
 	}
 
-	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
+	return Scene.UnmarshalChildren(value, node)
 }

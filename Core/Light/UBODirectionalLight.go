@@ -110,23 +110,23 @@ func (light *UBODirectionalLight) updateShadowCamera(scene Scene.IScene) {
 	boundingBox, center := light.calcCameraFrustumBoundingBox(scene)
 	direction := light.Direction.Get()
 
-	light.ShadowMap.Projection = *GeometryMath.Orthographic(boundingBox.Min.X(), boundingBox.Max.X(), boundingBox.Min.Y(), boundingBox.Max.Y(), boundingBox.Min.Z(), boundingBox.Max.Z())
-	light.ShadowMap.ViewMatrix = *GeometryMath.LookAt(center.Add(direction.Invert()), &center, &GeometryMath.Vector3{0, 1, 0})
-	light.ShadowMap.ViewProjection.Set(*light.ShadowMap.Projection.Mul(&light.ShadowMap.ViewMatrix))
+	light.ShadowMap.Projection = GeometryMath.Orthographic(boundingBox.Min.X(), boundingBox.Max.X(), boundingBox.Min.Y(), boundingBox.Max.Y(), boundingBox.Min.Z(), boundingBox.Max.Z())
+	light.ShadowMap.ViewMatrix = GeometryMath.LookAt(center.Add(direction.Invert()), center, GeometryMath.Vector3{0, 1, 0})
+	light.ShadowMap.ViewProjection.Set(light.ShadowMap.Projection.Mul(light.ShadowMap.ViewMatrix))
 }
 
-func (light *UBODirectionalLight) calcCameraFrustumBoundingBox(scene Scene.IScene) (*BoundingBox.AABB, GeometryMath.Vector3) {
+func (light *UBODirectionalLight) calcCameraFrustumBoundingBox(scene Scene.IScene) (BoundingBox.AABB, GeometryMath.Vector3) {
 	direction := light.Direction.Get()
-	tmpViewMatrix := *GeometryMath.LookAt(direction.Invert(), &GeometryMath.Vector3{0, 0, 0}, &GeometryMath.Vector3{0, 1, 0})
+	tmpViewMatrix := GeometryMath.LookAt(direction.Invert(), GeometryMath.Vector3{0, 0, 0}, GeometryMath.Vector3{0, 1, 0})
 
 	frustumPoints := light.calcCameraFrustumPoints(scene.GetCamera())
 	for i := range frustumPoints {
-		frustumPoints[i] = *tmpViewMatrix.MulVector(&frustumPoints[i])
+		frustumPoints[i] = tmpViewMatrix.MulVector(frustumPoints[i])
 	}
 	boundingBox := BoundingBox.NewAABB(frustumPoints[:])
 	boundingBox.Max[2] += offset
 
-	return boundingBox, *tmpViewMatrix.Inverse().MulVector(boundingBox.GetCenter())
+	return boundingBox, tmpViewMatrix.Inverse().MulVector(boundingBox.GetCenter())
 }
 
 func (light *UBODirectionalLight) calcCameraFrustumPoints(camera Camera.ICamera) [8]GeometryMath.Vector3 {
@@ -140,27 +140,27 @@ func (light *UBODirectionalLight) calcCameraFrustumPoints(camera Camera.ICamera)
 
 	front := camera.GetFront()
 	up := camera.GetUp()
-	right := *front.Cross(&up)
-	down := *up.Invert()
-	left := *right.Invert()
+	right := front.Cross(up)
+	down := up.Invert()
+	left := right.Invert()
 
 	centerFar := position.Add(front.MulScalar(light.ShadowMap.Distance.Get()))
 	centerNear := position.Add(front.MulScalar(near_plane))
 
-	farTop := *centerFar.Add(up.MulScalar(farHeight))
-	farBottom := *centerFar.Add(down.MulScalar(farHeight))
-	nearTop := *centerNear.Add(up.MulScalar(nearHeight))
-	nearBottom := *centerNear.Add(down.MulScalar(nearHeight))
+	farTop := centerFar.Add(up.MulScalar(farHeight))
+	farBottom := centerFar.Add(down.MulScalar(farHeight))
+	nearTop := centerNear.Add(up.MulScalar(nearHeight))
+	nearBottom := centerNear.Add(down.MulScalar(nearHeight))
 
 	return [8]GeometryMath.Vector3{
-		*farTop.Add(right.MulScalar(farWidth)),
-		*farTop.Add(left.MulScalar(farWidth)),
-		*farBottom.Add(right.MulScalar(farWidth)),
-		*farBottom.Add(left.MulScalar(farWidth)),
-		*nearTop.Add(right.MulScalar(nearWidth)),
-		*nearTop.Add(left.MulScalar(nearWidth)),
-		*nearBottom.Add(right.MulScalar(nearWidth)),
-		*nearBottom.Add(left.MulScalar(nearWidth)),
+		farTop.Add(right.MulScalar(farWidth)),
+		farTop.Add(left.MulScalar(farWidth)),
+		farBottom.Add(right.MulScalar(farWidth)),
+		farBottom.Add(left.MulScalar(farWidth)),
+		nearTop.Add(right.MulScalar(nearWidth)),
+		nearTop.Add(left.MulScalar(nearWidth)),
+		nearBottom.Add(right.MulScalar(nearWidth)),
+		nearBottom.Add(left.MulScalar(nearWidth)),
 	}
 }
 

@@ -2,8 +2,8 @@ package GeometryMath
 
 type Matrix4x4 [4][4]float32
 
-func (m1 *Matrix4x4) Mul(m2 *Matrix4x4) *Matrix4x4 {
-	return &Matrix4x4{
+func (m1 Matrix4x4) Mul(m2 Matrix4x4) Matrix4x4 {
+	return Matrix4x4{
 		{
 			(m1[0][0] * m2[0][0]) + (m1[0][1] * m2[1][0]) + (m1[0][2] * m2[2][0]) + (m1[0][3] * m2[3][0]),
 			(m1[0][0] * m2[0][1]) + (m1[0][1] * m2[1][1]) + (m1[0][2] * m2[2][1]) + (m1[0][3] * m2[3][1]),
@@ -31,8 +31,8 @@ func (m1 *Matrix4x4) Mul(m2 *Matrix4x4) *Matrix4x4 {
 	}
 }
 
-func (m1 *Matrix4x4) MulScalar(scalar float32) *Matrix4x4 {
-	return &Matrix4x4{
+func (m1 Matrix4x4) MulScalar(scalar float32) Matrix4x4 {
+	return Matrix4x4{
 		{m1[0][0] * scalar, m1[0][1] * scalar, m1[0][2] * scalar, m1[0][3] * scalar},
 		{m1[1][0] * scalar, m1[1][1] * scalar, m1[1][2] * scalar, m1[1][3] * scalar},
 		{m1[2][0] * scalar, m1[2][1] * scalar, m1[2][2] * scalar, m1[2][3] * scalar},
@@ -40,16 +40,16 @@ func (m1 *Matrix4x4) MulScalar(scalar float32) *Matrix4x4 {
 	}
 }
 
-func (m1 *Matrix4x4) MulVector(v1 *Vector3) *Vector3 {
-	return &Vector3{
+func (m1 Matrix4x4) MulVector(v1 Vector3) Vector3 {
+	return Vector3{
 		(v1.X() * m1[0][0]) + (v1.Y() * m1[0][1]) + (v1.Z() * m1[0][2]) + m1[0][3],
 		(v1.X() * m1[1][0]) + (v1.Y() * m1[1][1]) + (v1.Z() * m1[1][2]) + m1[1][3],
 		(v1.X() * m1[2][0]) + (v1.Y() * m1[2][1]) + (v1.Z() * m1[2][2]) + m1[2][3],
 	}
 }
 
-func (m1 *Matrix4x4) Transpose() *Matrix4x4 {
-	return &Matrix4x4{
+func (m1 Matrix4x4) Transpose() Matrix4x4 {
+	return Matrix4x4{
 		{m1[0][0], m1[1][0], m1[2][0], m1[3][0]},
 		{m1[0][1], m1[1][1], m1[2][1], m1[3][1]},
 		{m1[0][2], m1[1][2], m1[2][2], m1[3][2]},
@@ -57,7 +57,7 @@ func (m1 *Matrix4x4) Transpose() *Matrix4x4 {
 	}
 }
 
-func (m1 *Matrix4x4) Inverse() *Matrix4x4 {
+func (m1 Matrix4x4) Inverse() Matrix4x4 {
 	Coef00 := m1[2][2]*m1[3][3] - m1[3][2]*m1[2][3]
 	Coef02 := m1[1][2]*m1[3][3] - m1[3][2]*m1[1][3]
 	Coef03 := m1[1][2]*m1[2][3] - m1[2][2]*m1[1][3]
@@ -109,7 +109,7 @@ func (m1 *Matrix4x4) Inverse() *Matrix4x4 {
 	return Inverse.MulScalar(OneOverDeterminant)
 }
 
-func (m1 *Matrix4x4) Equals(m2 *Matrix4x4, threshold float32) bool {
+func (m1 Matrix4x4) Equals(m2 Matrix4x4, threshold float32) bool {
 	for i, _ := range m1 {
 		for j, _ := range m1[i] {
 			if !Equals(m1[i][j], m2[i][j], threshold) {
@@ -121,8 +121,8 @@ func (m1 *Matrix4x4) Equals(m2 *Matrix4x4, threshold float32) bool {
 	return true
 }
 
-func (m1 *Matrix4x4) ToMatrix3x3() *Matrix3x3 {
-	return &Matrix3x3{
+func (m1 Matrix4x4) ToMatrix3x3() Matrix3x3 {
+	return Matrix3x3{
 		{m1[0][0], m1[0][1], m1[0][2]},
 		{m1[1][0], m1[1][1], m1[1][2]},
 		{m1[2][0], m1[2][1], m1[2][2]},

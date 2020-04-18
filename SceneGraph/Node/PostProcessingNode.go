@@ -81,10 +81,6 @@ func (node *PostProcessingNode) SetBase(base Scene.INode) {
 }
 
 func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
-	if err := Scene.UnmarshalBase(value, node); err != nil {
-		return err
-	}
-
 	yamlConfig := struct {
 		Shader      Shader.Ptr              `yaml:"shader"`
 		FrameBuffer FrameBuffer.FrameBuffer `yaml:"frameBuffer"`
@@ -120,5 +116,5 @@ func (node *PostProcessingNode) UnmarshalYAML(value *yaml.Node) error {
 
 	node.Quad = *PostProcessing.NewQuad()
 
-	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
+	return Scene.UnmarshalChildren(value, node)
 }

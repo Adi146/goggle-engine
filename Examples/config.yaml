@@ -251,6 +251,21 @@ scene:
             diffuse: Models/terrain/snow_mntn2_d.jpg
             normal: Models/terrain/snow_mntn2_h.jpg
       children:
+        modelPlacements:
+          type: Node.ModelNode.ModelPlacementNode
+          placementMap: Models/terrain/heightmap.png
+          model:
+            file: Models/construction_light/Construction_Light.fbx
+            material:
+              textures:
+                diffuse: Models/construction_light/DiffuseMap.png
+                specular: Models/construction_light/Specular.png
+                emissive: Models/construction_light/Glow.png
+                normal: Models/construction_light/Normal.png
+            shader: phong
+            masterMatrix:
+              - scale: 0.1
+          addToParent: true
         fern1:
           type: Node.ModelNode
           file: Models/fern/fern.fbx

@@ -19,7 +19,7 @@ func Degree(radians float32) float32 {
 	return radians * 180 / math.Pi
 }
 
-func ExtractFromMatrix(m *Matrix4x4) []EulerAngles {
+func ExtractFromMatrix(m Matrix4x4) []EulerAngles {
 	if m[2][0] != 1 && m[2][0] != -1 {
 		yaw1 := -ASin(m[2][0])
 		yaw2 := math.Pi - yaw1

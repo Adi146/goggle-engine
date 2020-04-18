@@ -62,7 +62,7 @@ func (node *WASDControl) MoveSidewards(amount float32) {
 	node.Translate(vec.MulScalar(amount))
 }
 
-func (node *WASDControl) Translate(vec *GeometryMath.Vector3) {
+func (node *WASDControl) Translate(vec GeometryMath.Vector3) {
 	node.SetLocalTransformation(node.GetLocalTransformation().Mul(GeometryMath.Translate(vec)))
 }
 
@@ -82,10 +82,6 @@ func (node *WASDControl) SetBase(base Scene.INode) {
 }
 
 func (node *WASDControl) UnmarshalYAML(value *yaml.Node) error {
-	if err := Scene.UnmarshalBase(value, node); err != nil {
-		return err
-	}
-
 	yamlConfig := struct {
 		KeyboardSensitivity float32 `yaml:"keyboardSensitivity"`
 		MouseSensitivity    float32 `yaml:"mouseSensitivity"`
@@ -100,5 +96,5 @@ func (node *WASDControl) UnmarshalYAML(value *yaml.Node) error {
 	node.KeyboardSensitivity = yamlConfig.KeyboardSensitivity
 	node.MouseSensitivity = yamlConfig.MouseSensitivity
 
-	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
+	return Scene.UnmarshalChildren(value, node)
 }

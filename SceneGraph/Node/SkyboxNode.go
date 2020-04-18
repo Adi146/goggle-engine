@@ -47,10 +47,6 @@ func (node *SkyboxNode) SetBase(base Scene.INode) {
 }
 
 func (node *SkyboxNode) UnmarshalYAML(value *yaml.Node) error {
-	if err := Scene.UnmarshalBase(value, node); err != nil {
-		return err
-	}
-
 	yamlConfig := struct {
 		Skybox Skybox.Skybox `yaml:"textures"`
 		Shader Shader.Ptr    `yaml:"shader"`
@@ -67,5 +63,5 @@ func (node *SkyboxNode) UnmarshalYAML(value *yaml.Node) error {
 	node.Skybox = yamlConfig.Skybox
 	node.Shader = yamlConfig.Shader
 
-	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
+	return Scene.UnmarshalChildren(value, node)
 }

@@ -18,10 +18,12 @@ func init() {
 
 type Node struct {
 	scene          *Scene
-	Transformation *GeometryMath.Matrix4x4
+	Transformation GeometryMath.Matrix4x4
 
 	children map[string]INode
 	parent   INode
+
+	id string
 }
 
 func (node *Node) AddChild(child INode, id string) {
@@ -55,16 +57,31 @@ func (node *Node) GetGrandChildById(id string) INode {
 	return nil
 }
 
+func (node *Node) GetID() string {
+	return node.id
+}
+
+func (node *Node) SetID(id string) {
+	node.id = id
+}
+
 func (node *Node) GetParent() INode {
 	return node.parent
 }
 
-func (node *Node) SetParent(parent INode) {
+func (node *Node) SetParent(parent INode, childID string) {
 	node.parent = parent
 	if parent != nil {
 		node.SetScene(parent.GetScene())
+		parentID := parent.GetID()
+		if parentID == "" {
+			node.SetID(childID)
+		} else {
+			node.SetID(parentID + "." + childID)
+		}
 	} else {
 		node.SetScene(nil)
+		node.SetID("")
 	}
 }
 
@@ -80,11 +97,11 @@ func (node *Node) SetScene(scene *Scene) {
 	}
 }
 
-func (node *Node) GetLocalTransformation() *GeometryMath.Matrix4x4 {
+func (node *Node) GetLocalTransformation() GeometryMath.Matrix4x4 {
 	return node.Transformation
 }
 
-func (node *Node) SetLocalTransformation(matrix *GeometryMath.Matrix4x4) {
+func (node *Node) SetLocalTransformation(matrix GeometryMath.Matrix4x4) {
 	node.Transformation = matrix
 }
 
@@ -92,11 +109,11 @@ func (node *Node) GetLocalRotation() []GeometryMath.EulerAngles {
 	return GeometryMath.ExtractFromMatrix(node.GetLocalTransformation())
 }
 
-func (node *Node) GetLocalPosition() *GeometryMath.Vector3 {
-	return node.GetLocalTransformation().MulVector(&GeometryMath.Vector3{0, 0, 0})
+func (node *Node) GetLocalPosition() GeometryMath.Vector3 {
+	return node.GetLocalTransformation().MulVector(GeometryMath.Vector3{0, 0, 0})
 }
 
-func (node *Node) GetGlobalTransformation() *GeometryMath.Matrix4x4 {
+func (node *Node) GetGlobalTransformation() GeometryMath.Matrix4x4 {
 	if parent := node.GetParent(); parent == nil {
 		return node.GetLocalTransformation()
 	} else {
@@ -108,8 +125,8 @@ func (node *Node) GetGlobalRotation() []GeometryMath.EulerAngles {
 	return GeometryMath.ExtractFromMatrix(node.GetGlobalTransformation())
 }
 
-func (node *Node) GetGlobalPosition() *GeometryMath.Vector3 {
-	return node.GetGlobalTransformation().MulVector(&GeometryMath.Vector3{0, 0, 0})
+func (node *Node) GetGlobalPosition() GeometryMath.Vector3 {
+	return node.GetGlobalTransformation().MulVector(GeometryMath.Vector3{0, 0, 0})
 }
 
 func (node *Node) Tick(timeDelta float32) error {
@@ -127,14 +144,16 @@ func (node *Node) GetBase() INode {
 }
 
 func (node *Node) UnmarshalYAML(value *yaml.Node) error {
-	var yamlConfig struct {
+	yamlConfig := struct {
 		Transformation GeometryMath.Matrix4x4 `yaml:"transformation"`
+	}{
+		Transformation: node.Transformation,
 	}
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
 	}
-	node.SetLocalTransformation(&yamlConfig.Transformation)
-	if *node.GetLocalTransformation() == (GeometryMath.Matrix4x4{}) {
+	node.SetLocalTransformation(yamlConfig.Transformation)
+	if node.GetLocalTransformation() == (GeometryMath.Matrix4x4{}) {
 		node.SetLocalTransformation(GeometryMath.Identity())
 	}
 

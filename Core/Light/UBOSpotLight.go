@@ -85,7 +85,7 @@ func (light *UBOSpotLight) GetSize() int {
 func (light *UBOSpotLight) UpdateViewProjection() {
 	pos := light.Position.Get()
 	dir := light.Direction.Get()
-	light.ShadowMap.ViewProjection.Set(*light.ShadowMap.Projection.Mul(GeometryMath.LookAt(&pos, pos.Add(&dir), &GeometryMath.Vector3{0, 1, 0})))
+	light.ShadowMap.ViewProjection.Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(dir), GeometryMath.Vector3{0, 1, 0})))
 }
 
 func (light *UBOSpotLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
@@ -180,7 +180,7 @@ func (light *UBOSpotLight) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	light.ShadowMap.Projection = *GeometryMath.Perspective(yamlConfig.OuterCone, float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width)/float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height), 0.1, yamlConfig.ShadowMap.Distance)
+	light.ShadowMap.Projection = GeometryMath.Perspective(yamlConfig.OuterCone, float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width)/float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height), 0.1, yamlConfig.ShadowMap.Distance)
 	light.Position.Set(yamlConfig.SpotLight.Position)
 	light.Linear.Set(yamlConfig.SpotLight.Linear)
 	light.Quadratic.Set(yamlConfig.SpotLight.Quadratic)

@@ -58,6 +58,10 @@ func Floor(x float32) float32 {
 	return float32(math.Floor(float64(x)))
 }
 
+func Ceil(x float32) float32 {
+	return float32(math.Ceil(float64(x)))
+}
+
 func Mod(x float32, y float32) float32 {
 	return float32(math.Mod(float64(x), float64(y)))
 }

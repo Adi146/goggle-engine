@@ -24,7 +24,7 @@ type TerrainNode struct {
 func (node *TerrainNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.SetModelMatrix(*node.GetGlobalTransformation())
+	node.SetModelMatrix(node.GetGlobalTransformation())
 
 	if scene := node.GetScene(); scene != nil {
 		scene.AddOpaqueObject(node)
@@ -48,11 +48,24 @@ func (node *TerrainNode) SetBase(base Scene.INode) {
 	node.INode = base
 }
 
-func (node *TerrainNode) UnmarshalYAML(value *yaml.Node) error {
-	if err := Scene.UnmarshalBase(value, node); err != nil {
-		return err
-	}
+func (node *TerrainNode) AddChild(child Scene.INode, childID string) {
+	node.INode.AddChild(child, childID)
 
+	if asSubNode, isSubNode := child.(Scene.ISubNode); isSubNode {
+		childBase := child.GetBase()
+
+		if _, isAnchor := childBase.(*AnchorNode); !isAnchor {
+			anchor := AnchorNode{
+				INode:   childBase,
+				Terrain: nil,
+			}
+
+			asSubNode.SetBase(&anchor)
+		}
+	}
+}
+
+func (node *TerrainNode) UnmarshalYAML(value *yaml.Node) error {
 	yamlConfig := struct {
 		Shader  Shader.Ptr      `yaml:"shader"`
 		Terrain Terrain.Terrain `yaml:",inline"`
@@ -68,5 +81,5 @@ func (node *TerrainNode) UnmarshalYAML(value *yaml.Node) error {
 	node.Terrain = yamlConfig.Terrain
 	node.Shader = yamlConfig.Shader
 
-	return Scene.UnmarshalChildren(value, node, AnchorNodeFactoryName)
+	return Scene.UnmarshalChildren(value, node)
 }

@@ -25,7 +25,7 @@ func (factory nodeFactory) Get(key string) (INode, error) {
 	return reflect.New(nodeType).Interface().(INode), nil
 }
 
-func UnmarshalChildren(value *yaml.Node, node INode, baseTypeKey string) error {
+func UnmarshalChildren(value *yaml.Node, node INode) error {
 	type ChildConfig struct {
 		Type string `yaml:"type"`
 	}
@@ -49,56 +49,24 @@ func UnmarshalChildren(value *yaml.Node, node INode, baseTypeKey string) error {
 		}
 
 		if asSubNode, isSubNode := child.(ISubNode); isSubNode {
-			base, err := NodeFactory.Get(baseTypeKey)
-			if err != nil {
+			base := Node{}
+			if err := childValue.Decode(&base); err != nil {
 				return err
 			}
 
-			asSubNode.SetBase(base)
-		}
-
-		if err := childValue.Decode(child); err != nil {
-			return err
+			asSubNode.SetBase(&base)
 		}
 
 		AddChild(node, child, id)
-	}
-
-	return nil
-}
-
-func UnmarshalBase(value *yaml.Node, node ISubNode) error {
-	var yamlConfig struct {
-		BaseValue yaml.Node `yaml:"baseType"`
-	}
-	if err := value.Decode(&yamlConfig); err != nil {
-		return err
-	}
-
-	base := node.GetBase()
-	if yamlConfig.BaseValue.Kind == yaml.ScalarNode {
-		var baseKey string
-		if err := yamlConfig.BaseValue.Decode(&baseKey); err != nil {
+		if err := childValue.Decode(child); err != nil {
 			return err
 		}
-
-		tmpBase, err := NodeFactory.Get(baseKey)
-		if err != nil {
-			return err
-		}
-		base = tmpBase
-	} else if base == nil {
-		base = &Node{}
 	}
-	if err := value.Decode(base); err != nil {
-		return err
-	}
-	node.SetBase(base)
 
 	return nil
 }
 
 func AddChild(parent INode, child INode, childID string) {
 	parent.AddChild(child, childID)
-	child.SetParent(parent)
+	child.SetParent(parent, childID)
 }

@@ -19,11 +19,11 @@ type Range struct {
 }
 
 func (generator *BlendMapGenerator) GenerateBlendMap(heightMap *HeightMap) (*Texture.Texture2D, error) {
-	img := image.NewRGBA(image.Rect(0, 0, heightMap.NumColumns, heightMap.NumColumns))
+	img := image.NewRGBA(image.Rect(0, 0, heightMap.NumColumns, heightMap.NumRows))
 
 	for z := 0; z < heightMap.NumRows; z++ {
 		for x := 0; x < heightMap.NumColumns; x++ {
-			currentHeight := heightMap.GetHeight(x, z)
+			currentHeight := heightMap.GetHeightScaled(x, z)
 
 			pixelColor := color.RGBA{
 				R: uint8(generator.R.GetFactor(currentHeight) * 255),

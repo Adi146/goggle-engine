@@ -33,10 +33,6 @@ func (node *RotorNode) SetBase(base Scene.INode) {
 }
 
 func (node *RotorNode) UnmarshalYAML(value *yaml.Node) error {
-	if err := Scene.UnmarshalBase(value, node); err != nil {
-		return err
-	}
-
 	yamlConfig := struct {
 		Speed float32              `yaml:"speed"`
 		Axis  GeometryMath.Vector3 `yaml:"axis"`
@@ -55,5 +51,5 @@ func (node *RotorNode) UnmarshalYAML(value *yaml.Node) error {
 		node.Axis = GeometryMath.Vector3{0, 1, 0}
 	}
 
-	return Scene.UnmarshalChildren(value, node, Scene.NodeFactoryName)
+	return Scene.UnmarshalChildren(value, node)
 }

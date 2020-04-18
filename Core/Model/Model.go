@@ -27,9 +27,9 @@ func (model *Model) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, 
 	return err.Err()
 }
 
-func (model *Model) GetPosition() *GeometryMath.Vector3 {
+func (model *Model) GetPosition() GeometryMath.Vector3 {
 	modelMatrix := model.GetModelMatrix()
-	return modelMatrix.MulVector(&GeometryMath.Vector3{0, 0, 0})
+	return modelMatrix.MulVector(GeometryMath.Vector3{0, 0, 0})
 }
 
 func (model *Model) UnmarshalYAML(value *yaml.Node) error {

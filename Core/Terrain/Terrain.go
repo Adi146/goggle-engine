@@ -2,20 +2,23 @@ package Terrain
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/Core/Mesh"
-	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
+	"github.com/Adi146/goggle-engine/Core/Scene"
+	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/go-gl/gl/all-core/gl"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 	"gopkg.in/yaml.v3"
 )
 
 const (
-	restartIndex = 0xFFFF
+	maxChunkRows    = 64
+	maxChunkColumns = 64
 )
 
 type Terrain struct {
-	Model.Model
+	Chunks   []Chunk
+	Material *Material.BlendMaterial
+
 	TileSize  float32
 	HeightMap HeightMap
 
@@ -24,53 +27,50 @@ type Terrain struct {
 }
 
 func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
-	vertices := make([]Mesh.Vertex, heightMap.NumRows*heightMap.NumColumns)
-
 	offsetX := float32(heightMap.NumColumns)/2 - 0.5
 	offsetZ := float32(heightMap.NumRows)/2 - 0.5
 
-	for z := 0; z < heightMap.NumRows; z++ {
-		for x := 0; x < heightMap.NumColumns; x++ {
-			vertices[z*heightMap.NumColumns+x] = Mesh.Vertex{
-				Position: GeometryMath.Vector3{
-					(float32(x) - offsetX) * tileSize,
-					heightMap.GetHeightScaled(x, z),
-					(float32(z) - offsetZ) * tileSize,
-				},
-				Normal:    heightMap.GetNormal(x, z),
-				UV:        GeometryMath.Vector2{float32(x) / float32(heightMap.NumColumns), float32(z) / float32(heightMap.NumRows)},
-				Tangent:   heightMap.GetTangent(x, z),
-				BiTangent: heightMap.GetBiTangent(x, z),
+	var chunks []Chunk
+	for z := 0; z < heightMap.NumRows; z += maxChunkRows - 1 {
+		chunkRows := maxChunkRows
+		if z+chunkRows > heightMap.NumRows {
+			chunkRows = heightMap.NumRows - z
+		}
+		for x := 0; x < heightMap.NumColumns; x += maxChunkColumns - 1 {
+			chunkColumns := maxChunkColumns
+			if x+chunkColumns > heightMap.NumColumns {
+				chunkColumns = heightMap.NumColumns - x
 			}
+
+			chunks = append(chunks, generateChunk(&heightMap, x, z, chunkRows, chunkColumns, tileSize))
 		}
 	}
-
-	var indices []uint32
-	for z := 0; z < heightMap.NumRows-1; z++ {
-		for x := 0; x < heightMap.NumColumns; x++ {
-			topLeft := uint32(z*heightMap.NumColumns + x)
-			bottomLeft := uint32((z+1)*heightMap.NumColumns + x)
-
-			indices = append(indices, topLeft, bottomLeft)
-		}
-
-		indices = append(indices, restartIndex)
-	}
-
-	mesh := Mesh.NewMesh(vertices, indices)
-	mesh.IndexBuffer.RestartIndex = restartIndex
-	mesh.PrimitiveType = gl.TRIANGLE_STRIP
 
 	return &Terrain{
-		Model: Model.Model{
-			IMesh:    mesh,
-			Material: nil,
-		},
+		Chunks:    chunks,
 		TileSize:  tileSize,
 		HeightMap: heightMap,
 		OffsetX:   offsetX,
 		OffsetZ:   offsetZ,
 	}, nil
+}
+
+func (terrain *Terrain) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
+	var err Error.ErrorCollection
+
+	err.Push(shader.BindObject(terrain.Material))
+	for _, chunk := range terrain.Chunks {
+		err.Push(chunk.Draw(shader, invoker, scene))
+	}
+	terrain.Material.Unbind()
+
+	return err.Err()
+}
+
+func (terrain *Terrain) SetModelMatrix(mat GeometryMath.Matrix4x4) {
+	for _, chunk := range terrain.Chunks {
+		chunk.SetModelMatrix(mat)
+	}
 }
 
 func (terrain *Terrain) GetHeightAt(terrainPos GeometryMath.Vector3) float32 {

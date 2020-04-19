@@ -41,7 +41,7 @@ func (node *TerrainNode) Draw(shader Shader.IShaderProgram, invoker coreScene.ID
 		shader = node.Shader
 	}
 
-	return node.Model.Draw(shader, invoker, scene)
+	return node.Terrain.Draw(shader, invoker, scene)
 }
 
 func (node *TerrainNode) SetBase(base Scene.INode) {

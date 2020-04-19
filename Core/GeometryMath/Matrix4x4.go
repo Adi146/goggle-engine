@@ -48,6 +48,15 @@ func (m1 Matrix4x4) MulVector(v1 Vector3) Vector3 {
 	}
 }
 
+func (m1 Matrix4x4) MulVector4(v1 Vector4) Vector4 {
+	return Vector4{
+		(v1.X() * m1[0][0]) + (v1.Y() * m1[0][1]) + (v1.Z() * m1[0][2]) + (v1.W() * m1[0][3]),
+		(v1.X() * m1[1][0]) + (v1.Y() * m1[1][1]) + (v1.Z() * m1[1][2]) + (v1.W() * m1[1][3]),
+		(v1.X() * m1[2][0]) + (v1.Y() * m1[2][1]) + (v1.Z() * m1[2][2]) + (v1.W() * m1[2][3]),
+		(v1.X() * m1[3][0]) + (v1.Y() * m1[3][1]) + (v1.Z() * m1[3][2]) + (v1.W() * m1[2][3]),
+	}
+}
+
 func (m1 Matrix4x4) Transpose() Matrix4x4 {
 	return Matrix4x4{
 		{m1[0][0], m1[1][0], m1[2][0], m1[3][0]},

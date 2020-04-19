@@ -8,6 +8,8 @@ import (
 type IndexBuffer struct {
 	bufferId uint32
 	Length   int32
+
+	RestartIndex uint32
 }
 
 func NewIndexBuffer(indices []uint32) *IndexBuffer {
@@ -24,8 +26,15 @@ func NewIndexBuffer(indices []uint32) *IndexBuffer {
 
 func (buff *IndexBuffer) Bind() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, buff.bufferId)
+	if buff.RestartIndex != 0 {
+		gl.Enable(gl.PRIMITIVE_RESTART)
+		gl.PrimitiveRestartIndex(buff.RestartIndex)
+	}
 }
 
 func (buff *IndexBuffer) Unbind() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
+	if buff.RestartIndex != 0 {
+		gl.Disable(gl.PRIMITIVE_RESTART)
+	}
 }

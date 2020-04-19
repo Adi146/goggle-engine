@@ -9,23 +9,28 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
+type PrimitiveType uint32
+
 type Mesh struct {
 	VertexBuffer ArrayBuffer
 	VertexArray  VertexArray
 	IndexBuffer  *IndexBuffer
 	ModelMatrix  GeometryMath.Matrix4x4
 	BoundingBox  BoundingBox.AABB
+
+	PrimitiveType PrimitiveType
 }
 
 func NewMesh(vertices []Vertex, indices []uint32) *Mesh {
 	vbo := NewVertexBuffer(vertices)
 
 	return &Mesh{
-		VertexBuffer: vbo,
-		VertexArray:  NewVertexArray(vbo),
-		IndexBuffer:  NewIndexBuffer(indices),
-		ModelMatrix:  GeometryMath.Identity(),
-		BoundingBox:  BoundingBox.NewAABB(Vertices(vertices).GetPositions()),
+		VertexBuffer:  vbo,
+		VertexArray:   NewVertexArray(vbo),
+		IndexBuffer:   NewIndexBuffer(indices),
+		ModelMatrix:   GeometryMath.Identity(),
+		BoundingBox:   BoundingBox.NewAABB(Vertices(vertices).GetPositions()),
+		PrimitiveType: gl.TRIANGLES,
 	}
 }
 
@@ -35,7 +40,7 @@ func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, sc
 	err.Push(shader.BindObject(&mesh.ModelMatrix))
 	err.Push(shader.BindObject(mesh.VertexArray))
 	mesh.IndexBuffer.Bind()
-	gl.DrawElements(gl.TRIANGLES, mesh.IndexBuffer.Length, gl.UNSIGNED_INT, nil)
+	gl.DrawElements(uint32(mesh.PrimitiveType), mesh.IndexBuffer.Length, gl.UNSIGNED_INT, nil)
 	mesh.IndexBuffer.Unbind()
 	mesh.VertexBuffer.Unbind()
 
@@ -68,4 +73,8 @@ func (mesh *Mesh) GetBoundingBox() BoundingBox.AABB {
 
 func (mesh *Mesh) GetBoundingBoxTransformed() BoundingBox.AABB {
 	return mesh.BoundingBox.Transform(mesh.GetModelMatrix())
+}
+
+func (mesh *Mesh) GetPrimitiveType() PrimitiveType {
+	return mesh.PrimitiveType
 }

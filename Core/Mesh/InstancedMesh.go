@@ -38,11 +38,12 @@ func NewInstancedMeshes(mesh IMesh, matrices ...GeometryMath.Matrix4x4) ([]*Inst
 		for i := range matrices {
 			instances[i] = &InstancedMesh{
 				Mesh: Mesh{
-					VertexBuffer: mesh.GetVertexBuffer(),
-					VertexArray:  NewInstancedVertexArray(mesh.GetVertexArray(), mbo),
-					IndexBuffer:  mesh.GetIndexBuffer(),
-					BoundingBox:  mesh.GetBoundingBox(),
-					ModelMatrix:  mesh.GetModelMatrix(),
+					VertexBuffer:  mesh.GetVertexBuffer(),
+					VertexArray:   NewInstancedVertexArray(mesh.GetVertexArray(), mbo),
+					IndexBuffer:   mesh.GetIndexBuffer(),
+					BoundingBox:   mesh.GetBoundingBox(),
+					ModelMatrix:   mesh.GetModelMatrix(),
+					PrimitiveType: mesh.GetPrimitiveType(),
 				},
 				MasterMatrix: &masterMatrix,
 				MatrixBuffer: mbo,

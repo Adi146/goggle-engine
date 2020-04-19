@@ -6,7 +6,12 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Model"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Texture"
+	"github.com/go-gl/gl/all-core/gl"
 	"gopkg.in/yaml.v3"
+)
+
+const (
+	restartIndex = 0xFFFF
 )
 
 type Terrain struct {
@@ -20,7 +25,6 @@ type Terrain struct {
 
 func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
 	vertices := make([]Mesh.Vertex, heightMap.NumRows*heightMap.NumColumns)
-	indices := make([]uint32, 6*(heightMap.NumRows-1)*(heightMap.NumColumns-1))
 
 	offsetX := float32(heightMap.NumColumns)/2 - 0.5
 	offsetZ := float32(heightMap.NumRows)/2 - 0.5
@@ -41,25 +45,25 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
 		}
 	}
 
+	var indices []uint32
 	for z := 0; z < heightMap.NumRows-1; z++ {
-		for x := 0; x < heightMap.NumColumns-1; x++ {
+		for x := 0; x < heightMap.NumColumns; x++ {
 			topLeft := uint32(z*heightMap.NumColumns + x)
-			topRight := uint32(z*heightMap.NumColumns + x + 1)
 			bottomLeft := uint32((z+1)*heightMap.NumColumns + x)
-			bottomRight := uint32((z+1)*heightMap.NumColumns + x + 1)
 
-			indices[(z*(heightMap.NumColumns-1)+x)*6+0] = topLeft
-			indices[(z*(heightMap.NumColumns-1)+x)*6+1] = bottomLeft
-			indices[(z*(heightMap.NumColumns-1)+x)*6+2] = topRight
-			indices[(z*(heightMap.NumColumns-1)+x)*6+3] = topRight
-			indices[(z*(heightMap.NumColumns-1)+x)*6+4] = bottomLeft
-			indices[(z*(heightMap.NumColumns-1)+x)*6+5] = bottomRight
+			indices = append(indices, topLeft, bottomLeft)
 		}
+
+		indices = append(indices, restartIndex)
 	}
+
+	mesh := Mesh.NewMesh(vertices, indices)
+	mesh.IndexBuffer.RestartIndex = restartIndex
+	mesh.PrimitiveType = gl.TRIANGLE_STRIP
 
 	return &Terrain{
 		Model: Model.Model{
-			IMesh:    Mesh.NewMesh(vertices, indices),
+			IMesh:    mesh,
 			Material: nil,
 		},
 		TileSize:  tileSize,

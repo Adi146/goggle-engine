@@ -16,4 +16,6 @@ type IMesh interface {
 
 	GetModelMatrix() GeometryMath.Matrix4x4
 	SetModelMatrix(mat GeometryMath.Matrix4x4)
+
+	GetPrimitiveType() PrimitiveType
 }

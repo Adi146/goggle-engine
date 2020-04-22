@@ -18,13 +18,17 @@ type Model struct {
 }
 
 func (model *Model) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
-	var err Error.ErrorCollection
+	if drawable, isDrawable := model.IMesh.(Scene.IDrawable); isDrawable {
+		var err Error.ErrorCollection
 
-	err.Push(shader.BindObject(model.Material))
-	err.Push(model.IMesh.Draw(shader, invoker, scene))
-	model.Material.Unbind()
+		err.Push(shader.BindObject(model.Material))
+		err.Push(drawable.Draw(shader, invoker, scene))
+		model.Material.Unbind()
 
-	return err.Err()
+		return err.Err()
+	}
+
+	return nil
 }
 
 func (model *Model) GetPosition() GeometryMath.Vector3 {

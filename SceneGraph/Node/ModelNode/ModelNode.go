@@ -34,7 +34,7 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
 	node.SetModelMatrix(node.GetGlobalTransformation())
-	if instancedMesh, isInstancedMesh := node.Model.IMesh.(*Mesh.InstancedMesh); isInstancedMesh {
+	if instancedMesh, isInstancedMesh := node.Model.IMesh.(*Mesh.InstanceMasterMesh); isInstancedMesh {
 		instancedMesh.SetMasterMatrix(node.MasterMatrix)
 	}
 
@@ -65,13 +65,21 @@ func (node *ModelNode) SetBase(base Scene.INode) {
 }
 
 func (node *ModelNode) AddSlave(slave ...*ModelSlaveNode) error {
-	instancedMeshes, err := Mesh.NewInstancedMeshes(node.IMesh, slaves(slave).GetGlobalTransformations()...)
-	if err != nil {
-		return err
+	var newInstances []*Mesh.InstancedMesh
+
+	switch v := node.IMesh.(type) {
+	case *Mesh.Mesh:
+		master := Mesh.NewInstanceMasterMesh(v, slaves(slave).GetGlobalTransformations()...)
+		master.SetMasterMatrix(node.MasterMatrix)
+		newInstances = master.Instances
+		node.IMesh = master
+	case *Mesh.InstanceMasterMesh:
+		newInstances = v.CreateNewInstances(slaves(slave).GetGlobalTransformations()...)
+	default:
+		return fmt.Errorf("mesh of type %T can not be converted to instance master", v)
 	}
 
-	node.IMesh = instancedMeshes[0]
-	slaves(slave).SetInstancedMeshes(node, instancedMeshes[1:]...)
+	slaves(slave).SetInstancedMeshes(node, newInstances...)
 	node.Slaves = append(node.Slaves, slave...)
 
 	Log.Info(fmt.Sprintf("%d new slaves added", len(slave)))
@@ -107,13 +115,9 @@ func (node *ModelNode) UnmarshalYAML(value *yaml.Node) error {
 	if node.MasterMatrix == (GeometryMath.Matrix4x4{}) {
 		node.MasterMatrix = GeometryMath.Identity()
 	} else {
-		instancedMeshes, err := Mesh.NewInstancedMeshes(node.IMesh)
-		if err != nil {
+		if err := node.AddSlave(); err != nil {
 			return err
 		}
-
-		instancedMeshes[0].SetMasterMatrix(node.MasterMatrix)
-		node.IMesh = instancedMeshes[0]
 	}
 
 	return Scene.UnmarshalChildren(value, node)

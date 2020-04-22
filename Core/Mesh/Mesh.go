@@ -12,11 +12,12 @@ import (
 type PrimitiveType uint32
 
 type Mesh struct {
-	VertexBuffer   ArrayBuffer
-	VertexArray    VertexArray
-	IndexBuffer    *IndexBuffer
-	ModelMatrix    GeometryMath.Matrix4x4
-	BoundingVolume BoundingVolume.IBoundingVolume
+	VertexBuffer              ArrayBuffer
+	VertexArray               VertexArray
+	IndexBuffer               *IndexBuffer
+	ModelMatrix               GeometryMath.Matrix4x4
+	BoundingVolume            BoundingVolume.IBoundingVolume
+	TransformedBoundingVolume BoundingVolume.IBoundingVolume
 
 	PrimitiveType  PrimitiveType
 	FrustumCulling bool
@@ -35,25 +36,25 @@ func NewMesh(vertices []Vertex, indices []uint32, boundingVolume func(vertices [
 
 	if boundingVolume != nil {
 		mesh.BoundingVolume = boundingVolume(Vertices(vertices).GetPositions())
+		mesh.TransformedBoundingVolume = mesh.BoundingVolume.Transform(mesh.ModelMatrix)
 	}
 
 	return &mesh
 }
 
 func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
-	if !mesh.FrustumCulling || (mesh.FrustumCulling && scene.GetCamera().GetFrustum().Contains(mesh.BoundingVolume)) {
-		var err Error.ErrorCollection
+	var err Error.ErrorCollection
 
+	if !mesh.FrustumCulling || (mesh.FrustumCulling && scene.GetCamera().GetFrustum().Contains(mesh.GetBoundingVolumeTransformed())) {
 		err.Push(shader.BindObject(&mesh.ModelMatrix))
 		err.Push(shader.BindObject(mesh.VertexArray))
 		mesh.IndexBuffer.Bind()
 		gl.DrawElements(uint32(mesh.PrimitiveType), mesh.IndexBuffer.Length, gl.UNSIGNED_INT, nil)
 		mesh.IndexBuffer.Unbind()
 		mesh.VertexBuffer.Unbind()
-
-		return err.Err()
 	}
-	return nil
+
+	return err.Err()
 }
 
 func (mesh *Mesh) GetVertexBuffer() ArrayBuffer {
@@ -74,6 +75,7 @@ func (mesh *Mesh) GetModelMatrix() GeometryMath.Matrix4x4 {
 
 func (mesh *Mesh) SetModelMatrix(mat GeometryMath.Matrix4x4) {
 	mesh.ModelMatrix = mat
+	mesh.TransformedBoundingVolume = mesh.BoundingVolume.Transform(mesh.GetModelMatrix())
 }
 
 func (mesh *Mesh) GetBoundingVolume() BoundingVolume.IBoundingVolume {
@@ -81,7 +83,7 @@ func (mesh *Mesh) GetBoundingVolume() BoundingVolume.IBoundingVolume {
 }
 
 func (mesh *Mesh) GetBoundingVolumeTransformed() BoundingVolume.IBoundingVolume {
-	return mesh.BoundingVolume.Transform(mesh.GetModelMatrix())
+	return mesh.TransformedBoundingVolume
 }
 
 func (mesh *Mesh) GetPrimitiveType() PrimitiveType {

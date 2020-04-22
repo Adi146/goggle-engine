@@ -2,7 +2,7 @@ package ModelNode
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/BoundingBox"
+	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Terrain"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
@@ -28,52 +28,63 @@ type ModelPlacementNode struct {
 
 func (node *ModelPlacementNode) PlaceModels() error {
 	nodeID := node.GetID()
-	boundingBox := node.GetBoundingBoxTransformed()
+	boundingVolume := node.GetBoundingVolumeTransformed()
 
 	offsetX := float32(node.NumColumns)/2 - 0.5
 	offsetZ := float32(node.NumRows)/2 - 0.5
 
 	type newSlaveConfig struct {
 		Transformation GeometryMath.Matrix4x4
-		BoundingBox    BoundingBox.AABB
+		BoundingVolume BoundingVolume.IBoundingVolume
 	}
 	var newSlaveConfigs []newSlaveConfig
 
 	for z := 0; z < node.NumRows; z += 1 {
 	NextPosition:
 		for x := 0; x < node.NumColumns; x += 1 {
-			probability := node.GetProbabilityAtArea(
-				x+int(GeometryMath.Floor(boundingBox.Min.X())),
-				z+int(GeometryMath.Floor(boundingBox.Min.Z())),
-				x+int(GeometryMath.Ceil(boundingBox.Max.X())),
-				z+int(GeometryMath.Ceil(boundingBox.Max.Z())),
-			)
+			var probability float32
+			switch v := boundingVolume.(type) {
+			case BoundingVolume.AABB:
+				probability = node.GetProbabilityAtArea(
+					x+int(GeometryMath.Floor(v.Min.X())),
+					z+int(GeometryMath.Floor(v.Min.Z())),
+					x+int(GeometryMath.Ceil(v.Max.X())),
+					z+int(GeometryMath.Ceil(v.Max.Z())),
+				)
+			case BoundingVolume.Sphere:
+				probability = node.GetProbabilityAtArea(
+					x+int(GeometryMath.Floor(v.Center.X()-v.Radius)),
+					z+int(GeometryMath.Floor(v.Center.Z()-v.Radius)),
+					x+int(GeometryMath.Ceil(v.Center.X()+v.Radius)),
+					z+int(GeometryMath.Ceil(v.Center.Z()+v.Radius)),
+				)
+			}
 
 			if probability >= float32(node.RandomGenerator.NormFloat64()*0.125+0.5) {
 				slaveLocalMatrix := GeometryMath.Translate(GeometryMath.Vector3{float32(x) - offsetX, 0, float32(z) - offsetZ})
-				slaveBoundingBox := boundingBox.Transform(slaveLocalMatrix)
+				slaveBoundingBox := boundingVolume.Transform(slaveLocalMatrix)
 
-				if slaveBoundingBox.IntersectsWith(boundingBox) {
+				if slaveBoundingBox.IntersectsWith(boundingVolume) {
 					continue NextPosition
 				}
 
 				for _, child := range node.GetChildren() {
-					if collisionObject, isCollisionObject := child.(BoundingBox.ICollisionObject); isCollisionObject {
-						if slaveBoundingBox.IntersectsWith(collisionObject.GetBoundingBoxTransformed()) {
+					if collisionObject, isCollisionObject := child.(BoundingVolume.ICollisionObject); isCollisionObject {
+						if slaveBoundingBox.IntersectsWith(collisionObject.GetBoundingVolumeTransformed()) {
 							continue NextPosition
 						}
 					}
 				}
 
 				for _, newSlave := range newSlaveConfigs {
-					if slaveBoundingBox.IntersectsWith(newSlave.BoundingBox) {
+					if slaveBoundingBox.IntersectsWith(newSlave.BoundingVolume) {
 						continue NextPosition
 					}
 				}
 
 				newSlaveConfigs = append(newSlaveConfigs, newSlaveConfig{
 					Transformation: slaveLocalMatrix,
-					BoundingBox:    slaveBoundingBox,
+					BoundingVolume: slaveBoundingBox,
 				})
 			}
 		}

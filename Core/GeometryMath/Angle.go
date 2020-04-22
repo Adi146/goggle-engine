@@ -12,7 +12,7 @@ type EulerAngles struct {
 }
 
 func Radians(degree float32) float32 {
-	return degree * math.Pi / 180
+	return degree * math.Pi / 180.0
 }
 
 func Degree(radians float32) float32 {

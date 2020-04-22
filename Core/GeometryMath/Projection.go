@@ -18,7 +18,7 @@ func Perspective(fovy float32, aspect float32, near float32, far float32) Matrix
 	f := 1 / (Tan(fovy / 2))
 
 	return Matrix4x4{
-		{aspect * f, 0, 0, 0},
+		{f / aspect, 0, 0, 0},
 		{0, f, 0, 0},
 		{0, 0, -((far + near) / (fmn)), -((2 * far * near) / fmn)},
 		{0, 0, -1, 0},

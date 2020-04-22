@@ -1,7 +1,7 @@
 package Mesh
 
 import (
-	"github.com/Adi146/goggle-engine/Core/BoundingBox"
+	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -12,39 +12,48 @@ import (
 type PrimitiveType uint32
 
 type Mesh struct {
-	VertexBuffer ArrayBuffer
-	VertexArray  VertexArray
-	IndexBuffer  *IndexBuffer
-	ModelMatrix  GeometryMath.Matrix4x4
-	BoundingBox  BoundingBox.AABB
+	VertexBuffer   ArrayBuffer
+	VertexArray    VertexArray
+	IndexBuffer    *IndexBuffer
+	ModelMatrix    GeometryMath.Matrix4x4
+	BoundingVolume BoundingVolume.IBoundingVolume
 
-	PrimitiveType PrimitiveType
+	PrimitiveType  PrimitiveType
+	FrustumCulling bool
 }
 
-func NewMesh(vertices []Vertex, indices []uint32) *Mesh {
+func NewMesh(vertices []Vertex, indices []uint32, boundingVolume func(vertices []GeometryMath.Vector3) BoundingVolume.IBoundingVolume) *Mesh {
 	vbo := NewVertexBuffer(vertices)
 
-	return &Mesh{
+	mesh := Mesh{
 		VertexBuffer:  vbo,
 		VertexArray:   NewVertexArray(vbo),
 		IndexBuffer:   NewIndexBuffer(indices),
 		ModelMatrix:   GeometryMath.Identity(),
-		BoundingBox:   BoundingBox.NewAABB(Vertices(vertices).GetPositions()),
 		PrimitiveType: gl.TRIANGLES,
 	}
+
+	if boundingVolume != nil {
+		mesh.BoundingVolume = boundingVolume(Vertices(vertices).GetPositions())
+	}
+
+	return &mesh
 }
 
 func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
-	var err Error.ErrorCollection
+	if !mesh.FrustumCulling || (mesh.FrustumCulling && scene.GetCamera().GetFrustum().Contains(mesh.BoundingVolume)) {
+		var err Error.ErrorCollection
 
-	err.Push(shader.BindObject(&mesh.ModelMatrix))
-	err.Push(shader.BindObject(mesh.VertexArray))
-	mesh.IndexBuffer.Bind()
-	gl.DrawElements(uint32(mesh.PrimitiveType), mesh.IndexBuffer.Length, gl.UNSIGNED_INT, nil)
-	mesh.IndexBuffer.Unbind()
-	mesh.VertexBuffer.Unbind()
+		err.Push(shader.BindObject(&mesh.ModelMatrix))
+		err.Push(shader.BindObject(mesh.VertexArray))
+		mesh.IndexBuffer.Bind()
+		gl.DrawElements(uint32(mesh.PrimitiveType), mesh.IndexBuffer.Length, gl.UNSIGNED_INT, nil)
+		mesh.IndexBuffer.Unbind()
+		mesh.VertexBuffer.Unbind()
 
-	return err.Err()
+		return err.Err()
+	}
+	return nil
 }
 
 func (mesh *Mesh) GetVertexBuffer() ArrayBuffer {
@@ -67,14 +76,22 @@ func (mesh *Mesh) SetModelMatrix(mat GeometryMath.Matrix4x4) {
 	mesh.ModelMatrix = mat
 }
 
-func (mesh *Mesh) GetBoundingBox() BoundingBox.AABB {
-	return mesh.BoundingBox
+func (mesh *Mesh) GetBoundingVolume() BoundingVolume.IBoundingVolume {
+	return mesh.BoundingVolume
 }
 
-func (mesh *Mesh) GetBoundingBoxTransformed() BoundingBox.AABB {
-	return mesh.BoundingBox.Transform(mesh.GetModelMatrix())
+func (mesh *Mesh) GetBoundingVolumeTransformed() BoundingVolume.IBoundingVolume {
+	return mesh.BoundingVolume.Transform(mesh.GetModelMatrix())
 }
 
 func (mesh *Mesh) GetPrimitiveType() PrimitiveType {
 	return mesh.PrimitiveType
+}
+
+func (mesh *Mesh) EnableFrustumCulling() {
+	mesh.FrustumCulling = true
+}
+
+func (mesh *Mesh) DisableFrustumCulling() {
+	mesh.FrustumCulling = false
 }

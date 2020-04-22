@@ -49,7 +49,7 @@ type Skybox struct {
 
 func NewSkybox(texture *Texture.CubeMap) (*Skybox, error) {
 	return &Skybox{
-		Mesh:    Mesh.NewMesh(vertices, indices),
+		Mesh:    Mesh.NewMesh(vertices, indices, nil),
 		CubeMap: texture,
 	}, nil
 }

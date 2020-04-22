@@ -2,6 +2,7 @@ package Model
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"path"
@@ -166,5 +167,5 @@ func importAssimpMesh(assimpMesh *assimp.Mesh) Mesh.IMesh {
 		indices = append(indices, assimpFace.CopyIndices()...)
 	}
 
-	return Mesh.NewMesh(vertices, indices)
+	return Mesh.NewMesh(vertices, indices, BoundingVolume.NewBoundingVolumeSphere)
 }

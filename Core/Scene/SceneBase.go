@@ -137,7 +137,7 @@ func (scene *SceneBase) UnmarshalYAML(value *yaml.Node) error {
 	width, height := yamlConfig.Window.GetSize()
 
 	projectionConfig := yamlConfig.Camera.GetProjection()
-	projectionConfig.Aspect = float32(height) / float32(width)
+	projectionConfig.Aspect = float32(width) / float32(height)
 	yamlConfig.Camera.SetProjection(projectionConfig)
 
 	*scene = (SceneBase)(yamlConfig)

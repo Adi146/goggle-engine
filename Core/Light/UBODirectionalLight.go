@@ -1,7 +1,7 @@
 package Light
 
 import (
-	"github.com/Adi146/goggle-engine/Core/BoundingBox"
+	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Function"
@@ -115,7 +115,7 @@ func (light *UBODirectionalLight) updateShadowCamera(scene Scene.IScene) {
 	light.ShadowMap.ViewProjection.Set(light.ShadowMap.Projection.Mul(light.ShadowMap.ViewMatrix))
 }
 
-func (light *UBODirectionalLight) calcCameraFrustumBoundingBox(scene Scene.IScene) (BoundingBox.AABB, GeometryMath.Vector3) {
+func (light *UBODirectionalLight) calcCameraFrustumBoundingBox(scene Scene.IScene) (BoundingVolume.AABB, GeometryMath.Vector3) {
 	direction := light.Direction.Get()
 	tmpViewMatrix := GeometryMath.LookAt(direction.Invert(), GeometryMath.Vector3{0, 0, 0}, GeometryMath.Vector3{0, 1, 0})
 
@@ -123,7 +123,7 @@ func (light *UBODirectionalLight) calcCameraFrustumBoundingBox(scene Scene.IScen
 	for i := range frustumPoints {
 		frustumPoints[i] = tmpViewMatrix.MulVector(frustumPoints[i])
 	}
-	boundingBox := BoundingBox.NewAABB(frustumPoints[:])
+	boundingBox := BoundingVolume.NewAABB(frustumPoints[:])
 	boundingBox.Max[2] += offset
 
 	return boundingBox, tmpViewMatrix.Inverse().MulVector(boundingBox.GetCenter())
@@ -133,10 +133,10 @@ func (light *UBODirectionalLight) calcCameraFrustumPoints(camera Camera.ICamera)
 	projectionConfig := camera.GetProjection()
 	position := camera.GetPosition()
 
-	farWidth := light.ShadowMap.Distance.Get() * GeometryMath.Tan(GeometryMath.Radians(projectionConfig.Fovy))
-	nearWidth := float32(near_plane) * GeometryMath.Tan(projectionConfig.Fovy)
-	farHeight := farWidth * projectionConfig.Aspect
-	nearHeight := nearWidth * projectionConfig.Aspect
+	farHeight := light.ShadowMap.Distance.Get() * GeometryMath.Tan(GeometryMath.Radians(projectionConfig.Fovy*0.5))
+	nearHeight := float32(near_plane) * GeometryMath.Tan(projectionConfig.Fovy*0.5)
+	farWidth := farHeight * projectionConfig.Aspect
+	nearWidth := nearHeight * projectionConfig.Aspect
 
 	front := camera.GetFront()
 	up := camera.GetUp()

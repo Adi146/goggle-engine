@@ -26,6 +26,7 @@ type UBOCamera struct {
 	up    GeometryMath.Vector3
 
 	projectionConfig GeometryMath.PerspectiveConfig
+	frustum          PlaneFrustum
 }
 
 func (camera *UBOCamera) ForceUpdate() {
@@ -50,6 +51,8 @@ func (camera *UBOCamera) Update(position GeometryMath.Vector3, front GeometryMat
 
 	camera.front = front
 	camera.up = up
+
+	camera.frustum.Update(position, front, up)
 }
 
 func (camera *UBOCamera) GetViewMatrix() GeometryMath.Matrix4x4 {
@@ -71,6 +74,7 @@ func (camera *UBOCamera) GetUp() GeometryMath.Vector3 {
 func (camera *UBOCamera) SetProjection(projection GeometryMath.PerspectiveConfig) {
 	camera.projectionMatrix.Set(projection.Decode())
 	camera.projectionConfig = projection
+	camera.frustum.UpdateProjectionConfig(projection)
 }
 
 func (camera *UBOCamera) GetProjection() GeometryMath.PerspectiveConfig {
@@ -79,6 +83,10 @@ func (camera *UBOCamera) GetProjection() GeometryMath.PerspectiveConfig {
 
 func (camera *UBOCamera) GetProjectionMatrix() GeometryMath.Matrix4x4 {
 	return camera.projectionMatrix.Get()
+}
+
+func (camera *UBOCamera) GetFrustum() IFrustum {
+	return &camera.frustum
 }
 
 func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {

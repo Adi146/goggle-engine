@@ -18,6 +18,10 @@ func Tan(a float32) float32 {
 	return float32(math.Tan(float64(a)))
 }
 
+func ATan(a float32) float32 {
+	return float32(math.Atan(float64(a)))
+}
+
 func ASin(a float32) float32 {
 	return float32(math.Asin(float64(a)))
 }

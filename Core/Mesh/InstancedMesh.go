@@ -2,7 +2,7 @@ package Mesh
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/BoundingBox"
+	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -38,12 +38,12 @@ func NewInstancedMeshes(mesh IMesh, matrices ...GeometryMath.Matrix4x4) ([]*Inst
 		for i := range matrices {
 			instances[i] = &InstancedMesh{
 				Mesh: Mesh{
-					VertexBuffer:  mesh.GetVertexBuffer(),
-					VertexArray:   NewInstancedVertexArray(mesh.GetVertexArray(), mbo),
-					IndexBuffer:   mesh.GetIndexBuffer(),
-					BoundingBox:   mesh.GetBoundingBox(),
-					ModelMatrix:   mesh.GetModelMatrix(),
-					PrimitiveType: mesh.GetPrimitiveType(),
+					VertexBuffer:   mesh.GetVertexBuffer(),
+					VertexArray:    NewInstancedVertexArray(mesh.GetVertexArray(), mbo),
+					IndexBuffer:    mesh.GetIndexBuffer(),
+					BoundingVolume: mesh.GetBoundingVolume(),
+					ModelMatrix:    mesh.GetModelMatrix(),
+					PrimitiveType:  mesh.GetPrimitiveType(),
 				},
 				MasterMatrix: &masterMatrix,
 				MatrixBuffer: mbo,
@@ -82,8 +82,8 @@ func (mesh *InstancedMesh) SetMasterMatrix(mat GeometryMath.Matrix4x4) {
 	*mesh.MasterMatrix = mat
 }
 
-func (mesh *InstancedMesh) GetBoundingBoxTransformed() BoundingBox.AABB {
-	return mesh.BoundingBox.Transform(mesh.GetModelMatrix().Mul(*mesh.MasterMatrix))
+func (mesh *InstancedMesh) GetBoundingVolumeTransformed() BoundingVolume.IBoundingVolume {
+	return mesh.BoundingVolume.Transform(mesh.GetModelMatrix().Mul(*mesh.MasterMatrix))
 }
 
 func (mesh *InstancedMesh) CreateNewInstances(matrices ...GeometryMath.Matrix4x4) ([]*InstancedMesh, error) {
@@ -99,10 +99,10 @@ func (mesh *InstancedMesh) CreateNewInstances(matrices ...GeometryMath.Matrix4x4
 	for i := range matrices {
 		instances[i] = &InstancedMesh{
 			Mesh: Mesh{
-				VertexBuffer: mesh.GetVertexBuffer(),
-				VertexArray:  mesh.GetVertexArray(),
-				IndexBuffer:  mesh.GetIndexBuffer(),
-				BoundingBox:  mesh.GetBoundingBox(),
+				VertexBuffer:   mesh.GetVertexBuffer(),
+				VertexArray:    mesh.GetVertexArray(),
+				IndexBuffer:    mesh.GetIndexBuffer(),
+				BoundingVolume: mesh.GetBoundingVolume(),
 			},
 			MasterMatrix: mesh.MasterMatrix,
 			MatrixBuffer: mesh.MatrixBuffer,

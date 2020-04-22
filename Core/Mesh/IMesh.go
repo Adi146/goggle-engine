@@ -1,14 +1,14 @@
 package Mesh
 
 import (
-	"github.com/Adi146/goggle-engine/Core/BoundingBox"
+	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 )
 
 type IMesh interface {
 	Scene.IDrawable
-	BoundingBox.ICollisionObject
+	BoundingVolume.ICollisionObject
 
 	GetVertexBuffer() ArrayBuffer
 	GetVertexArray() VertexArray
@@ -18,4 +18,7 @@ type IMesh interface {
 	SetModelMatrix(mat GeometryMath.Matrix4x4)
 
 	GetPrimitiveType() PrimitiveType
+
+	EnableFrustumCulling()
+	DisableFrustumCulling()
 }

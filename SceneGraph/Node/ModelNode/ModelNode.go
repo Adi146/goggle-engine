@@ -102,6 +102,7 @@ func (node *ModelNode) UnmarshalYAML(value *yaml.Node) error {
 	node.Shader = yamlConfig.Shader
 	node.MasterMatrix = yamlConfig.MasterMatrix
 	node.SetModelMatrix(node.GetGlobalTransformation())
+	node.EnableFrustumCulling()
 
 	if node.MasterMatrix == (GeometryMath.Matrix4x4{}) {
 		node.MasterMatrix = GeometryMath.Identity()

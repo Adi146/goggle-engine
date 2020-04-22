@@ -1,11 +1,9 @@
 package Terrain
 
 import (
-	"github.com/Adi146/goggle-engine/Core/Camera"
+	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
-	"github.com/Adi146/goggle-engine/Core/Scene"
-	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/go-gl/gl/all-core/gl"
 )
 
@@ -50,45 +48,12 @@ func generateChunk(heightMap *HeightMap, offsetX, offsetZ int, chunkRows, chunkC
 		indices = append(indices, restartIndex)
 	}
 
-	mesh := Mesh.NewMesh(vertices, indices)
+	mesh := Mesh.NewMesh(vertices, indices, BoundingVolume.NewBoundingVolumeAABB)
+	mesh.EnableFrustumCulling()
 	mesh.IndexBuffer.RestartIndex = restartIndex
 	mesh.PrimitiveType = gl.TRIANGLE_STRIP
 
 	return Chunk{
 		Mesh: *mesh,
 	}
-}
-
-func (chunk *Chunk) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
-	if chunk.clip(scene.GetCamera()) {
-		return chunk.Mesh.Draw(shader, invoker, scene)
-	}
-
-	return nil
-}
-
-func (chunk *Chunk) clip(camera Camera.ICamera) bool {
-	boundingBox := chunk.GetBoundingBox()
-	vertices := []GeometryMath.Vector4{
-		{boundingBox.Min.X(), boundingBox.Min.Y(), boundingBox.Min.Z(), 1.0},
-		{boundingBox.Min.X(), boundingBox.Min.Y(), boundingBox.Max.Z(), 1.0},
-		{boundingBox.Min.X(), boundingBox.Max.Y(), boundingBox.Max.Z(), 1.0},
-		{boundingBox.Max.X(), boundingBox.Max.Y(), boundingBox.Max.Z(), 1.0},
-		{boundingBox.Max.X(), boundingBox.Min.Y(), boundingBox.Min.Z(), 1.0},
-		{boundingBox.Max.X(), boundingBox.Max.Y(), boundingBox.Min.Z(), 1.0},
-		{boundingBox.Max.X(), boundingBox.Min.Y(), boundingBox.Max.Z(), 1.0},
-		{boundingBox.Min.X(), boundingBox.Max.Y(), boundingBox.Min.Z(), 1.0},
-	}
-
-	for _, vertex := range vertices {
-		clipCoord := camera.GetProjectionMatrix().Mul(camera.GetViewMatrix().Mul(chunk.GetModelMatrix())).MulVector4(vertex)
-
-		if (clipCoord.X() < clipCoord.W() && clipCoord.X() > -clipCoord.W()) ||
-			(clipCoord.Y() < clipCoord.W() && clipCoord.Y() > -clipCoord.W()) ||
-			(clipCoord.Z() < clipCoord.W() && clipCoord.Z() > -clipCoord.W()) {
-			return true
-		}
-	}
-
-	return false
 }

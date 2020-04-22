@@ -31,5 +31,5 @@ var (
 )
 
 func NewQuad() *Mesh.Mesh {
-	return Mesh.NewMesh(quadVertices, quadIndices)
+	return Mesh.NewMesh(quadVertices, quadIndices, nil)
 }

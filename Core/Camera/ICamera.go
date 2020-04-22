@@ -10,4 +10,5 @@ type ICamera interface {
 	SetProjection(projection GeometryMath.PerspectiveConfig)
 	GetProjection() GeometryMath.PerspectiveConfig
 	GetProjectionMatrix() GeometryMath.Matrix4x4
+	GetFrustum() IFrustum
 }

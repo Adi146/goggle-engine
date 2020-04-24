@@ -2,6 +2,7 @@ package Mesh
 
 import (
 	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -42,10 +43,10 @@ func NewMesh(vertices []Vertex, indices []uint32, boundingVolume func(vertices [
 	return &mesh
 }
 
-func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
+func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	var err Error.ErrorCollection
 
-	if !mesh.FrustumCulling || (mesh.FrustumCulling && scene.GetCamera().GetFrustum().Contains(mesh.GetBoundingVolumeTransformed())) {
+	if !mesh.FrustumCulling || (mesh.FrustumCulling && camera.GetFrustum().Contains(mesh.GetBoundingVolumeTransformed())) {
 		err.Push(shader.BindObject(&mesh.ModelMatrix))
 		err.Push(shader.BindObject(mesh.VertexArray))
 		mesh.IndexBuffer.Bind()

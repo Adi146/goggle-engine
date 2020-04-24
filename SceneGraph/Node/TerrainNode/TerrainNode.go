@@ -1,6 +1,7 @@
 package TerrainNode
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	coreScene "github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Terrain"
@@ -33,7 +34,7 @@ func (node *TerrainNode) Tick(timeDelta float32) error {
 	return err
 }
 
-func (node *TerrainNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
+func (node *TerrainNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene, camera Camera.ICamera) error {
 	if shader == nil {
 		node.Shader.Bind()
 		defer node.Shader.Unbind()
@@ -41,7 +42,7 @@ func (node *TerrainNode) Draw(shader Shader.IShaderProgram, invoker coreScene.ID
 		shader = node.Shader
 	}
 
-	return node.Terrain.Draw(shader, invoker, scene)
+	return node.Terrain.Draw(shader, invoker, scene, camera)
 }
 
 func (node *TerrainNode) SetBase(base Scene.INode) {

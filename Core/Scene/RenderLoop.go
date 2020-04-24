@@ -11,7 +11,7 @@ func RunRenderLoop(scene IScene) {
 		timeDelta, _ := scene.GetWindow().GetTimeDeltaAndFPS()
 		scene.Tick(timeDelta)
 
-		Log.Error(scene.Draw(nil, nil, nil), "Render Error")
+		Log.Error(scene.Draw(nil, nil, nil, nil), "Render Error")
 
 		scene.GetWindow().SwapWindow()
 	}

@@ -47,7 +47,7 @@ func (scene *SceneBase) Clear() {
 	scene.transparentObjects = []ITransparentDrawable{}
 }
 
-func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
+func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, origin IScene, camera Camera.ICamera) error {
 	if shader != nil {
 		shader.Bind()
 		defer shader.Unbind()
@@ -57,6 +57,9 @@ func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, or
 	}
 	if origin == nil {
 		origin = scene
+	}
+	if camera == nil {
+		camera = scene.GetCamera()
 	}
 
 	if invoker == scene {
@@ -69,9 +72,9 @@ func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, or
 	}
 
 	var err Error.ErrorCollection
-	err.Push(scene.drawPreRenderObjects(shader, invoker, origin))
-	err.Push(scene.drawOpaqueObjects(shader, invoker, origin))
-	err.Push(scene.drawTransparentObjects(shader, invoker, origin))
+	err.Push(scene.drawPreRenderObjects(shader, invoker, origin, camera))
+	err.Push(scene.drawOpaqueObjects(shader, invoker, origin, camera))
+	err.Push(scene.drawTransparentObjects(shader, invoker, origin, camera))
 
 	if err.Len() != 0 {
 		Log.Error(&err, "render error")
@@ -80,27 +83,27 @@ func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, or
 	return err.Err()
 }
 
-func (scene *SceneBase) drawPreRenderObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
+func (scene *SceneBase) drawPreRenderObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene, camera Camera.ICamera) error {
 	var err Error.ErrorCollection
 
 	for i := 0; i < len(scene.preRenderObjects); i++ {
-		err.Push(scene.preRenderObjects[i].Draw(shader, invoker, origin))
+		err.Push(scene.preRenderObjects[i].Draw(shader, invoker, origin, camera))
 	}
 
 	return err.Err()
 }
 
-func (scene *SceneBase) drawOpaqueObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
+func (scene *SceneBase) drawOpaqueObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene, camera Camera.ICamera) error {
 	var err Error.ErrorCollection
 
 	for i := 0; i < len(scene.opaqueObjects); i++ {
-		err.Push(scene.opaqueObjects[i].Draw(shader, invoker, origin))
+		err.Push(scene.opaqueObjects[i].Draw(shader, invoker, origin, camera))
 	}
 
 	return err.Err()
 }
 
-func (scene *SceneBase) drawTransparentObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene) error {
+func (scene *SceneBase) drawTransparentObjects(shader Shader.IShaderProgram, invoker IDrawable, origin IScene, camera Camera.ICamera) error {
 	var err Error.ErrorCollection
 	cameraPosition := scene.Camera.GetPosition()
 
@@ -113,7 +116,7 @@ func (scene *SceneBase) drawTransparentObjects(shader Shader.IShaderProgram, inv
 	}
 	sort.Sort(byDistance(transparentDrawables))
 	for _, drawable := range transparentDrawables {
-		err.Push(drawable.Draw(shader, invoker, origin))
+		err.Push(drawable.Draw(shader, invoker, origin, camera))
 	}
 
 	return err.Err()

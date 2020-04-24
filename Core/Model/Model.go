@@ -2,6 +2,7 @@ package Model
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
@@ -17,12 +18,12 @@ type Model struct {
 	Material Material.IMaterial
 }
 
-func (model *Model) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
+func (model *Model) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	if drawable, isDrawable := model.IMesh.(Scene.IDrawable); isDrawable {
 		var err Error.ErrorCollection
 
 		err.Push(shader.BindObject(model.Material))
-		err.Push(drawable.Draw(shader, invoker, scene))
+		err.Push(drawable.Draw(shader, invoker, scene, camera))
 		model.Material.Unbind()
 
 		return err.Err()

@@ -1,4 +1,5 @@
 #version 410 core
+#define MAX_DIRECTIONAL_LIGHTS 32
 
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec2 a_uv;
@@ -9,6 +10,7 @@ out VS_OUT {
 } vs_out;
 
 layout (std140) uniform directionalLight {
+    int u_numDirectionalLights;
     struct {
         vec3 direction;
 
@@ -20,13 +22,14 @@ layout (std140) uniform directionalLight {
 
         float distance;
         float transitionDistance;
-    } u_directionalLight;
+    } u_directionalLights[MAX_DIRECTIONAL_LIGHTS];
 };
 
 uniform mat4 u_modelMatrix;
+uniform int u_lightIndex;
 
 void main() {
-    gl_Position = vec4(a_position, 1.0) * (u_modelMatrix * a_instanceMatrix * u_directionalLight.viewProjectionMatrix);
+    gl_Position = vec4(a_position, 1.0) * (u_modelMatrix * a_instanceMatrix * u_directionalLights[u_lightIndex].viewProjectionMatrix);
 
     vs_out.uv = a_uv;
 }

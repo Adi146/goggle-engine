@@ -2,6 +2,7 @@ package Light
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
@@ -88,7 +89,7 @@ func (light *UBOPointLight) SetPosition(pos GeometryMath.Vector3) {
 	light.ShadowMap.ViewProjection[5].Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(GeometryMath.Vector3{0.0, 0.0, -1.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
 }
 
-func (light *UBOPointLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
+func (light *UBOPointLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	_, isPointLight := invoker.(*UBOPointLight)
 	_, isDirectionalLight := invoker.(*UBODirectionalLight)
 	_, isSpotLight := invoker.(*UBOSpotLight)
@@ -116,7 +117,7 @@ func (light *UBOPointLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDr
 		return err
 	}
 
-	return scene.Draw(light.ShadowMap.Shader, light, scene)
+	return scene.Draw(light.ShadowMap.Shader, light, scene, camera)
 }
 
 func (light *UBOPointLight) UnmarshalYAML(value *yaml.Node) error {

@@ -1,6 +1,7 @@
 package Light
 
 import (
+	"fmt"
 	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
@@ -24,7 +25,7 @@ const (
 	directionalLight_offset_transitionDistance = 132
 
 	directionalLight_size_section = 144
-	directionalLight_ubo_size     = directionalLight_size_section
+	directionalLight_ubo_size     = UniformBuffer.ArrayUniformBuffer_offset_elements + UniformBuffer.Num_elements*directionalLight_size_section
 	DirectionalLight_ubo_type     = "directionalLight"
 
 	DirectionalLight_fbo_type = "shadowMap_directionalLight"
@@ -46,6 +47,7 @@ type UBODirectionalLight struct {
 		TransitionDistance UniformBufferSection.Float
 		Shader             Shader.IShaderProgram
 		FrameBuffer        FrameBuffer.FrameBuffer
+		Index int
 	}
 }
 
@@ -77,7 +79,7 @@ func (light *UBODirectionalLight) SetDirection(val GeometryMath.Vector3) {
 	light.Direction.Set(val)
 }
 
-func (light *UBODirectionalLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
+func (light *UBODirectionalLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	_, isPointLight := invoker.(*UBOPointLight)
 	_, isDirectionalLight := invoker.(*UBODirectionalLight)
 	_, isSpotLight := invoker.(*UBOSpotLight)
@@ -103,7 +105,11 @@ func (light *UBODirectionalLight) Draw(shader Shader.IShaderProgram, invoker Sce
 		defer shader.Bind()
 	}
 
-	return scene.Draw(light.ShadowMap.Shader, light, scene)
+	if err := light.ShadowMap.Shader.BindObject(int32(light.ShadowMap.Index)); err != nil {
+		return err
+	}
+
+	return scene.Draw(light.ShadowMap.Shader, light, scene, camera)
 }
 
 func (light *UBODirectionalLight) updateShadowCamera(scene Scene.IScene) {
@@ -166,11 +172,15 @@ func (light *UBODirectionalLight) calcCameraFrustumPoints(camera Camera.ICamera)
 
 func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 	uboYamlConfig := struct {
-		UniformBuffer *UniformBuffer.UniformBuffer `yaml:"uniformBuffer"`
+		Ptr *UniformBuffer.ArrayUniformBufferPtr `yaml:"uniformBuffer"`
 	}{
-		UniformBuffer: &UniformBuffer.UniformBuffer{
-			Size: directionalLight_ubo_size,
-			Type: DirectionalLight_ubo_type,
+		Ptr: &UniformBuffer.ArrayUniformBufferPtr{
+			ArrayUniformBuffer: &UniformBuffer.ArrayUniformBuffer{
+				UniformBuffer: &UniformBuffer.UniformBuffer{
+					Size: directionalLight_ubo_size,
+					Type: DirectionalLight_ubo_type,
+				},
+			},
 		},
 	}
 	if err := value.Decode(&uboYamlConfig); err != nil {
@@ -220,10 +230,18 @@ func (light *UBODirectionalLight) UnmarshalYAML(value *yaml.Node) error {
 	light.ShadowMap.Shader = yamlConfig.ShadowMap.Shader.IShaderProgram
 	light.ShadowMap.FrameBuffer = yamlConfig.ShadowMap.FrameBuffer
 
-	light.SetUniformBuffer(uboYamlConfig.UniformBuffer, 0)
+	index, err := uboYamlConfig.Ptr.AddElement(light)
+	if err != nil {
+		return err
+	}
+	light.ShadowMap.Index = index
 
 	for _, shader := range yamlConfig.Shaders {
-		if err := shader.BindObject(texture); err != nil {
+		uniformAddress, err := shader.GetUniformAddress(texture)
+		if err != nil {
+			return err
+		}
+		if err := shader.BindUniform(texture, fmt.Sprintf(uniformAddress, index)); err != nil {
 			Log.Error(err, "")
 		}
 	}

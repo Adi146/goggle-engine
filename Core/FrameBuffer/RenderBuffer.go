@@ -27,6 +27,14 @@ func NewDepth24Stencil8Rbo(width int32, height int32) *RenderBuffer {
 	return buff
 }
 
+func NewDepth24Stencil8MultisampleRbo(width int32, height int32, samples int32) *RenderBuffer {
+	buff := NewRenderBuffer()
+
+	gl.NamedRenderbufferStorageMultisample(buff.GetID(), samples, gl.DEPTH24_STENCIL8, width, height)
+
+	return buff
+}
+
 func (buff *RenderBuffer) GetID() uint32 {
 	return buff.rbo
 }

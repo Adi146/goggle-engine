@@ -1,6 +1,7 @@
 package Terrain
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Scene"
@@ -55,12 +56,12 @@ func GenerateTerrain(heightMap HeightMap, tileSize float32) (*Terrain, error) {
 	}, nil
 }
 
-func (terrain *Terrain) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
+func (terrain *Terrain) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	var err Error.ErrorCollection
 
 	err.Push(shader.BindObject(terrain.Material))
 	for _, chunk := range terrain.Chunks {
-		err.Push(chunk.Draw(shader, invoker, scene))
+		err.Push(chunk.Draw(shader, invoker, scene, camera))
 	}
 	terrain.Material.Unbind()
 

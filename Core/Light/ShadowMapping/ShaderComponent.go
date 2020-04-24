@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	ua_shadowMapDirectionalLight = "u_shadowMapDirectionalLight"
-	ua_shadowMapsPointLight      = "u_shadowMapsPointLight[%d]"
+	ua_shadowMapDirectionalLight = "u_shadowMapDirectionalLights[%d]"
+	ua_shadowMapsPointLight      = "u_shadowMapsPointLights[%d]"
 	ua_shadowMapsSpotLight       = "u_shadowMapsSpotLights[%d]"
 )
 
@@ -36,20 +36,5 @@ func (program *ShaderComponent) GetUniformAddress(i interface{}) (string, error)
 }
 
 func (program *ShaderComponent) BindObject(i interface{}) error {
-	uniformAddress, err := program.GetUniformAddress(i)
-	if err != nil {
-		return err
-	}
-
-	switch v := i.(type) {
-	case Texture.ITexture:
-		switch t := v.GetType(); t {
-		case Light.ShadowMapDirectionalLight:
-			return program.BindUniform(v, uniformAddress)
-		case Light.ShadowMapPointLight, Light.ShadowMapSpotLight:
-			return fmt.Errorf("use GetUniformAddress and specify index instead")
-		}
-	}
-
-	return err
+	return fmt.Errorf("use GetUniformAddress and specify index instead")
 }

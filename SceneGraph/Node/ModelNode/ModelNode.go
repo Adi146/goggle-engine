@@ -2,6 +2,7 @@ package ModelNode
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model"
@@ -49,7 +50,7 @@ func (node *ModelNode) Tick(timeDelta float32) error {
 	return err
 }
 
-func (node *ModelNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
+func (node *ModelNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene, camera Camera.ICamera) error {
 	if shader == nil {
 		node.Shader.Bind()
 		defer node.Shader.Unbind()
@@ -57,7 +58,7 @@ func (node *ModelNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDra
 		shader = node.Shader
 	}
 
-	return node.Model.Draw(shader, invoker, scene)
+	return node.Model.Draw(shader, invoker, scene, camera)
 }
 
 func (node *ModelNode) SetBase(base Scene.INode) {

@@ -1,6 +1,7 @@
 package Mesh
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -42,16 +43,16 @@ func NewInstanceMasterMesh(mesh *Mesh, matrices ...GeometryMath.Matrix4x4) *Inst
 	return &master
 }
 
-func (mesh *InstanceMasterMesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
+func (mesh *InstanceMasterMesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	var err Error.ErrorCollection
 
 	var matrices []GeometryMath.Matrix4x4
-	if !mesh.FrustumCulling || (mesh.FrustumCulling && scene.GetCamera().GetFrustum().Contains(mesh.GetBoundingVolumeTransformed())) {
+	if !mesh.FrustumCulling || (mesh.FrustumCulling && camera.GetFrustum().Contains(mesh.GetBoundingVolumeTransformed())) {
 		matrices = append(matrices, mesh.GetModelMatrix())
 	}
 
 	for _, instance := range mesh.Instances {
-		if !instance.FrustumCulling || (instance.FrustumCulling && scene.GetCamera().GetFrustum().Contains(instance.GetBoundingVolumeTransformed())) {
+		if !instance.FrustumCulling || (instance.FrustumCulling && camera.GetFrustum().Contains(instance.GetBoundingVolumeTransformed())) {
 			matrices = append(matrices, instance.GetModelMatrix())
 		}
 	}

@@ -1,6 +1,7 @@
 package Skybox
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
@@ -54,12 +55,12 @@ func NewSkybox(texture *Texture.CubeMap) (*Skybox, error) {
 	}, nil
 }
 
-func (skybox *Skybox) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene) error {
+func (skybox *Skybox) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	defer Function.GetCurrentDepthFunction().Set()
 	Function.LessEqual.Set()
 
 	err := shader.BindObject(skybox.CubeMap)
-	skybox.Mesh.Draw(shader, nil, nil)
+	skybox.Mesh.Draw(shader, invoker, scene, camera)
 	skybox.CubeMap.Unbind()
 
 	return err

@@ -1,6 +1,7 @@
 package Node
 
 import (
+	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
 	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
@@ -44,7 +45,7 @@ func (node *PostProcessingNode) Tick(timeDelta float32) error {
 	return err
 }
 
-func (node *PostProcessingNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene) error {
+func (node *PostProcessingNode) Draw(shader Shader.IShaderProgram, invoker coreScene.IDrawable, scene coreScene.IScene, camera Camera.ICamera) error {
 	if invoker != scene {
 		return nil
 	}
@@ -53,7 +54,7 @@ func (node *PostProcessingNode) Draw(shader Shader.IShaderProgram, invoker coreS
 	node.FrameBuffer.Bind()
 	node.FrameBuffer.Clear()
 
-	err := scene.Draw(shader, node, scene)
+	err := scene.Draw(shader, node, scene, camera)
 	oldFrameBuffer.Bind()
 	if err != nil {
 		return err
@@ -73,7 +74,7 @@ func (node *PostProcessingNode) Draw(shader Shader.IShaderProgram, invoker coreS
 	}
 
 	scene.Clear()
-	return node.Quad.Draw(node.Shader, node, scene)
+	return node.Quad.Draw(node.Shader, node, scene, nil)
 }
 
 func (node *PostProcessingNode) SetBase(base Scene.INode) {

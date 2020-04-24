@@ -3,6 +3,7 @@ package Skybox
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
+	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 
@@ -61,6 +62,8 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	switch v := i.(type) {
 	case Mesh.VertexArray:
 		v.Bind()
+		return nil
+	case *GeometryMath.Matrix4x4:
 		return nil
 	default:
 		uniformAddress, err := program.GetUniformAddress(i)

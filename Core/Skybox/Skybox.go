@@ -8,6 +8,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
+	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 var (
@@ -56,12 +57,14 @@ func NewSkybox(texture *Texture.CubeMap) (*Skybox, error) {
 }
 
 func (skybox *Skybox) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
+	var err Error.ErrorCollection
+
 	defer Function.GetCurrentDepthFunction().Set()
 	Function.LessEqual.Set()
 
-	err := shader.BindObject(skybox.CubeMap)
-	skybox.Mesh.Draw(shader, invoker, scene, camera)
+	err.Push(shader.BindObject(skybox.CubeMap))
+	err.Push(skybox.Mesh.Draw(shader, invoker, scene, camera))
 	skybox.CubeMap.Unbind()
 
-	return err
+	return err.Err()
 }

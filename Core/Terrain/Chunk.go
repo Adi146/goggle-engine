@@ -46,7 +46,7 @@ func generateChunk(heightMap *HeightMap, offsetX, offsetZ int, chunkRows, chunkC
 		}
 
 		indices = append(indices, restartIndex)
-}
+	}
 
 	mesh := Mesh.NewMesh(vertices, indices, BoundingVolume.NewBoundingVolumeAABB)
 	mesh.EnableFrustumCulling()

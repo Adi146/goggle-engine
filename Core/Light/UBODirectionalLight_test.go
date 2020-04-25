@@ -38,17 +38,17 @@ shadowMap:
 	expectedDiffuse := GeometryMath.Vector3{0.8, 0.8, 0.8}
 	expectedSpecular := GeometryMath.Vector3{0.8, 0.8, 0.8}
 
-	if light.Direction.Get() != expectedDirection {
-		t.Errorf("direction value not matching (expecting %f, got %f", expectedDirection, light.Direction.Get())
+	if light.DirectionalLight.Direction.Get() != expectedDirection {
+		t.Errorf("direction value not matching (expecting %f, got %f", expectedDirection, light.DirectionalLight.Direction.Get())
 	}
-	if light.Ambient.Get() != expectedAmbient {
-		t.Errorf("ambient value not matching (expecting %f, got %f", expectedAmbient, light.Ambient.Get())
+	if light.DirectionalLight.Ambient.Get() != expectedAmbient {
+		t.Errorf("ambient value not matching (expecting %f, got %f", expectedAmbient, light.DirectionalLight.Ambient.Get())
 	}
-	if light.Diffuse.Get() != expectedDiffuse {
-		t.Errorf("diffuse value not matching (expecting %f, got %f", expectedDiffuse, light.Diffuse.Get())
+	if light.DirectionalLight.Diffuse.Get() != expectedDiffuse {
+		t.Errorf("diffuse value not matching (expecting %f, got %f", expectedDiffuse, light.DirectionalLight.Diffuse.Get())
 	}
-	if light.Specular.Get() != expectedSpecular {
-		t.Errorf("specular value not matching (expecting %f, got %f", expectedSpecular, light.Specular.Get())
+	if light.DirectionalLight.Specular.Get() != expectedSpecular {
+		t.Errorf("specular value not matching (expecting %f, got %f", expectedSpecular, light.DirectionalLight.Specular.Get())
 	}
 
 	expectedDistance := float32(200)

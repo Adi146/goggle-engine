@@ -3,7 +3,6 @@ package ShadowMapping
 import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
@@ -20,6 +19,10 @@ const (
 	ua_pointLight       = "pointLight"
 	ua_spotLight        = "spotLight"
 	ua_lightIndex       = "u_lightIndex"
+
+	DirectionalLight_ubo_type = "directionalLight"
+	PointLight_ubo_type       = "pointLight"
+	SpotLight_ubo_type        = "spotLight"
 )
 
 type ShaderProgram struct {
@@ -60,11 +63,11 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 		return ua_modelMatrix, nil
 	case UniformBuffer.IUniformBuffer:
 		switch t := v.GetType(); t {
-		case Light.DirectionalLight_ubo_type:
+		case DirectionalLight_ubo_type:
 			return ua_directionalLight, nil
-		case Light.PointLight_ubo_type:
+		case PointLight_ubo_type:
 			return ua_pointLight, nil
-		case Light.SpotLight_ubo_type:
+		case SpotLight_ubo_type:
 			return ua_spotLight, nil
 		default:
 			return "", fmt.Errorf("shadow map shader does not support unifrom buffer of type %s", t)

@@ -54,7 +54,7 @@ func (m1 *Matrix4x4) UnmarshalYAML(value *yaml.Node) error {
 func getMatrixConfig(yamlKey string) (IMatrixConfig, error) {
 	switch yamlKey {
 	case yaml_key_orthogonal:
-		return new(orthogonalConfig), nil
+		return new(OrthographicConfig), nil
 	case yaml_key_perspective:
 		return new(PerspectiveConfig), nil
 	case yaml_key_rotation:
@@ -66,42 +66,6 @@ func getMatrixConfig(yamlKey string) (IMatrixConfig, error) {
 	default:
 		return nil, fmt.Errorf("matrix key %s is not supported", yamlKey)
 	}
-}
-
-type orthogonalConfig struct {
-	Left   float32 `yaml:"left"`
-	Right  float32 `yaml:"right"`
-	Bottom float32 `yaml:"bottom"`
-	Top    float32 `yaml:"top"`
-	Near   float32 `yaml:"near"`
-	Far    float32 `yaml:"far"`
-}
-
-func (config *orthogonalConfig) Decode() Matrix4x4 {
-	return Orthographic(
-		config.Left,
-		config.Right,
-		config.Bottom,
-		config.Top,
-		config.Near,
-		config.Far,
-	)
-}
-
-type PerspectiveConfig struct {
-	Fovy   float32 `yaml:"fovy"`
-	Aspect float32 `yaml:"aspect"`
-	Near   float32 `yaml:"near"`
-	Far    float32 `yaml:"far"`
-}
-
-func (config *PerspectiveConfig) Decode() Matrix4x4 {
-	return Perspective(
-		Radians(config.Fovy),
-		config.Aspect,
-		config.Near,
-		config.Far,
-	)
 }
 
 type rotationConfig struct {

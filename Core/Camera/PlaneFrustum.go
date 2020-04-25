@@ -6,13 +6,6 @@ import (
 )
 
 type PlaneFrustum struct {
-	Dimensions struct {
-		FarHeight  float32
-		FarWidth   float32
-		NearHeight float32
-		NearWidth  float32
-	}
-
 	Planes struct {
 		Far    GeometryMath.Plane3
 		Near   GeometryMath.Plane3
@@ -22,14 +15,24 @@ type PlaneFrustum struct {
 		Left   GeometryMath.Plane3
 	}
 
-	ProjectionConfig GeometryMath.PerspectiveConfig
+	Dimensions struct {
+		FarHeight  float32
+		FarWidth   float32
+		NearHeight float32
+		NearWidth  float32
+	}
+
+	ProjectionConfig GeometryMath.IProjectionConfig
 }
 
-func (frustum *PlaneFrustum) Update(position GeometryMath.Vector3, front GeometryMath.Vector3, up GeometryMath.Vector3) {
-	right := front.Cross(up)
+func (frustum *PlaneFrustum) Update(camera ICamera) {
+	position := camera.GetPosition()
+	front := camera.GetFront()
+	up := camera.GetUp()
+	right := camera.GetRight()
 
-	centerFar := position.Add(front.MulScalar(frustum.ProjectionConfig.Far))
-	centerNear := position.Add(front.MulScalar(frustum.ProjectionConfig.Near))
+	centerFar := position.Add(front.MulScalar(frustum.ProjectionConfig.GetFar()))
+	centerNear := position.Add(front.MulScalar(frustum.ProjectionConfig.GetNear()))
 
 	frustum.Planes.Near = GeometryMath.NewPlane(front, centerNear)
 	frustum.Planes.Far = GeometryMath.NewPlane(front.Invert(), centerFar)
@@ -39,32 +42,33 @@ func (frustum *PlaneFrustum) Update(position GeometryMath.Vector3, front Geometr
 	nearRight := centerNear.Add(right.MulScalar(frustum.Dimensions.NearWidth))
 	nearLeft := centerNear.Sub(right.MulScalar(frustum.Dimensions.NearWidth))
 
-	aux := nearTop.Sub(position).Normalize()
+	farTop := centerFar.Add(up.MulScalar(frustum.Dimensions.FarHeight))
+	farBottom := centerFar.Sub(up.MulScalar(frustum.Dimensions.FarHeight))
+	farRight := centerFar.Add(right.MulScalar(frustum.Dimensions.FarWidth))
+	farLeft := centerFar.Sub(right.MulScalar(frustum.Dimensions.FarWidth))
+
+	aux := farTop.Sub(nearTop).Normalize()
 	normal := aux.Cross(right)
 	frustum.Planes.Top = GeometryMath.NewPlane(normal, nearTop)
 
-	aux = nearBottom.Sub(position).Normalize()
+	aux = farBottom.Sub(nearBottom).Normalize()
 	normal = right.Cross(aux)
 	frustum.Planes.Bottom = GeometryMath.NewPlane(normal, nearBottom)
 
-	aux = nearRight.Sub(position).Normalize()
+	aux = farRight.Sub(nearRight).Normalize()
 	normal = up.Cross(aux)
 	frustum.Planes.Right = GeometryMath.NewPlane(normal, nearRight)
 
-	aux = nearLeft.Sub(position).Normalize()
+	aux = farLeft.Sub(nearLeft).Normalize()
 	normal = aux.Cross(up)
 	frustum.Planes.Left = GeometryMath.NewPlane(normal, nearLeft)
 }
 
-func (frustum *PlaneFrustum) UpdateProjectionConfig(projectionConfig GeometryMath.PerspectiveConfig) {
+func (frustum *PlaneFrustum) UpdateProjectionConfig(projectionConfig GeometryMath.IProjectionConfig) {
 	frustum.ProjectionConfig = projectionConfig
 
-	tanY := GeometryMath.Tan(GeometryMath.Radians(projectionConfig.Fovy * 0.5))
-
-	frustum.Dimensions.FarHeight = frustum.ProjectionConfig.Far * tanY
-	frustum.Dimensions.NearHeight = frustum.ProjectionConfig.Near * tanY
-	frustum.Dimensions.FarWidth = frustum.Dimensions.FarHeight * projectionConfig.Aspect
-	frustum.Dimensions.NearWidth = frustum.Dimensions.NearHeight * projectionConfig.Aspect
+	frustum.Dimensions.NearWidth, frustum.Dimensions.NearHeight = projectionConfig.GetPlane(projectionConfig.GetNear())
+	frustum.Dimensions.FarWidth, frustum.Dimensions.FarHeight = projectionConfig.GetPlane(projectionConfig.GetFar())
 }
 
 func (frustum *PlaneFrustum) Contains(volume BoundingVolume.IBoundingVolume) bool {
@@ -107,4 +111,8 @@ func (frustum *PlaneFrustum) GetAllPlanes() []GeometryMath.Plane3 {
 		frustum.Planes.Top,
 		frustum.Planes.Bottom,
 	}
+}
+
+func (frustum *PlaneFrustum) GetProjectionConfig() GeometryMath.IProjectionConfig {
+	return frustum.ProjectionConfig
 }

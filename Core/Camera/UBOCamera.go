@@ -18,15 +18,10 @@ const (
 )
 
 type UBOCamera struct {
+	Camera
 	projectionMatrix UniformBufferSection.Matrix4x4
 	viewMatrix       UniformBufferSection.Matrix4x4
 	position         UniformBufferSection.Vector3
-
-	front GeometryMath.Vector3
-	up    GeometryMath.Vector3
-
-	projectionConfig GeometryMath.PerspectiveConfig
-	frustum          PlaneFrustum
 }
 
 func (camera *UBOCamera) ForceUpdate() {
@@ -51,42 +46,18 @@ func (camera *UBOCamera) Update(position GeometryMath.Vector3, front GeometryMat
 
 	camera.front = front
 	camera.up = up
+	camera.right = front.Cross(up)
 
-	camera.frustum.Update(position, front, up)
-}
-
-func (camera *UBOCamera) GetViewMatrix() GeometryMath.Matrix4x4 {
-	return camera.viewMatrix.Get()
+	camera.frustum.Update(camera)
 }
 
 func (camera *UBOCamera) GetPosition() GeometryMath.Vector3 {
 	return camera.position.Get()
 }
 
-func (camera *UBOCamera) GetFront() GeometryMath.Vector3 {
-	return camera.front
-}
-
-func (camera *UBOCamera) GetUp() GeometryMath.Vector3 {
-	return camera.up
-}
-
-func (camera *UBOCamera) SetProjection(projection GeometryMath.PerspectiveConfig) {
+func (camera *UBOCamera) SetProjection(projection GeometryMath.IProjectionConfig) {
 	camera.projectionMatrix.Set(projection.Decode())
-	camera.projectionConfig = projection
-	camera.frustum.UpdateProjectionConfig(projection)
-}
-
-func (camera *UBOCamera) GetProjection() GeometryMath.PerspectiveConfig {
-	return camera.projectionConfig
-}
-
-func (camera *UBOCamera) GetProjectionMatrix() GeometryMath.Matrix4x4 {
-	return camera.projectionMatrix.Get()
-}
-
-func (camera *UBOCamera) GetFrustum() IFrustum {
-	return &camera.frustum
+	camera.Camera.SetProjection(projection)
 }
 
 func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
@@ -107,7 +78,7 @@ func (camera *UBOCamera) UnmarshalYAML(value *yaml.Node) error {
 		return nil
 	}
 
-	camera.SetProjection(yamlConfig)
+	camera.SetProjection(&yamlConfig)
 	camera.viewMatrix.Set(GeometryMath.Identity())
 
 	camera.SetUniformBuffer(uboYamlConfig.UniformBuffer, 0)

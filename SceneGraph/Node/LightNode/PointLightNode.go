@@ -22,7 +22,7 @@ type PointLightNode struct {
 func (node *PointLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.UBOPointLight.SetPosition(node.GetGlobalPosition())
+	node.UBOPointLight.PointLight.Position.Set(node.GetGlobalPosition())
 
 	if scene := node.GetScene(); scene != nil {
 		scene.AddPreRenderObject(node)

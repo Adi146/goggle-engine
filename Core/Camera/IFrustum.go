@@ -6,9 +6,10 @@ import (
 )
 
 type IFrustum interface {
-	Update(position GeometryMath.Vector3, front GeometryMath.Vector3, up GeometryMath.Vector3)
-	UpdateProjectionConfig(projectionConfig GeometryMath.PerspectiveConfig)
+	Update(camera ICamera)
+	UpdateProjectionConfig(projectionConfig GeometryMath.IProjectionConfig)
 	Contains(volume BoundingVolume.IBoundingVolume) bool
 	ContainsSphere(sphere BoundingVolume.Sphere) bool
 	ContainsAABB(aabb BoundingVolume.AABB) bool
+	GetProjectionConfig() GeometryMath.IProjectionConfig
 }

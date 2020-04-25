@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/Core/Light"
 	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
@@ -96,13 +95,13 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 	case UniformBuffer.IUniformBuffer:
 		var err Error.ErrorCollection
 		switch t := v.GetType(); t {
-		case Light.DirectionalLight_ubo_type:
+		case ShadowMapping.DirectionalLight_ubo_type:
 			err.Push(program.BindUniform(v, ua_directionalLight))
 			err.Push(program.BindUniform(true, ua_directionalLightIsSet))
-		case Light.PointLight_ubo_type:
+		case ShadowMapping.PointLight_ubo_type:
 			err.Push(program.BindUniform(v, ua_pointLight))
 			err.Push(program.BindUniform(true, ua_pointLightIsSet))
-		case Light.SpotLight_ubo_type:
+		case ShadowMapping.SpotLight_ubo_type:
 			err.Push(program.BindUniform(v, ua_spotLight))
 			err.Push(program.BindUniform(true, ua_spotLightIsSet))
 		case Camera.UBO_type:

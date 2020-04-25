@@ -1,4 +1,4 @@
-package Light
+package ShadowMapping
 
 import (
 	core "github.com/Adi146/goggle-engine/Core/Texture"
@@ -12,7 +12,7 @@ const (
 	ShadowMapSpotLight        core.Type = "shadowMapSpotLight"
 )
 
-func NewShadowMap(width int32, height int32, textureType core.Type) (*core.Texture, error) {
+func NewShadowMapTexture(width int32, height int32, textureType core.Type) (*core.Texture, error) {
 	texture := core.Texture{
 		Type:   textureType,
 		Target: gl.TEXTURE_2D,
@@ -32,7 +32,7 @@ func NewShadowMap(width int32, height int32, textureType core.Type) (*core.Textu
 	return &texture, nil
 }
 
-func NewShadowCubeMap(width int32, height int32, textureType core.Type) (*core.Texture, error) {
+func NewShadowCubeMapTexture(width int32, height int32, textureType core.Type) (*core.Texture, error) {
 	texture := core.Texture{
 		Type:   textureType,
 		Target: gl.TEXTURE_CUBE_MAP,

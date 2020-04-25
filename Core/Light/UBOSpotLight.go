@@ -1,16 +1,14 @@
 package Light
 
 import (
-	"fmt"
 	"github.com/Adi146/goggle-engine/Core/Camera"
-	"github.com/Adi146/goggle-engine/Core/FrameBuffer"
-	"github.com/Adi146/goggle-engine/Core/Function"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
+	shadowMap "github.com/Adi146/goggle-engine/Core/Light/ShadowMapping/SpotLight"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 	"github.com/Adi146/goggle-engine/Core/UniformBuffer/UniformBufferSection"
-	"github.com/Adi146/goggle-engine/Utils/Log"
 	"gopkg.in/yaml.v3"
 )
 
@@ -28,96 +26,62 @@ const (
 
 	spotLight_size_section = 176
 	spotLight_ubo_size     = UniformBuffer.ArrayUniformBuffer_offset_elements + UniformBuffer.Num_elements*spotLight_size_section
-	SpotLight_ubo_type     = "spotLight"
 
 	SpotLight_fbo_type = "shadowMap_spotLight"
 )
 
 type UBOSpotLight struct {
-	Position  UniformBufferSection.Vector3
-	Linear    UniformBufferSection.Float
-	Quadratic UniformBufferSection.Float
-	Ambient   UniformBufferSection.Vector3
-	Diffuse   UniformBufferSection.Vector3
-	Specular  UniformBufferSection.Vector3
-	Direction UniformBufferSection.Vector3
-	InnerCone UniformBufferSection.Float
-	OuterCone UniformBufferSection.Float
+	SpotLight struct {
+		Position  UniformBufferSection.Vector3 `yaml:"position,flow"`
+		Linear    UniformBufferSection.Float   `yaml:"linear,flow"`
+		Quadratic UniformBufferSection.Float   `yaml:"quadratic,flow"`
+		Ambient   UniformBufferSection.Vector3 `yaml:"ambient,flow"`
+		Diffuse   UniformBufferSection.Vector3 `yaml:"diffuse,flow"`
+		Specular  UniformBufferSection.Vector3 `yaml:"specular,flow"`
+		Direction UniformBufferSection.Vector3 `yaml:"direction,flow"`
+		InnerCone UniformBufferSection.Float   `yaml:"innerCone"`
+		OuterCone UniformBufferSection.Float   `yaml:"outerCone"`
+	} `yaml:"spotLight"`
 
-	ShadowMap struct {
-		Projection     GeometryMath.Matrix4x4
-		ViewProjection UniformBufferSection.Matrix4x4
-		Shader         Shader.IShaderProgram
-		FrameBuffer    FrameBuffer.FrameBuffer
-		Index          int
-	}
+	ShadowMap ShadowMapping.ShadowMap `yaml:"shadowMap"`
 }
 
 func (light *UBOSpotLight) ForceUpdate() {
-	light.Position.ForceUpdate()
-	light.Linear.ForceUpdate()
-	light.Quadratic.ForceUpdate()
-	light.Ambient.ForceUpdate()
-	light.Diffuse.ForceUpdate()
-	light.Specular.ForceUpdate()
-	light.Direction.ForceUpdate()
-	light.InnerCone.ForceUpdate()
-	light.OuterCone.ForceUpdate()
-	light.ShadowMap.ViewProjection.ForceUpdate()
+	light.SpotLight.Position.ForceUpdate()
+	light.SpotLight.Linear.ForceUpdate()
+	light.SpotLight.Quadratic.ForceUpdate()
+	light.SpotLight.Ambient.ForceUpdate()
+	light.SpotLight.Diffuse.ForceUpdate()
+	light.SpotLight.Specular.ForceUpdate()
+	light.SpotLight.Direction.ForceUpdate()
+	light.SpotLight.InnerCone.ForceUpdate()
+	light.SpotLight.OuterCone.ForceUpdate()
+	light.ShadowMap.ForceUpdate()
 }
 
 func (light *UBOSpotLight) SetUniformBuffer(ubo UniformBuffer.IUniformBuffer, offset int) {
-	light.Position.SetUniformBuffer(ubo, offset+spotLight_offset_position)
-	light.Linear.SetUniformBuffer(ubo, offset+spotLight_offset_linear)
-	light.Quadratic.SetUniformBuffer(ubo, offset+spotLight_offset_quadratic)
-	light.Ambient.SetUniformBuffer(ubo, offset+spotLight_offset_ambient)
-	light.Diffuse.SetUniformBuffer(ubo, offset+spotLight_offset_diffuse)
-	light.Specular.SetUniformBuffer(ubo, offset+spotLight_offset_specular)
-	light.Direction.SetUniformBuffer(ubo, offset+spotLight_offset_direction)
-	light.InnerCone.SetUniformBuffer(ubo, offset+spotLight_offset_innerCone)
-	light.OuterCone.SetUniformBuffer(ubo, offset+spotLight_offset_outerCone)
-	light.ShadowMap.ViewProjection.SetUniformBuffer(ubo, offset+spotLight_offset_viewProjection)
+	light.SpotLight.Position.SetUniformBuffer(ubo, offset+spotLight_offset_position)
+	light.SpotLight.Linear.SetUniformBuffer(ubo, offset+spotLight_offset_linear)
+	light.SpotLight.Quadratic.SetUniformBuffer(ubo, offset+spotLight_offset_quadratic)
+	light.SpotLight.Ambient.SetUniformBuffer(ubo, offset+spotLight_offset_ambient)
+	light.SpotLight.Diffuse.SetUniformBuffer(ubo, offset+spotLight_offset_diffuse)
+	light.SpotLight.Specular.SetUniformBuffer(ubo, offset+spotLight_offset_specular)
+	light.SpotLight.Direction.SetUniformBuffer(ubo, offset+spotLight_offset_direction)
+	light.SpotLight.InnerCone.SetUniformBuffer(ubo, offset+spotLight_offset_innerCone)
+	light.SpotLight.OuterCone.SetUniformBuffer(ubo, offset+spotLight_offset_outerCone)
+	light.ShadowMap.Camera.(UniformBuffer.IUniformBufferSection).SetUniformBuffer(ubo, offset+spotLight_offset_viewProjection)
 }
 
 func (light *UBOSpotLight) GetSize() int {
 	return spotLight_size_section
 }
 
-func (light *UBOSpotLight) UpdateViewProjection() {
-	pos := light.Position.Get()
-	dir := light.Direction.Get()
-	light.ShadowMap.ViewProjection.Set(light.ShadowMap.Projection.Mul(GeometryMath.LookAt(pos, pos.Add(dir), GeometryMath.Vector3{0, 1, 0})))
+func (light *UBOSpotLight) UpdateCamera(scene Scene.IScene, camera Camera.ICamera) {
+	light.ShadowMap.Camera.(*shadowMap.Camera).Update(light.SpotLight.Position.Get(), light.SpotLight.Direction.Get())
 }
 
 func (light *UBOSpotLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
-	_, isPointLight := invoker.(*UBOPointLight)
-	_, isDirectionalLight := invoker.(*UBODirectionalLight)
-	_, isSpotLight := invoker.(*UBOSpotLight)
-	if isPointLight || isDirectionalLight || isSpotLight {
-		return nil
-	}
-
-	defer FrameBuffer.GetCurrentFrameBuffer().Bind()
-	defer Function.GetCurrentCullFunction().Set()
-	defer Function.GetCurrentDepthFunction().Set()
-	defer Function.GetCurrentBlendFunction().Set()
-
-	light.ShadowMap.FrameBuffer.Bind()
-	Function.Front.Set()
-	Function.Less.Set()
-	Function.DisabledBlend.Set()
-
-	light.ShadowMap.FrameBuffer.Clear()
-
-	if shader != nil {
-		defer shader.Bind()
-	}
-
-	if err := light.ShadowMap.Shader.BindObject(int32(light.ShadowMap.Index)); err != nil {
-		return err
-	}
-
-	return scene.Draw(light.ShadowMap.Shader, light, scene, camera)
+	return light.ShadowMap.Draw(shader, invoker, scene, camera)
 }
 
 func (light *UBOSpotLight) UnmarshalYAML(value *yaml.Node) error {
@@ -128,7 +92,7 @@ func (light *UBOSpotLight) UnmarshalYAML(value *yaml.Node) error {
 			ArrayUniformBuffer: &UniformBuffer.ArrayUniformBuffer{
 				UniformBuffer: &UniformBuffer.UniformBuffer{
 					Size: spotLight_ubo_size,
-					Type: SpotLight_ubo_type,
+					Type: ShadowMapping.SpotLight_ubo_type,
 				},
 			},
 		},
@@ -138,77 +102,35 @@ func (light *UBOSpotLight) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 
-	type ShadowMap struct {
-		Distance    float32                 `yaml:"distance"`
-		Shader      Shader.Ptr              `yaml:"shader"`
-		FrameBuffer FrameBuffer.FrameBuffer `yaml:"frameBuffer"`
-		Shaders     []Shader.Ptr            `yaml:"bindOnShaders"`
-	}
-
-	yamlConfig := struct {
-		SpotLight `yaml:"spotLight"`
-		ShadowMap `yaml:"shadowMap"`
-	}{
-		SpotLight: SpotLight{
-			Position:  light.Position.Get(),
-			Linear:    light.Linear.Get(),
-			Quadratic: light.Quadratic.Get(),
-			Ambient:   light.Ambient.Get(),
-			Diffuse:   light.Diffuse.Get(),
-			Specular:  light.Specular.Get(),
-			Direction: light.Direction.Get(),
-		},
-		ShadowMap: ShadowMap{
-			Shader: Shader.Ptr{
-				IShaderProgram: light.ShadowMap.Shader,
-			},
-			FrameBuffer: FrameBuffer.FrameBuffer{
-				Type: SpotLight_fbo_type,
-			},
-		},
-	}
-	if err := value.Decode(&yamlConfig); err != nil {
-		return err
-	}
-
-	texture, err := NewShadowMap(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width, yamlConfig.ShadowMap.FrameBuffer.Viewport.Height, ShadowMapSpotLight)
-	if err != nil {
-		return err
-	}
-
-	yamlConfig.ShadowMap.FrameBuffer.AddDepthAttachment(texture)
-	if err := yamlConfig.ShadowMap.FrameBuffer.Finish(); err != nil {
-		return err
-	}
-
-	light.ShadowMap.Projection = GeometryMath.Perspective(yamlConfig.OuterCone, float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width)/float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height), 0.1, yamlConfig.ShadowMap.Distance)
-	light.Position.Set(yamlConfig.SpotLight.Position)
-	light.Linear.Set(yamlConfig.SpotLight.Linear)
-	light.Quadratic.Set(yamlConfig.SpotLight.Quadratic)
-	light.Ambient.Set(yamlConfig.SpotLight.Ambient)
-	light.Diffuse.Set(yamlConfig.SpotLight.Diffuse)
-	light.Specular.Set(yamlConfig.SpotLight.Specular)
-	light.Direction.Set(yamlConfig.SpotLight.Direction)
-	light.InnerCone.Set(GeometryMath.Cos(GeometryMath.Radians(yamlConfig.InnerCone)))
-	light.OuterCone.Set(GeometryMath.Cos(GeometryMath.Radians(yamlConfig.OuterCone)))
-	light.ShadowMap.Shader = yamlConfig.ShadowMap.Shader.IShaderProgram
-	light.ShadowMap.FrameBuffer = yamlConfig.ShadowMap.FrameBuffer
+	light.ShadowMap.Camera = &shadowMap.Camera{}
+	light.ShadowMap.TextureType = ShadowMapping.ShadowMapSpotLight
+	light.ShadowMap.TextureConstructor = ShadowMapping.NewShadowMapTexture
+	light.ShadowMap.FrameBuffer.Type = SpotLight_fbo_type
+	light.ShadowMap.UpdateCameraCallback = light.UpdateCamera
 
 	index, err := uboYamlConfig.Ptr.AddElement(light)
 	if err != nil {
 		return err
 	}
-	light.ShadowMap.Index = index
 
-	for _, shader := range yamlConfig.Shaders {
-		uniformAddress, err := shader.GetUniformAddress(texture)
-		if err != nil {
-			return err
-		}
-		if err := shader.BindUniform(texture, fmt.Sprintf(uniformAddress, index)); err != nil {
-			Log.Error(err, "")
-		}
+	light.ShadowMap.LightIndex = index
+
+	type yamlConfigType UBOSpotLight
+	yamlConfig := (*yamlConfigType)(light)
+
+	if err := value.Decode(&yamlConfig); err != nil {
+		return err
 	}
+
+	light.SpotLight.InnerCone.Set(GeometryMath.Cos(GeometryMath.Radians(light.SpotLight.InnerCone.Get())))
+	light.SpotLight.OuterCone.Set(GeometryMath.Cos(GeometryMath.Radians(light.SpotLight.OuterCone.Get())))
+
+	light.ShadowMap.Camera.SetProjection(&GeometryMath.PerspectiveConfig{
+		Fovy:   GeometryMath.Degree(light.SpotLight.OuterCone.Get()),
+		Aspect: float32(light.ShadowMap.FrameBuffer.Viewport.Width) / float32(light.ShadowMap.FrameBuffer.Viewport.Height),
+		Near:   0.1,
+		Far:    light.ShadowMap.Distance.Get(),
+	})
 
 	return nil
 }

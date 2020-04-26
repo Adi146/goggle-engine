@@ -12,7 +12,7 @@ func TestUBODirectionalLight_UnmarshalYAML(t *testing.T) {
 	window, _ := TestUtils.CreateTestWindow(t)
 	defer window.Destroy()
 
-	var light Light.UBODirectionalLight
+	var light Light.DirectionalLight
 	var data = `
 directionalLight:
     direction: [-1, -1, -1]

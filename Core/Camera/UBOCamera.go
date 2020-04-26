@@ -44,11 +44,7 @@ func (camera *UBOCamera) Update(position GeometryMath.Vector3, front GeometryMat
 	camera.position.Set(position)
 	camera.viewMatrix.Set(GeometryMath.LookAt(position, position.Add(front), up))
 
-	camera.front = front
-	camera.up = up
-	camera.right = front.Cross(up)
-
-	camera.frustum.Update(camera)
+	camera.Camera.Update(position, front, up)
 }
 
 func (camera *UBOCamera) GetPosition() GeometryMath.Vector3 {

@@ -33,16 +33,27 @@ func (camera *Camera) GetSize() int {
 	return camera_size_section
 }
 
-func (camera *Camera) Update(position GeometryMath.Vector3) {
+func (camera *Camera) Update(position GeometryMath.Vector3, front GeometryMath.Vector3, up GeometryMath.Vector3) {
 	camera.ViewProjection[0].Set(camera.ProjectionMatrix.Mul(GeometryMath.LookAt(position, position.Add(GeometryMath.Vector3{1.0, 0.0, 0.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
 	camera.ViewProjection[1].Set(camera.ProjectionMatrix.Mul(GeometryMath.LookAt(position, position.Add(GeometryMath.Vector3{-1.0, 0.0, 0.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
 	camera.ViewProjection[2].Set(camera.ProjectionMatrix.Mul(GeometryMath.LookAt(position, position.Add(GeometryMath.Vector3{0.0, 1.0, 0.0}), GeometryMath.Vector3{0.0, 0.0, 1.0})))
 	camera.ViewProjection[3].Set(camera.ProjectionMatrix.Mul(GeometryMath.LookAt(position, position.Add(GeometryMath.Vector3{0.0, -1.0, 0.0}), GeometryMath.Vector3{0.0, 0.0, -1.0})))
 	camera.ViewProjection[4].Set(camera.ProjectionMatrix.Mul(GeometryMath.LookAt(position, position.Add(GeometryMath.Vector3{0.0, 0.0, 1.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
 	camera.ViewProjection[5].Set(camera.ProjectionMatrix.Mul(GeometryMath.LookAt(position, position.Add(GeometryMath.Vector3{0.0, 0.0, -1.0}), GeometryMath.Vector3{0.0, -1.0, 0.0})))
+
+	camera.Camera.Update(position, front, up)
 }
 
 func (camera *Camera) SetProjection(projection GeometryMath.IProjectionConfig) {
 	camera.ProjectionMatrix = projection.Decode()
-	camera.Camera.SetProjection(projection)
+
+	frustumProjection := GeometryMath.OrthographicConfig{
+		Left:   -projection.GetFar(),
+		Right:  projection.GetFar(),
+		Bottom: -projection.GetFar(),
+		Top:    projection.GetFar(),
+		Near:   -projection.GetFar(),
+		Far:    projection.GetFar(),
+	}
+	camera.Camera.SetProjection(&frustumProjection)
 }

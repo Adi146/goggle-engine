@@ -13,7 +13,7 @@ func TestUBOPointLight_UnmarshalYAML(t *testing.T) {
 	defer window.Destroy()
 
 	lightStruct := struct {
-		Lights []Light.UBOPointLight `yaml:"lights"`
+		Lights []Light.PointLight `yaml:"lights"`
 	}{}
 
 	var data = `
@@ -91,7 +91,7 @@ lights:
 			t.Errorf("[light %d] position value not matching (expecting %f, got %f)", i, expectedResults[i].Position, light.PointLight.Position.Get())
 		}
 		if light.PointLight.Ambient.Get() != expectedResults[i].Ambient {
-			t.Errorf("[light %d] ambient value not matching (expecting %f, got %f)", i,expectedResults[i].Ambient, light.PointLight.Ambient.Get())
+			t.Errorf("[light %d] ambient value not matching (expecting %f, got %f)", i, expectedResults[i].Ambient, light.PointLight.Ambient.Get())
 		}
 		if light.PointLight.Diffuse.Get() != expectedResults[i].Diffuse {
 			t.Errorf("[light %d] diffuse value not matching (expecting %f, got %f)", i, expectedResults[i].Diffuse, light.PointLight.Diffuse.Get())

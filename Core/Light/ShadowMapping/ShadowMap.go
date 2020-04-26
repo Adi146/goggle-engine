@@ -42,7 +42,9 @@ func (shadowMap *ShadowMap) Draw(shader Shader.IShaderProgram, invoker Scene.IDr
 		return nil
 	}
 
-	shadowMap.UpdateCameraCallback(scene, camera)
+	if shadowMap.UpdateCameraCallback != nil {
+		shadowMap.UpdateCameraCallback(scene, camera)
+	}
 
 	defer FrameBuffer.GetCurrentFrameBuffer().Bind()
 	defer Function.GetCurrentCullFunction().Set()
@@ -64,7 +66,7 @@ func (shadowMap *ShadowMap) Draw(shader Shader.IShaderProgram, invoker Scene.IDr
 		return err
 	}
 
-	return scene.Draw(shadowMap.Shader, shadowMap, scene, camera)
+	return scene.Draw(shadowMap.Shader, shadowMap, scene, shadowMap.Camera)
 }
 
 func (shadowMap *ShadowMap) UnmarshalYAML(value *yaml.Node) error {

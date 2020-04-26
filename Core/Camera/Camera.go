@@ -30,6 +30,16 @@ func (camera *Camera) GetRight() GeometryMath.Vector3 {
 	return camera.right
 }
 
+func (camera *Camera) Update(position GeometryMath.Vector3, front GeometryMath.Vector3, up GeometryMath.Vector3) {
+	camera.position = position
+
+	camera.front = front
+	camera.up = up
+	camera.right = front.Cross(up)
+
+	camera.frustum.Update(camera)
+}
+
 func (camera *Camera) SetProjection(projection GeometryMath.IProjectionConfig) {
 	camera.frustum.UpdateProjectionConfig(projection)
 }

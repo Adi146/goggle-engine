@@ -17,12 +17,25 @@ type Camera struct {
 	UniformBufferSection.Matrix4x4
 }
 
-func (camera *Camera) Update(sceneCamera core.ICamera, direction GeometryMath.Vector3, distance float32) {
-	boundingBox, center := camera.calcCameraFrustumBoundingBox(sceneCamera, direction, distance)
+func (camera *Camera) UpdateInternal(sceneCamera core.ICamera, front GeometryMath.Vector3, distance float32) {
+	boundingBox, center := camera.calcCameraFrustumBoundingBox(sceneCamera, front, distance)
 
-	projectionMatrix := GeometryMath.Orthographic(boundingBox.Min.X(), boundingBox.Max.X(), boundingBox.Min.Y(), boundingBox.Max.Y(), boundingBox.Min.Z(), boundingBox.Max.Z())
-	viewMatrix := GeometryMath.LookAt(center.Add(direction.Invert()), center, GeometryMath.Vector3{0, 1, 0})
-	camera.Set(projectionMatrix.Mul(viewMatrix))
+	projectionConfig := GeometryMath.OrthographicConfig{
+		Left:   boundingBox.Min.X(),
+		Right:  boundingBox.Max.X(),
+		Bottom: boundingBox.Min.Y(),
+		Top:    boundingBox.Max.Y(),
+		Near:   boundingBox.Min.Z(),
+		Far:    boundingBox.Max.Z(),
+	}
+
+	position := center.Add(front.Invert())
+	up := front.Cross(GeometryMath.Vector3{0, 1, 0}).Cross(front).Normalize()
+
+	camera.Camera.SetProjection(&projectionConfig)
+	camera.Camera.Update(position, front, up)
+
+	camera.Set(projectionConfig.Decode().Mul(GeometryMath.LookAt(position, center, up)))
 }
 
 func (camera *Camera) calcCameraFrustumBoundingBox(sceneCamera core.ICamera, direction GeometryMath.Vector3, distance float32) (BoundingVolume.AABB, GeometryMath.Vector3) {

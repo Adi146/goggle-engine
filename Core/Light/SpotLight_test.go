@@ -13,7 +13,7 @@ func TestUBOSpotLight_UnmarshalYAML(t *testing.T) {
 	defer window.Destroy()
 
 	lightStruct := struct {
-		Lights []Light.UBOSpotLight `yaml:"lights"`
+		Lights []Light.SpotLight `yaml:"lights"`
 	}{}
 
 	var data = `
@@ -116,7 +116,7 @@ lights:
 			t.Errorf("[light %d] linear value not matching (expecting %f, got %f)", i, expectedResults[i].Linear, light.SpotLight.Linear.Get())
 		}
 		if light.SpotLight.Quadratic.Get() != expectedResults[i].Quadratic {
-			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i,expectedResults[i].Quadratic, light.SpotLight.Quadratic.Get())
+			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i, expectedResults[i].Quadratic, light.SpotLight.Quadratic.Get())
 		}
 		if !GeometryMath.Equals(light.SpotLight.InnerCone.Get(), expectedResults[i].InnerCone, 1e-5) {
 			t.Errorf("[light %d] innerCone value not matching (expecting %f, got %f)", i, expectedResults[i].InnerCone, light.SpotLight.InnerCone.Get())

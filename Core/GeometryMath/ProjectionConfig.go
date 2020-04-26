@@ -49,8 +49,8 @@ func (config OrthographicConfig) SetSize(width, height, near, far float32) {
 }
 
 func (config *OrthographicConfig) GetPlane(distance float32) (float32, float32) {
-	height := -config.Bottom + config.Top
-	width := -config.Left + config.Right
+	height := config.Top - config.Bottom
+	width := config.Right - config.Left
 
 	return width, height
 }

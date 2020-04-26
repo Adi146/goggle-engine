@@ -168,7 +168,7 @@ scene:
           transformation:
             - translation: [0, 30, -30]
           shadowMap:
-            distance: 325
+            distance: 192
             shader: shadowMapPointLight
             frameBuffer:
               width: 1024
@@ -192,7 +192,7 @@ scene:
           transformation:
             - translation: [0, 30, 30]
           shadowMap:
-            distance: 325
+            distance: 192
             shader: shadowMapPointLight
             frameBuffer:
               width: 1024

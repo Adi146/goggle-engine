@@ -1,0 +1,44 @@
+phong:
+  type: phongShader
+  vertexShaders:
+    - ../Core/Shader/PhongShader/phong.vert
+  fragmentShaders:
+    - ../Core/Shader/PhongShader/phong.frag
+    - ../Core/Shader/PhongShader/lights.frag
+    - ../Core/Model/Material/material.frag
+    - ../Core/Light/ShadowMapping/shadow.frag
+postProcessing:
+  type: postProcessingShader
+  vertexShaders:
+    - ../Core/PostProcessing/postProcessing.vert
+  fragmentShaders:
+    - ../Core/PostProcessing/kernel.frag
+skybox:
+  type: skyboxShader
+  vertexShaders:
+    - ../Core/Skybox/skybox.vert
+  fragmentShaders:
+    - ../Core/Skybox/skybox.frag
+shadowMapDirectionalLight:
+  type: shadowMapShader
+  vertexShaders:
+    - ../Core/Light/ShadowMapping/DirectionalLight/shadowMap.vert
+  fragmentShaders:
+    - ../Core/Light/ShadowMapping/DirectionalLight/shadowMap.frag
+    - ../Core/Model/Material/material.frag
+shadowMapPointLight:
+  type: shadowMapShader
+  vertexShaders:
+    - ../Core/Light/ShadowMapping/PointLight/shadowMap.vert
+  fragmentShaders:
+    - ../Core/Light/ShadowMapping/PointLight/shadowMap.frag
+    - ../Core/Model/Material/material.frag
+  geometryShaders:
+    - ../Core/Light/ShadowMapping/PointLight/shadowMap.geom
+shadowMapSpotLight:
+  type: shadowMapShader
+  vertexShaders:
+    - ../Core/Light/ShadowMapping/SpotLight/shadowMap.vert
+  fragmentShaders:
+    - ../Core/Light/ShadowMapping/SpotLight/shadowMap.frag
+    - ../Core/Model/Material/material.frag

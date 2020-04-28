@@ -1,0 +1,42 @@
+type: UI.Control.WASDControl
+keyboardSensitivity: 40
+mouseSensitivity: 0.05
+transformation:
+  - translation: [0, 10, 100]
+children:
+  camera:
+    type: Node.Camera
+    transformation:
+      - rotation:
+          angle: 180
+          axis: [0, 1, 0]
+  flash_light:
+    type: Node.LightNode.SpotLightNode
+    spotLight:
+      innerCone: 12.5
+      outerCone: 17.5
+      ambient: [0, 0.1, 0]
+      diffuse: [0, 1, 0]
+      specular: [0, 1, 0]
+      linear: 0.014
+      quadratic: 0.0007
+      direction: [0, 0, 1]
+    uniformBuffer:
+      binding: 3
+      id: spotLight
+      shaders:
+        - phong
+        - shadowMapSpotLight
+    shadowMap:
+      distance: 325
+      shader: shadowMapSpotLight
+      frameBuffer:
+        width: 1024
+        height: 1024
+      bindOnShaders:
+        - phong
+    transformation:
+      - rotation:
+          angle: 180
+          axis: [0, 1, 0]
+      - translation: [2, 2, 2]

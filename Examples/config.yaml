@@ -1,50 +1,6 @@
 openGlLogging: true
 
-shaders:
-  phong:
-    type: phongShader
-    vertexShaders:
-      - ../Core/Shader/PhongShader/phong.vert
-    fragmentShaders:
-      - ../Core/Shader/PhongShader/phong.frag
-      - ../Core/Shader/PhongShader/lights.frag
-      - ../Core/Model/Material/material.frag
-      - ../Core/Light/ShadowMapping/shadow.frag
-  postProcessing:
-    type: postProcessingShader
-    vertexShaders:
-      - ../Core/PostProcessing/postProcessing.vert
-    fragmentShaders:
-      - ../Core/PostProcessing/kernel.frag
-  skybox:
-    type: skyboxShader
-    vertexShaders:
-      - ../Core/Skybox/skybox.vert
-    fragmentShaders:
-      - ../Core/Skybox/skybox.frag
-  shadowMapDirectionalLight:
-    type: shadowMapShader
-    vertexShaders:
-      - ../Core/Light/ShadowMapping/DirectionalLight/shadowMap.vert
-    fragmentShaders:
-      - ../Core/Light/ShadowMapping/DirectionalLight/shadowMap.frag
-      - ../Core/Model/Material/material.frag
-  shadowMapPointLight:
-    type: shadowMapShader
-    vertexShaders:
-      - ../Core/Light/ShadowMapping/PointLight/shadowMap.vert
-    fragmentShaders:
-      - ../Core/Light/ShadowMapping/PointLight/shadowMap.frag
-      - ../Core/Model/Material/material.frag
-    geometryShaders:
-      - ../Core/Light/ShadowMapping/PointLight/shadowMap.geom
-  shadowMapSpotLight:
-    type: shadowMapShader
-    vertexShaders:
-      - ../Core/Light/ShadowMapping/SpotLight/shadowMap.vert
-    fragmentShaders:
-      - ../Core/Light/ShadowMapping/SpotLight/shadowMap.frag
-      - ../Core/Model/Material/material.frag
+shaders: !include shaders.yaml
 
 scene:
   window:
@@ -84,49 +40,7 @@ scene:
       frameBuffer:
         width: 1920
         height: 1080
-    cameraControl:
-      type: UI.Control.WASDControl
-      keyboardSensitivity: 40
-      mouseSensitivity: 0.05
-      transformation:
-        - translation: [0, 10, 100]
-      children:
-        camera:
-          type: Node.Camera
-          transformation:
-            - rotation:
-                angle: 180
-                axis: [0, 1, 0]
-        flash_light:
-          type: Node.LightNode.SpotLightNode
-          spotLight:
-            innerCone: 12.5
-            outerCone: 17.5
-            ambient: [0, 0.1, 0]
-            diffuse: [0, 1, 0]
-            specular: [0, 1, 0]
-            linear: 0.014
-            quadratic: 0.0007
-            direction: [0, 0, 1]
-          uniformBuffer:
-            binding: 3
-            id: spotLight
-            shaders:
-              - phong
-              - shadowMapSpotLight
-          shadowMap:
-            distance: 325
-            shader: shadowMapSpotLight
-            frameBuffer:
-              width: 1024
-              height: 1024
-            bindOnShaders:
-              - phong
-          transformation:
-            - rotation:
-                angle: 180
-                axis: [0, 1, 0]
-            - translation: [2, 2, 2]
+    cameraControl: !include camera.yaml
     sun:
       type: Node.UtilNode.RotorNode
       speed: 0.05

@@ -5,10 +5,13 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Utils/Log"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
-
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
+)
+
+const (
+	yaml_include_command = "!include"
 )
 
 type config struct {
@@ -17,6 +20,10 @@ type config struct {
 }
 
 func (config *config) UnmarshalYAML(value *yaml.Node) error {
+	if err := addIncludes(value); err != nil {
+		return err
+	}
+
 	var yamlConfig struct {
 		OpenGlLogging bool        `yaml:"openGlLogging"`
 		SceneGraph    Scene.Scene `yaml:"scene"`
@@ -53,4 +60,35 @@ func ReadConfig(file *os.File) (coreScene.IScene, error) {
 	}
 
 	return config.SceneGraph, nil
+}
+
+func addIncludes(value *yaml.Node) error {
+	if value.Kind == yaml.ScalarNode {
+		if value.Tag == yaml_include_command {
+			file, err := os.Open(value.Value)
+			if err != nil {
+				return err
+			}
+
+			bytes, err := ioutil.ReadAll(file)
+			if err != nil {
+				return err
+			}
+
+			var node yaml.Node
+			if err := yaml.Unmarshal(bytes, &node); err != nil {
+				return err
+			}
+
+			*value = node
+		}
+	}
+
+	for _, subNode := range value.Content {
+		if err := addIncludes(subNode); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

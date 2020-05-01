@@ -32,7 +32,7 @@ func NewInstanceMasterMesh(mesh *Mesh, matrices ...GeometryMath.Matrix4x4) *Inst
 	for i := range matrices {
 		instances[i] = &InstancedMesh{
 			ModelMatrix:               matrices[i],
-			BoundingVolume:            mesh.GetBoundingVolume(),
+			boundingVolume:            mesh.GetBoundingVolume(),
 			TransformedBoundingVolume: mesh.GetBoundingVolume().Transform(matrices[i].Mul(master.MasterMatrix)),
 			FrustumCulling:            mesh.FrustumCulling,
 			Master:                    &master,
@@ -47,12 +47,12 @@ func (mesh *InstanceMasterMesh) Draw(shader Shader.IShaderProgram, invoker Scene
 	var err Error.ErrorCollection
 
 	var matrices []GeometryMath.Matrix4x4
-	if !mesh.FrustumCulling || (mesh.FrustumCulling && camera.GetFrustum().Contains(mesh.GetBoundingVolumeTransformed())) {
+	if !mesh.FrustumCulling || (mesh.FrustumCulling && camera.GetFrustum().Contains(mesh.GetBoundingVolume())) {
 		matrices = append(matrices, mesh.GetModelMatrix())
 	}
 
 	for _, instance := range mesh.Instances {
-		if !instance.FrustumCulling || (instance.FrustumCulling && camera.GetFrustum().Contains(instance.GetBoundingVolumeTransformed())) {
+		if !instance.FrustumCulling || (instance.FrustumCulling && camera.GetFrustum().Contains(instance.GetBoundingVolume())) {
 			matrices = append(matrices, instance.GetModelMatrix())
 		}
 	}
@@ -75,10 +75,10 @@ func (mesh *InstanceMasterMesh) Draw(shader Shader.IShaderProgram, invoker Scene
 
 func (mesh *InstanceMasterMesh) SetMasterMatrix(mat GeometryMath.Matrix4x4) {
 	mesh.MasterMatrix = mat
-	mesh.TransformedBoundingVolume = mesh.BoundingVolume.Transform(mesh.GetModelMatrix().Mul(mat))
+	mesh.TransformedBoundingVolume = mesh.boundingVolume.Transform(mesh.GetModelMatrix().Mul(mat))
 
 	for _, instance := range mesh.Instances {
-		instance.TransformedBoundingVolume = instance.BoundingVolume.Transform(instance.GetModelMatrix().Mul(mat))
+		instance.TransformedBoundingVolume = instance.boundingVolume.Transform(instance.GetModelMatrix().Mul(mat))
 	}
 }
 
@@ -89,7 +89,7 @@ func (mesh *InstanceMasterMesh) CreateNewInstances(matrices ...GeometryMath.Matr
 	for i := range matrices {
 		instances[i] = &InstancedMesh{
 			ModelMatrix:               matrices[i],
-			BoundingVolume:            mesh.GetBoundingVolume(),
+			boundingVolume:            mesh.GetBoundingVolume(),
 			TransformedBoundingVolume: mesh.GetBoundingVolume().Transform(matrices[i].Mul(mesh.MasterMatrix)),
 			FrustumCulling:            mesh.FrustumCulling,
 			Master:                    mesh,

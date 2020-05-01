@@ -123,6 +123,13 @@ scene:
         bottom: Models/skybox/bottom.jpg
         left: Models/skybox/left.jpg
         right: Models/skybox/right.jpg
+    triggerTest:
+      type: Node.UtilNode.TriggerNode
+      triggerVolume: AABB
+      triggerOn:
+        - cameraControl.trigger
+      transformation:
+        - scale: 15
     terrain:
       type: Node.TerrainNode
       shader: phong

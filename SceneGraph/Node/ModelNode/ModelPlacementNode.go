@@ -28,7 +28,7 @@ type ModelPlacementNode struct {
 
 func (node *ModelPlacementNode) PlaceModels() error {
 	nodeID := node.GetID()
-	boundingVolume := node.GetBoundingVolumeTransformed()
+	boundingVolume := node.GetBoundingVolume()
 
 	offsetX := float32(node.NumColumns)/2 - 0.5
 	offsetZ := float32(node.NumRows)/2 - 0.5
@@ -70,7 +70,7 @@ func (node *ModelPlacementNode) PlaceModels() error {
 
 				for _, child := range node.GetChildren() {
 					if collisionObject, isCollisionObject := child.(BoundingVolume.ICollisionObject); isCollisionObject {
-						if slaveBoundingBox.IntersectsWith(collisionObject.GetBoundingVolumeTransformed()) {
+						if slaveBoundingBox.IntersectsWith(collisionObject.GetBoundingVolume()) {
 							continue NextPosition
 						}
 					}

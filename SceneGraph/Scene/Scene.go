@@ -11,6 +11,10 @@ type Scene struct {
 	Root INode
 }
 
+func (scene *Scene) Start() error {
+	return scene.Root.Start()
+}
+
 func (scene *Scene) Tick(timeDelta float32) {
 	scene.SceneBase.Tick(timeDelta)
 	if scene.Root != nil {

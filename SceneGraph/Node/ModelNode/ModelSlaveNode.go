@@ -2,6 +2,7 @@ package ModelNode
 
 import (
 	"fmt"
+	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
 	"github.com/Adi146/goggle-engine/SceneGraph/Scene"
@@ -55,6 +56,10 @@ func (node *ModelSlaveNode) Tick(timeDelta float32) error {
 
 func (node *ModelSlaveNode) SetBase(base Scene.INode) {
 	node.INode = base
+}
+
+func (node *ModelSlaveNode) GetBoundingVolume() BoundingVolume.IBoundingVolume {
+	return node.IMesh.GetBoundingVolume()
 }
 
 func (node *ModelSlaveNode) UnmarshalYAML(value *yaml.Node) error {

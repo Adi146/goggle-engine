@@ -5,8 +5,8 @@ import (
 )
 
 type AABB struct {
-	Min GeometryMath.Vector3
-	Max GeometryMath.Vector3
+	Min GeometryMath.Vector3 `yaml:"min"`
+	Max GeometryMath.Vector3 `yaml:"max"`
 }
 
 func NewBoundingVolumeAABB(vertices []GeometryMath.Vector3) IBoundingVolume {
@@ -27,6 +27,13 @@ func NewAABB(vertices []GeometryMath.Vector3) AABB {
 	return AABB{
 		Min: min,
 		Max: max,
+	}
+}
+
+func NewDefaultAABB() AABB {
+	return AABB{
+		Min: GeometryMath.Vector3{-1, -1, -1},
+		Max: GeometryMath.Vector3{1, 1, 1},
 	}
 }
 
@@ -67,6 +74,8 @@ func (aabb AABB) IntersectsWith(volume IBoundingVolume) bool {
 		return IntersectionAABBandAABB(aabb, v)
 	case Sphere:
 		return IntersectionSphereAndAABB(v, aabb)
+	case Point:
+		return IntersectionAABBAndPoint(aabb, v)
 	default:
 		return false
 	}

@@ -5,6 +5,10 @@ import (
 )
 
 func RunRenderLoop(scene IScene) {
+	if err := scene.Start(); err != nil {
+		panic(err)
+	}
+
 	for !scene.GetWindow().ShouldClose() {
 		scene.GetWindow().PollEvents()
 

@@ -17,7 +17,7 @@ type Mesh struct {
 	VertexArray               VertexArray
 	IndexBuffer               *IndexBuffer
 	ModelMatrix               GeometryMath.Matrix4x4
-	BoundingVolume            BoundingVolume.IBoundingVolume
+	boundingVolume            BoundingVolume.IBoundingVolume
 	TransformedBoundingVolume BoundingVolume.IBoundingVolume
 
 	PrimitiveType  PrimitiveType
@@ -36,8 +36,8 @@ func NewMesh(vertices []Vertex, indices []uint32, boundingVolume func(vertices [
 	}
 
 	if boundingVolume != nil {
-		mesh.BoundingVolume = boundingVolume(Vertices(vertices).GetPositions())
-		mesh.TransformedBoundingVolume = mesh.BoundingVolume.Transform(mesh.ModelMatrix)
+		mesh.boundingVolume = boundingVolume(Vertices(vertices).GetPositions())
+		mesh.TransformedBoundingVolume = mesh.boundingVolume.Transform(mesh.ModelMatrix)
 	}
 
 	return &mesh
@@ -46,7 +46,7 @@ func NewMesh(vertices []Vertex, indices []uint32, boundingVolume func(vertices [
 func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	var err Error.ErrorCollection
 
-	if !mesh.FrustumCulling || (mesh.FrustumCulling && camera.GetFrustum().Contains(mesh.GetBoundingVolumeTransformed())) {
+	if !mesh.FrustumCulling || (mesh.FrustumCulling && camera.GetFrustum().Contains(mesh.GetBoundingVolume())) {
 		err.Push(shader.BindObject(&mesh.ModelMatrix))
 		err.Push(shader.BindObject(mesh.VertexArray))
 		mesh.IndexBuffer.Bind()
@@ -76,14 +76,10 @@ func (mesh *Mesh) GetModelMatrix() GeometryMath.Matrix4x4 {
 
 func (mesh *Mesh) SetModelMatrix(mat GeometryMath.Matrix4x4) {
 	mesh.ModelMatrix = mat
-	mesh.TransformedBoundingVolume = mesh.BoundingVolume.Transform(mesh.GetModelMatrix())
+	mesh.TransformedBoundingVolume = mesh.boundingVolume.Transform(mesh.GetModelMatrix())
 }
 
 func (mesh *Mesh) GetBoundingVolume() BoundingVolume.IBoundingVolume {
-	return mesh.BoundingVolume
-}
-
-func (mesh *Mesh) GetBoundingVolumeTransformed() BoundingVolume.IBoundingVolume {
 	return mesh.TransformedBoundingVolume
 }
 

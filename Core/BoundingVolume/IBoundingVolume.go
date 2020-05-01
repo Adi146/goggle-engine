@@ -36,3 +36,21 @@ func IntersectionSphereAndAABB(sphere Sphere, box AABB) bool {
 
 	return distance < sphere.Radius
 }
+
+func IntersectionSphereAndPoint(sphere Sphere, point Point) bool {
+	var distance = GeometryMath.Sqrt(
+		(point.X()-sphere.Center.X())*(point.X()-sphere.Center.X()) +
+			(point.Y()-sphere.Center.Y())*(point.Y()-sphere.Center.Y()) +
+			(point.Z() - sphere.Center.Z()*(point.Z()) - sphere.Center.Z()))
+	return distance < sphere.Radius
+}
+
+func IntersectionAABBAndPoint(box AABB, point Point) bool {
+	return (point.X() >= box.Min.X() && point.X() <= box.Max.X()) &&
+		(point.Y() >= box.Min.Y() && point.Y() <= box.Max.Y()) &&
+		(point.Z() >= box.Min.Z() && point.Z() <= box.Max.Z())
+}
+
+func IntersectionPointAndPoint(point1, point2 Point) bool {
+	return point1 == point2
+}

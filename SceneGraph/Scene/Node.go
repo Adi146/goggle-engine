@@ -24,6 +24,8 @@ type Node struct {
 	parent   INode
 
 	id string
+
+	events map[string]IEvent
 }
 
 func (node *Node) AddChild(child INode, id string) {
@@ -36,7 +38,6 @@ func (node *Node) AddChild(child INode, id string) {
 
 func (node *Node) GetChildren() map[string]INode {
 	return node.children
-
 }
 
 func (node *Node) GetGrandChildById(id string) INode {
@@ -143,6 +144,16 @@ func (node *Node) GetBase() INode {
 	return node
 }
 
+func (node *Node) Start() error {
+	var err Error.ErrorCollection
+
+	for _, child := range node.GetChildren() {
+		err.Push(child.Start())
+	}
+
+	return err.Err()
+}
+
 func (node *Node) UnmarshalYAML(value *yaml.Node) error {
 	yamlConfig := struct {
 		Transformation GeometryMath.Matrix4x4 `yaml:"transformation"`
@@ -158,4 +169,16 @@ func (node *Node) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	return nil
+}
+
+func (node *Node) AddEvent(event IEvent, id string) {
+	if node.events == nil {
+		node.events = map[string]IEvent{}
+	}
+
+	node.events[id] = event
+}
+
+func (node *Node) GetEventByID(id string) IEvent {
+	return node.events[id]
 }

@@ -5,8 +5,8 @@ import (
 )
 
 type Sphere struct {
-	Center GeometryMath.Vector3
-	Radius float32
+	Center GeometryMath.Vector3 `yaml:"center"`
+	Radius float32              `yaml:"radius"`
 }
 
 func NewBoundingVolumeSphere(vertices []GeometryMath.Vector3) IBoundingVolume {
@@ -32,6 +32,13 @@ func NewSphereWithCenter(center GeometryMath.Vector3, vertices []GeometryMath.Ve
 	}
 }
 
+func NewDefaultSphere() Sphere {
+	return Sphere{
+		Center: GeometryMath.Vector3{0, 0, 0},
+		Radius: 1,
+	}
+}
+
 func (sphere Sphere) GetCenter() GeometryMath.Vector3 {
 	return sphere.Center
 }
@@ -52,6 +59,8 @@ func (sphere Sphere) IntersectsWith(volume IBoundingVolume) bool {
 		return IntersectionSphereAndAABB(sphere, v)
 	case Sphere:
 		return IntersectionSphereAndSphere(sphere, v)
+	case Point:
+		return IntersectionSphereAndPoint(sphere, v)
 	default:
 		return false
 	}

@@ -40,3 +40,6 @@ children:
           angle: 180
           axis: [0, 1, 0]
       - translation: [2, 2, 2]
+  trigger:
+    type: Node.UtilNode.TriggerNode
+    triggerVolume: point

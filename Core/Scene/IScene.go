@@ -8,6 +8,7 @@ import (
 type IScene interface {
 	IDrawable
 
+	Start() error
 	Tick(timeDelta float32)
 
 	Clear()

@@ -31,4 +31,8 @@ type INode interface {
 
 	Tick(timeDelta float32) error
 	GetBase() INode
+	Start() error
+
+	AddEvent(event IEvent, id string)
+	GetEventByID(id string) IEvent
 }

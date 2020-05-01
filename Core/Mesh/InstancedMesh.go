@@ -7,7 +7,7 @@ import (
 
 type InstancedMesh struct {
 	ModelMatrix               GeometryMath.Matrix4x4
-	BoundingVolume            BoundingVolume.IBoundingVolume
+	boundingVolume            BoundingVolume.IBoundingVolume
 	TransformedBoundingVolume BoundingVolume.IBoundingVolume
 	FrustumCulling            bool
 	Master                    *InstanceMasterMesh
@@ -19,14 +19,10 @@ func (mesh *InstancedMesh) GetModelMatrix() GeometryMath.Matrix4x4 {
 
 func (mesh *InstancedMesh) SetModelMatrix(mat GeometryMath.Matrix4x4) {
 	mesh.ModelMatrix = mat
-	mesh.TransformedBoundingVolume = mesh.BoundingVolume.Transform(mat.Mul(mesh.Master.MasterMatrix))
+	mesh.TransformedBoundingVolume = mesh.boundingVolume.Transform(mat.Mul(mesh.Master.MasterMatrix))
 }
 
 func (mesh *InstancedMesh) GetBoundingVolume() BoundingVolume.IBoundingVolume {
-	return mesh.BoundingVolume
-}
-
-func (mesh *InstancedMesh) GetBoundingVolumeTransformed() BoundingVolume.IBoundingVolume {
 	return mesh.TransformedBoundingVolume
 }
 

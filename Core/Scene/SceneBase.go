@@ -25,6 +25,10 @@ type SceneBase struct {
 	transparentObjects []ITransparentDrawable
 }
 
+func (scene *SceneBase) Start() error {
+	return nil
+}
+
 func (scene *SceneBase) Tick(timeDelta float32) {
 	scene.Clear()
 }

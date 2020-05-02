@@ -2,7 +2,7 @@ package Mesh
 
 import (
 	"github.com/Adi146/goggle-engine/Core/Utils"
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/v4.3-core/gl"
 )
 
 type IndexBuffer struct {

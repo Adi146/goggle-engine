@@ -1,4 +1,4 @@
-#version 410 core
+#version 430 core
 #define MAX_POINT_LIGHTS 32
 
 in GS_OUT {

@@ -6,7 +6,7 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 	"gopkg.in/yaml.v3"
 
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/v4.3-core/gl"
 )
 
 type SDLWindow struct {

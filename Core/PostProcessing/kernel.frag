@@ -1,8 +1,10 @@
-#version 410 core
+#version 430 core
 
 in VS_OUT {
     vec2 uv;
 } fs_in;
+
+layout(location = 0) out vec4 FragColor;
 
 uniform sampler2D u_screenTexture;
 uniform float u_kernelOffset;
@@ -32,5 +34,5 @@ void main() {
         color += sampleTex[i] * u_kernel[i];
     }
 
-    gl_FragColor = vec4(color, 1.0);
+    FragColor = vec4(color, 1.0);
 }

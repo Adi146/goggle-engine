@@ -3,7 +3,7 @@ package Texture
 import (
 	"fmt"
 
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/v4.3-core/gl"
 )
 
 var unitManager UnitManager

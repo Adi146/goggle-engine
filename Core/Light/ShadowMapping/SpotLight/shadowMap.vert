@@ -1,4 +1,4 @@
-#version 410 core
+#version 430 core
 #define MAX_SPOT_LIGHTS 32
 
 layout(location = 0) in vec3 a_position;

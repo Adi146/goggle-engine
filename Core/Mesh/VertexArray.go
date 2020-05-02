@@ -2,6 +2,7 @@ package Mesh
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/OpenGL/Buffer"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"unsafe"
 )
@@ -21,7 +22,7 @@ const (
 
 type VertexArray uint32
 
-func NewVertexArray(vbo ArrayBuffer) VertexArray {
+func NewVertexArray(vbo Buffer.ArrayBuffer) VertexArray {
 	vertex := Vertex{}
 	identity := GeometryMath.Identity()
 
@@ -29,7 +30,6 @@ func NewVertexArray(vbo ArrayBuffer) VertexArray {
 	gl.GenVertexArrays(1, (*uint32)(&vao))
 
 	vbo.Bind()
-	defer vbo.Unbind()
 
 	vao.Bind()
 	vao.enablePositionAttribute()

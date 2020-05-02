@@ -2,15 +2,15 @@ package Mesh
 
 import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/OpenGL/Buffer"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"unsafe"
 )
 
-func NewInstancedVertexArray(vao VertexArray, mbo ArrayBuffer) VertexArray {
+func NewInstancedVertexArray(vao VertexArray, mbo Buffer.ArrayBuffer) VertexArray {
 	matrix := GeometryMath.Matrix4x4{}
 
 	mbo.Bind()
-	defer mbo.Unbind()
 
 	vao.Bind()
 	gl.EnableVertexArrayAttrib(uint32(vao), index_modelMatrix_1)

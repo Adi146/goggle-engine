@@ -3,9 +3,9 @@ package Mesh
 import (
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/OpenGL/Buffer"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/Utils"
 	"github.com/Adi146/goggle-engine/Utils/Error"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -14,12 +14,13 @@ import (
 type InstanceMasterMesh struct {
 	Mesh
 	MasterMatrix GeometryMath.Matrix4x4
-	MatrixBuffer ArrayBuffer
+	MatrixBuffer Buffer.ArrayBuffer
 	Instances    []*InstancedMesh
 }
 
 func NewInstanceMasterMesh(mesh *Mesh, matrices ...GeometryMath.Matrix4x4) *InstanceMasterMesh {
-	mbo := NewMatrixBuffer(append([]GeometryMath.Matrix4x4{mesh.GetModelMatrix()}, matrices...))
+	allMatrices := append([]GeometryMath.Matrix4x4{mesh.GetModelMatrix()}, matrices...)
+	mbo := Buffer.NewArrayBuffer(&allMatrices)
 	mesh.VertexArray = NewInstancedVertexArray(mesh.GetVertexArray(), mbo)
 
 	master := InstanceMasterMesh{
@@ -61,14 +62,14 @@ func (mesh *InstanceMasterMesh) Draw(shader Shader.IShaderProgram, invoker Scene
 		return nil
 	}
 
-	mesh.MatrixBuffer.UpdateData(&matrices, 0)
+	mesh.MatrixBuffer.Set(&matrices)
+	mesh.MatrixBuffer.Sync()
 
 	err.Push(shader.BindObject(&mesh.MasterMatrix))
 	err.Push(shader.BindObject(mesh.VertexArray))
 	mesh.IndexBuffer.Bind()
 	gl.DrawElementsInstanced(gl.TRIANGLES, mesh.IndexBuffer.Length, gl.UNSIGNED_INT, nil, int32(len(matrices)))
 	mesh.IndexBuffer.Unbind()
-	mesh.VertexBuffer.Unbind()
 
 	return err.Err()
 }
@@ -83,8 +84,6 @@ func (mesh *InstanceMasterMesh) SetMasterMatrix(mat GeometryMath.Matrix4x4) {
 }
 
 func (mesh *InstanceMasterMesh) CreateNewInstances(matrices ...GeometryMath.Matrix4x4) []*InstancedMesh {
-	mesh.MatrixBuffer.IncreaseSize(len(matrices) * Utils.SizeOf(GeometryMath.Matrix4x4{}))
-
 	instances := make([]*InstancedMesh, len(matrices))
 	for i := range matrices {
 		instances[i] = &InstancedMesh{

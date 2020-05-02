@@ -4,6 +4,7 @@ import (
 	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
+	"github.com/Adi146/goggle-engine/Core/OpenGL/Buffer"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Utils/Error"
@@ -13,7 +14,7 @@ import (
 type PrimitiveType uint32
 
 type Mesh struct {
-	VertexBuffer              ArrayBuffer
+	VertexBuffer              Buffer.ArrayBuffer
 	VertexArray               VertexArray
 	IndexBuffer               *IndexBuffer
 	ModelMatrix               GeometryMath.Matrix4x4
@@ -25,7 +26,7 @@ type Mesh struct {
 }
 
 func NewMesh(vertices []Vertex, indices []uint32, boundingVolume func(vertices []GeometryMath.Vector3) BoundingVolume.IBoundingVolume) *Mesh {
-	vbo := NewVertexBuffer(vertices)
+	vbo := Buffer.NewArrayBuffer(&vertices)
 
 	mesh := Mesh{
 		VertexBuffer:  vbo,
@@ -52,13 +53,12 @@ func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, sc
 		mesh.IndexBuffer.Bind()
 		gl.DrawElements(uint32(mesh.PrimitiveType), mesh.IndexBuffer.Length, gl.UNSIGNED_INT, nil)
 		mesh.IndexBuffer.Unbind()
-		mesh.VertexBuffer.Unbind()
 	}
 
 	return err.Err()
 }
 
-func (mesh *Mesh) GetVertexBuffer() ArrayBuffer {
+func (mesh *Mesh) GetVertexBuffer() Buffer.ArrayBuffer {
 	return mesh.VertexBuffer
 }
 

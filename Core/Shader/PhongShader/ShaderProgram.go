@@ -2,7 +2,6 @@ package PhongShader
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
@@ -18,7 +17,6 @@ const (
 
 	ua_modelMatrix = "u_modelMatrix"
 
-	ua_camera           = "camera"
 	ua_directionalLight = "directionalLight"
 	ua_pointLight       = "pointLight"
 	ua_spotLight        = "spotLight"
@@ -104,8 +102,6 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		case ShadowMapping.SpotLight_ubo_type:
 			err.Push(program.BindUniform(v, ua_spotLight))
 			err.Push(program.BindUniform(true, ua_spotLightIsSet))
-		case Camera.UBO_type:
-			err.Push(program.BindUniform(v, ua_camera))
 		default:
 			return fmt.Errorf("phong shader does not support uniform buffers of type %s", t)
 		}

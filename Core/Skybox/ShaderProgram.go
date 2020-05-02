@@ -2,11 +2,8 @@ package Skybox
 
 import (
 	"fmt"
-	"github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Mesh"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
 )
@@ -15,8 +12,6 @@ const (
 	shader_factory_name = "skyboxShader"
 
 	ua_skybox = "u_skybox"
-
-	ua_camera = "camera"
 )
 
 type ShaderProgram struct {
@@ -46,13 +41,6 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 	switch v := i.(type) {
 	case Texture.ITexture:
 		return ua_skybox, nil
-	case UniformBuffer.IUniformBuffer:
-		switch t := v.GetType(); t {
-		case Camera.UBO_type:
-			return ua_camera, nil
-		default:
-			return "", fmt.Errorf("skybox shader does not support uniform buffers of type %s", t)
-		}
 	default:
 		return "", fmt.Errorf("skybox shader does not support type %T", v)
 	}

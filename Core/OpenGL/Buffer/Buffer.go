@@ -46,20 +46,18 @@ func (buffer *buffer) Bind() {
 }
 
 func (buffer *buffer) Sync() {
-	if !buffer.isSync {
-		var currentSize int32
-		gl.GetNamedBufferParameteriv(buffer.id, gl.BUFFER_SIZE, &currentSize)
+	var currentSize int32
+	gl.GetNamedBufferParameteriv(buffer.id, gl.BUFFER_SIZE, &currentSize)
 
-		dataSize := Utils.SizeOf(buffer.data)
+	dataSize := Utils.SizeOf(buffer.data)
 
-		if dataSize > int(currentSize) {
-			gl.NamedBufferData(buffer.id, dataSize, Utils.GlPtr(buffer.data), gl.DYNAMIC_DRAW)
-		} else {
-			gl.NamedBufferSubData(buffer.id, 0, dataSize, Utils.GlPtr(buffer.data))
-		}
-
-		buffer.isSync = true
+	if dataSize > int(currentSize) {
+		gl.NamedBufferData(buffer.id, dataSize, Utils.GlPtr(buffer.data), gl.DYNAMIC_DRAW)
+	} else {
+		gl.NamedBufferSubData(buffer.id, 0, dataSize, Utils.GlPtr(buffer.data))
 	}
+
+	buffer.isSync = true
 }
 
 func (buffer *buffer) Set(data interface{}) {

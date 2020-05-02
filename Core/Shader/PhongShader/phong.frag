@@ -15,7 +15,7 @@ struct MaterialColor {
     vec3 emissive;
 };
 
-layout (std140) uniform camera {
+layout (std140, binding = 0) uniform camera {
     mat4 u_projectionMatrix;
     mat4 u_viewMatrix;
     vec3 u_cameraPosition;

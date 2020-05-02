@@ -55,7 +55,7 @@ layout (std140) uniform spotLight {
     } u_spotLights[MAX_SPOT_LIGHTS];
 };
 
-layout (std140) uniform camera {
+layout (std140, binding = 0) uniform camera {
     mat4 u_projectionMatrix;
     mat4 u_viewMatrix;
     vec3 u_cameraPosition;

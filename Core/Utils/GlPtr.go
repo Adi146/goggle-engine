@@ -23,6 +23,8 @@ func GlPtr(data interface{}) unsafe.Pointer {
 			addr = unsafe.Pointer(e.UnsafeAddr())
 		case reflect.Array, reflect.Slice:
 			addr = unsafe.Pointer(e.Index(0).UnsafeAddr())
+		case reflect.Struct:
+			addr = unsafe.Pointer(e.Field(0).UnsafeAddr())
 		default:
 			panic(fmt.Errorf("unsupported pointer to type %s; must be a slice or pointer to a singular scalar value or the first element of an array or slice", e.Kind()))
 		}

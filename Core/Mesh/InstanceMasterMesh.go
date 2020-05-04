@@ -33,8 +33,8 @@ func NewInstanceMasterMesh(mesh *Mesh, matrices ...GeometryMath.Matrix4x4) *Inst
 	for i := range matrices {
 		instances[i] = &InstancedMesh{
 			ModelMatrix:               matrices[i],
-			boundingVolume:            mesh.GetBoundingVolume(),
-			TransformedBoundingVolume: mesh.GetBoundingVolume().Transform(matrices[i].Mul(master.MasterMatrix)),
+			boundingVolume:            mesh.boundingVolume,
+			TransformedBoundingVolume: mesh.boundingVolume.Transform(matrices[i].Mul(master.MasterMatrix)),
 			FrustumCulling:            mesh.FrustumCulling,
 			Master:                    &master,
 		}
@@ -88,8 +88,8 @@ func (mesh *InstanceMasterMesh) CreateNewInstances(matrices ...GeometryMath.Matr
 	for i := range matrices {
 		instances[i] = &InstancedMesh{
 			ModelMatrix:               matrices[i],
-			boundingVolume:            mesh.GetBoundingVolume(),
-			TransformedBoundingVolume: mesh.GetBoundingVolume().Transform(matrices[i].Mul(mesh.MasterMatrix)),
+			boundingVolume:            mesh.boundingVolume,
+			TransformedBoundingVolume: mesh.boundingVolume.Transform(matrices[i].Mul(mesh.MasterMatrix)),
 			FrustumCulling:            mesh.FrustumCulling,
 			Master:                    mesh,
 		}

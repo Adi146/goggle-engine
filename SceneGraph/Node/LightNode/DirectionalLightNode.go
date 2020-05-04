@@ -26,7 +26,7 @@ type DirectionalLightNode struct {
 func (node *DirectionalLightNode) Tick(timeDelta float32) error {
 	err := node.INode.Tick(timeDelta)
 
-	node.DirectionalLight.DirectionalLight.Direction.Set(node.GetGlobalTransformation().MulVector(node.InitDirection).Normalize())
+	node.DirectionalLight.Update(node.GetGlobalTransformation().MulVector(node.InitDirection).Normalize())
 
 	if scene := node.GetScene(); scene != nil {
 		scene.AddPreRenderObject(node)
@@ -45,7 +45,7 @@ func (node *DirectionalLightNode) UnmarshalYAML(value *yaml.Node) error {
 	}
 
 	if node.InitDirection == (GeometryMath.Vector3{}) {
-		node.InitDirection = node.DirectionalLight.DirectionalLight.Direction.Get()
+		node.InitDirection = node.DirectionalLight.DirectionalLight.Direction
 	}
 
 	return Scene.UnmarshalChildren(value, node)

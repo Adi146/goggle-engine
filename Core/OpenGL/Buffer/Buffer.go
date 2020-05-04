@@ -12,55 +12,56 @@ type IBuffer interface {
 	Sync()
 }
 
-type buffer struct {
+type Buffer struct {
 	id         uint32
 	data       interface{}
 	bufferType uint32
-	isSync     bool
+	usage      uint32
 }
 
-func newBuffer(bufferType uint32, data interface{}) buffer {
-	buffer := buffer{
+func newBuffer(bufferType uint32, data interface{}, usage uint32) Buffer {
+	buffer := Buffer{
 		data:       data,
 		bufferType: bufferType,
-		isSync:     true,
+		usage:      usage,
 	}
 
 	gl.GenBuffers(1, &buffer.id)
 	buffer.Bind()
-	gl.BufferData(buffer.bufferType, Utils.SizeOf(data), Utils.GlPtr(buffer.data), gl.DYNAMIC_DRAW)
+	gl.BufferData(buffer.bufferType, Utils.SizeOf(data), Utils.GlPtr(buffer.data), buffer.usage)
 
 	return buffer
 }
 
-func (buffer *buffer) GetID() uint32 {
+func (buffer *Buffer) GetID() uint32 {
 	return buffer.id
 }
 
-func (buffer *buffer) Destroy() {
+func (buffer *Buffer) Destroy() {
 	gl.DeleteBuffers(1, &buffer.id)
 }
 
-func (buffer *buffer) Bind() {
+func (buffer *Buffer) Bind() {
 	gl.BindBuffer(buffer.bufferType, buffer.id)
 }
 
-func (buffer *buffer) Sync() {
+func (buffer *Buffer) Sync() {
+	if buffer.id == 0 {
+		return
+	}
+
 	var currentSize int32
 	gl.GetNamedBufferParameteriv(buffer.id, gl.BUFFER_SIZE, &currentSize)
 
 	dataSize := Utils.SizeOf(buffer.data)
 
 	if dataSize > int(currentSize) {
-		gl.NamedBufferData(buffer.id, dataSize, Utils.GlPtr(buffer.data), gl.DYNAMIC_DRAW)
+		gl.NamedBufferData(buffer.id, dataSize, Utils.GlPtr(buffer.data), buffer.usage)
 	} else {
 		gl.NamedBufferSubData(buffer.id, 0, dataSize, Utils.GlPtr(buffer.data))
 	}
-
-	buffer.isSync = true
 }
 
-func (buffer *buffer) Set(data interface{}) {
+func (buffer *Buffer) Set(data interface{}) {
 	buffer.data = data
-	buffer.isSync = false
 }

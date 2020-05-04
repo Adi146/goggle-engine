@@ -3,7 +3,7 @@
 #define MAX_POINT_LIGHTS 32
 #define MAX_SPOT_LIGHTS 32
 
-layout (std140) uniform directionalLight {
+layout (std140, binding = 1) uniform directionalLight {
     int u_numDirectionalLights;
     struct {
         vec3 direction;
@@ -19,7 +19,7 @@ layout (std140) uniform directionalLight {
     } u_directionalLights[MAX_DIRECTIONAL_LIGHTS];
 };
 
-layout (std140) uniform pointLight {
+layout (std140, binding = 2) uniform pointLight {
     int u_numPointLights;
     struct {
         vec3 position;
@@ -35,7 +35,7 @@ layout (std140) uniform pointLight {
     } u_pointLights[MAX_POINT_LIGHTS];
 };
 
-layout (std140) uniform spotLight {
+layout (std140, binding = 3) uniform spotLight {
     int u_numSpotLights;
     struct {
         vec3 position;

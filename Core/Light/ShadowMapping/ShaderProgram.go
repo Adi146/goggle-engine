@@ -7,22 +7,13 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
 )
 
 const (
 	shader_factory_name = "shadowMapShader"
 
 	ua_modelMatrix = "u_modelMatrix"
-
-	ua_directionalLight = "directionalLight"
-	ua_pointLight       = "pointLight"
-	ua_spotLight        = "spotLight"
-	ua_lightIndex       = "u_lightIndex"
-
-	DirectionalLight_ubo_type = "directionalLight"
-	PointLight_ubo_type       = "pointLight"
-	SpotLight_ubo_type        = "spotLight"
+	ua_lightIndex  = "u_lightIndex"
 )
 
 type ShaderProgram struct {
@@ -61,17 +52,6 @@ func (program *ShaderProgram) GetUniformAddress(i interface{}) (string, error) {
 		return program.MaterialShader.GetUniformAddress(i)
 	case *GeometryMath.Matrix4x4:
 		return ua_modelMatrix, nil
-	case UniformBuffer.IUniformBuffer:
-		switch t := v.GetType(); t {
-		case DirectionalLight_ubo_type:
-			return ua_directionalLight, nil
-		case PointLight_ubo_type:
-			return ua_pointLight, nil
-		case SpotLight_ubo_type:
-			return ua_spotLight, nil
-		default:
-			return "", fmt.Errorf("shadow map shader does not support unifrom buffer of type %s", t)
-		}
 	case int32:
 		return ua_lightIndex, nil
 	default:

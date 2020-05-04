@@ -19,8 +19,6 @@ directionalLight:
     ambient: [0.32, 0.32, 0.32]
     diffuse: [0.8, 0.8, 0.8]
     specular: [0.8, 0.8, 0.8]
-uniformBuffer:
-    binding: 1
 shadowMap:
     distance: 200
     transitionDistance: 20
@@ -38,26 +36,26 @@ shadowMap:
 	expectedDiffuse := GeometryMath.Vector3{0.8, 0.8, 0.8}
 	expectedSpecular := GeometryMath.Vector3{0.8, 0.8, 0.8}
 
-	if light.DirectionalLight.Direction.Get() != expectedDirection {
-		t.Errorf("direction value not matching (expecting %f, got %f", expectedDirection, light.DirectionalLight.Direction.Get())
+	if light.DirectionalLight.Direction != expectedDirection {
+		t.Errorf("direction value not matching (expecting %f, got %f", expectedDirection, light.DirectionalLight.Direction)
 	}
-	if light.DirectionalLight.Ambient.Get() != expectedAmbient {
-		t.Errorf("ambient value not matching (expecting %f, got %f", expectedAmbient, light.DirectionalLight.Ambient.Get())
+	if light.DirectionalLight.Ambient != expectedAmbient {
+		t.Errorf("ambient value not matching (expecting %f, got %f", expectedAmbient, light.DirectionalLight.Ambient)
 	}
-	if light.DirectionalLight.Diffuse.Get() != expectedDiffuse {
-		t.Errorf("diffuse value not matching (expecting %f, got %f", expectedDiffuse, light.DirectionalLight.Diffuse.Get())
+	if light.DirectionalLight.Diffuse != expectedDiffuse {
+		t.Errorf("diffuse value not matching (expecting %f, got %f", expectedDiffuse, light.DirectionalLight.Diffuse)
 	}
-	if light.DirectionalLight.Specular.Get() != expectedSpecular {
-		t.Errorf("specular value not matching (expecting %f, got %f", expectedSpecular, light.DirectionalLight.Specular.Get())
+	if light.DirectionalLight.Specular != expectedSpecular {
+		t.Errorf("specular value not matching (expecting %f, got %f", expectedSpecular, light.DirectionalLight.Specular)
 	}
 
 	expectedDistance := float32(200)
 	expectedTransitionDistance := float32(20)
 
-	if light.ShadowMap.Distance.Get() != expectedDistance {
-		t.Errorf("distance value not matching (expecting %f, got %f)", expectedDistance, light.ShadowMap.Distance.Get())
+	if light.ShadowMap.Distance != expectedDistance {
+		t.Errorf("distance value not matching (expecting %f, got %f)", expectedDistance, light.ShadowMap.Distance)
 	}
-	if light.ShadowMap.TransitionDistance.Get() != expectedTransitionDistance {
-		t.Errorf("transition distance value not matching (expecting %f, got %f)", expectedTransitionDistance, light.ShadowMap.TransitionDistance.Get())
+	if light.ShadowMap.TransitionDistance != expectedTransitionDistance {
+		t.Errorf("transition distance value not matching (expecting %f, got %f)", expectedTransitionDistance, light.ShadowMap.TransitionDistance)
 	}
 }

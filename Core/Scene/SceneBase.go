@@ -73,6 +73,8 @@ func (scene *SceneBase) Draw(shader Shader.IShaderProgram, invoker IDrawable, or
 		scene.CullFunction.Set()
 		scene.DepthFunction.Set()
 		scene.BlendFunction.Set()
+
+		scene.Camera.Sync()
 	}
 
 	var err Error.ErrorCollection
@@ -136,7 +138,7 @@ func (scene *SceneBase) GetCamera() Camera.ICamera {
 
 func (scene *SceneBase) UnmarshalYAML(value *yaml.Node) error {
 	type yamlConfigType SceneBase
-	yamlConfig := (yamlConfigType)(*scene)
+	yamlConfig := (*yamlConfigType)(scene)
 	if err := value.Decode(&yamlConfig); err != nil {
 		return err
 	}
@@ -146,8 +148,6 @@ func (scene *SceneBase) UnmarshalYAML(value *yaml.Node) error {
 	projectionConfig := yamlConfig.Camera.GetFrustum().GetProjectionConfig()
 	projectionConfig.SetSize(float32(width), float32(height), projectionConfig.GetNear(), projectionConfig.GetFar())
 	yamlConfig.Camera.SetProjection(projectionConfig)
-
-	*scene = (SceneBase)(yamlConfig)
 
 	return nil
 }

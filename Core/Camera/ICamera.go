@@ -9,5 +9,7 @@ type ICamera interface {
 	GetUp() GeometryMath.Vector3
 	GetRight() GeometryMath.Vector3
 	SetProjection(projection GeometryMath.IProjectionConfig)
+	GetProjectionMatrix() GeometryMath.Matrix4x4
+	GetViewMatrix() GeometryMath.Matrix4x4
 	GetFrustum() IFrustum
 }

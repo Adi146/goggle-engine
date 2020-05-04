@@ -4,7 +4,6 @@ import (
 	"github.com/Adi146/goggle-engine/Core/BoundingVolume"
 	core "github.com/Adi146/goggle-engine/Core/Camera"
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer/UniformBufferSection"
 )
 
 const (
@@ -14,7 +13,6 @@ const (
 
 type Camera struct {
 	core.Camera
-	UniformBufferSection.Matrix4x4
 }
 
 func (camera *Camera) UpdateInternal(sceneCamera core.ICamera, front GeometryMath.Vector3, distance float32) {
@@ -34,8 +32,6 @@ func (camera *Camera) UpdateInternal(sceneCamera core.ICamera, front GeometryMat
 
 	camera.Camera.SetProjection(&projectionConfig)
 	camera.Camera.Update(position, front, up)
-
-	camera.Set(projectionConfig.Decode().Mul(GeometryMath.LookAt(position, center, up)))
 }
 
 func (camera *Camera) calcCameraFrustumBoundingBox(sceneCamera core.ICamera, direction GeometryMath.Vector3, distance float32) (BoundingVolume.AABB, GeometryMath.Vector3) {

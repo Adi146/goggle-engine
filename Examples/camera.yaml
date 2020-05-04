@@ -21,12 +21,6 @@ children:
       linear: 0.014
       quadratic: 0.0007
       direction: [0, 0, 1]
-    uniformBuffer:
-      binding: 3
-      id: spotLight
-      shaders:
-        - phong
-        - shadowMapSpotLight
     shadowMap:
       distance: 325
       shader: shadowMapSpotLight

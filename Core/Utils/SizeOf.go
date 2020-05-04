@@ -10,8 +10,12 @@ func SizeOf(data interface{}) int {
 		return 0
 	}
 
-	v := reflect.ValueOf(data)
-	return sizeOf(v)
+	switch v := data.(type) {
+	case reflect.Value:
+		return sizeOf(v)
+	default:
+		return sizeOf(reflect.ValueOf(data))
+	}
 }
 
 func sizeOf(v reflect.Value) int {

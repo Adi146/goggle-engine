@@ -10,8 +10,18 @@ func GlPtr(data interface{}) unsafe.Pointer {
 	if data == nil {
 		return unsafe.Pointer(nil)
 	}
+
+	switch v := data.(type) {
+	case reflect.Value:
+		return glPtr(v)
+	default:
+		return glPtr(reflect.ValueOf(data))
+	}
+}
+
+func glPtr(v reflect.Value) unsafe.Pointer {
 	var addr unsafe.Pointer
-	v := reflect.ValueOf(data)
+
 	switch v.Type().Kind() {
 	case reflect.Ptr:
 		e := v.Elem()
@@ -30,10 +40,13 @@ func GlPtr(data interface{}) unsafe.Pointer {
 		}
 	case reflect.Uintptr:
 		addr = unsafe.Pointer(v.Pointer())
-	case reflect.Slice:
+	case reflect.Array, reflect.Slice:
 		addr = unsafe.Pointer(v.Index(0).UnsafeAddr())
+	case reflect.Struct:
+		addr = unsafe.Pointer(v.Field(0).UnsafeAddr())
 	default:
 		panic(fmt.Errorf("unsupported type %s; must be a slice or pointer to a singular scalar value or the first element of an array or slice", v.Type()))
 	}
+
 	return addr
 }

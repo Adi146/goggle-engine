@@ -13,7 +13,7 @@ out GS_OUT {
     vec2 uv;
 } gs_out;
 
-layout (std140) uniform pointLight {
+layout (std140, binding = 2) uniform pointLight {
     int u_numPointLights;
     struct {
         vec3 position;

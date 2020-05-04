@@ -9,7 +9,7 @@ out VS_OUT {
     vec2 uv;
 } vs_out;
 
-layout (std140) uniform directionalLight {
+layout (std140, binding = 1) uniform directionalLight {
     int u_numDirectionalLights;
     struct {
         vec3 direction;

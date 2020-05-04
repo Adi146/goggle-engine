@@ -14,11 +14,6 @@ scene:
     fovy: 45
     near: 0.1
     far: 1000
-    uniformBuffer:
-      binding: 0
-      shaders:
-        - phong
-        - skybox
   depthTest: true
   culling: true
   blend: true
@@ -52,11 +47,6 @@ scene:
             ambient: [0.32, 0.32, 0.32]
             diffuse: [0.8, 0.8, 0.8]
             specular: [0.8, 0.8, 0.8]
-          uniformBuffer:
-            binding: 1
-            shaders:
-              - phong
-              - shadowMapDirectionalLight
           shadowMap:
             distance: 200
             transitionDistance: 20
@@ -78,7 +68,6 @@ scene:
             specular: [0.0, 0.0, 1.0]
             linear: 0.014
             quadratic: 0.0007
-          uniformBuffer: pointLight
           transformation:
             - translation: [0, 30, -30]
           shadowMap:
@@ -97,12 +86,6 @@ scene:
             specular: [1.0, 0.0, 0.0]
             linear: 0.014
             quadratic: 0.0007
-          uniformBuffer:
-            id: pointLight
-            binding: 2
-            shaders:
-              - phong
-              - shadowMapPointLight
           transformation:
             - translation: [0, 30, 30]
           shadowMap:
@@ -257,7 +240,6 @@ scene:
                 linear: 0.014
                 quadratic: 0.0007
                 direction: [0, 0, 1]
-              uniformBuffer: spotLight
               shadowMap:
                 distance: 325
                 shader: shadowMapSpotLight

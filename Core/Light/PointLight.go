@@ -5,110 +5,93 @@ import (
 	"github.com/Adi146/goggle-engine/Core/GeometryMath"
 	"github.com/Adi146/goggle-engine/Core/Light/ShadowMapping"
 	shadowMap "github.com/Adi146/goggle-engine/Core/Light/ShadowMapping/PointLight"
+	"github.com/Adi146/goggle-engine/Core/OpenGL/Buffer"
+	"github.com/Adi146/goggle-engine/Core/OpenGL/Buffer/MemoryLayout"
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer/UniformBufferSection"
 	"gopkg.in/yaml.v3"
 )
 
 const (
-	pointLight_offset_position  = 0
-	pointLight_offset_linear    = 12
-	pointLight_offset_quadratic = 16
-	pointLight_offset_ambient   = 32
-	pointLight_offset_diffuse   = 48
-	pointLight_offset_specular  = 64
-	pointLight_offset_camera    = 80
-	pointLight_offset_distance  = 464
+	PointLight_ubo_binding = 2
+	PointLight_fbo_type    = "shadowMap_pointLight"
+)
 
-	pointLight_size_section = 480
-	pointLight_ubo_size     = UniformBuffer.ArrayUniformBuffer_offset_elements + UniformBuffer.Num_elements*pointLight_size_section
-
-	PointLight_fbo_type = "shadowMap_pointLight"
+var (
+	PointLightBuffer Buffer.UniformBuffer
+	PointLightArray  UniformBufferArray
 )
 
 type PointLight struct {
 	PointLight struct {
-		Position  UniformBufferSection.Vector3 `yaml:"position,flow"`
-		Linear    UniformBufferSection.Float   `yaml:"linear,flow"`
-		Quadratic UniformBufferSection.Float   `yaml:"quadratic,flow"`
-		Ambient   UniformBufferSection.Vector3 `yaml:"ambient,flow"`
-		Diffuse   UniformBufferSection.Vector3 `yaml:"diffuse,flow"`
-		Specular  UniformBufferSection.Vector3 `yaml:"specular,flow"`
+		Position  GeometryMath.Vector3 `yaml:"position,flow"`
+		Linear    float32              `yaml:"linear,flow"`
+		Quadratic float32              `yaml:"quadratic,flow"`
+		Ambient   GeometryMath.Vector3 `yaml:"ambient,flow"`
+		Diffuse   GeometryMath.Vector3 `yaml:"diffuse,flow"`
+		Specular  GeometryMath.Vector3 `yaml:"specular,flow"`
 	} `yaml:"pointLight"`
 
 	ShadowMap ShadowMapping.ShadowMap `yaml:"shadowMap"`
+	Buffer.DynamicBufferData
 }
 
-func (light *PointLight) ForceUpdate() {
-	light.PointLight.Position.ForceUpdate()
-	light.PointLight.Linear.ForceUpdate()
-	light.PointLight.Quadratic.ForceUpdate()
-	light.PointLight.Ambient.ForceUpdate()
-	light.PointLight.Diffuse.ForceUpdate()
-	light.PointLight.Specular.ForceUpdate()
-	light.ShadowMap.ForceUpdate()
-}
-
-func (light *PointLight) SetUniformBuffer(ubo UniformBuffer.IUniformBuffer, offset int) {
-	light.PointLight.Position.SetUniformBuffer(ubo, offset+pointLight_offset_position)
-	light.PointLight.Linear.SetUniformBuffer(ubo, offset+pointLight_offset_linear)
-	light.PointLight.Quadratic.SetUniformBuffer(ubo, offset+pointLight_offset_quadratic)
-	light.PointLight.Ambient.SetUniformBuffer(ubo, offset+pointLight_offset_ambient)
-	light.PointLight.Diffuse.SetUniformBuffer(ubo, offset+pointLight_offset_diffuse)
-	light.PointLight.Specular.SetUniformBuffer(ubo, offset+pointLight_offset_specular)
-	light.ShadowMap.Camera.(UniformBuffer.IUniformBufferSection).SetUniformBuffer(ubo, offset+pointLight_offset_camera)
-	light.ShadowMap.Distance.SetUniformBuffer(ubo, offset+pointLight_offset_distance)
-}
-
-func (light *PointLight) GetSize() int {
-	return pointLight_size_section
+type std140PointLight struct {
+	position             GeometryMath.Vector3
+	linear               float32
+	quadratic            MemoryLayout.Std140Float32
+	ambient              MemoryLayout.Std140Vector3
+	diffuse              MemoryLayout.Std140Vector3
+	specular             MemoryLayout.Std140Vector3
+	viewProjectionMatrix [6]GeometryMath.Matrix4x4
+	distance             float32
+	padding              [3]MemoryLayout.Padding
 }
 
 func (light *PointLight) Update(position GeometryMath.Vector3) {
-	light.PointLight.Position.Set(position)
+	light.PointLight.Position = position
 	light.ShadowMap.Camera.(*shadowMap.Camera).Update(position, GeometryMath.Vector3{0, 0, 1}, GeometryMath.Vector3{0, 1, 0})
+	light.SetIsSync(false)
+}
+
+func (light *PointLight) UpdateCamera(scene Scene.IScene, camera Camera.ICamera) {
+	PointLightBuffer.Sync()
 }
 
 func (light *PointLight) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
 	return light.ShadowMap.Draw(shader, invoker, scene, camera)
 }
 
-func (light *PointLight) UnmarshalYAML(value *yaml.Node) error {
-	uboYamlConfig := struct {
-		Ptr UniformBuffer.ArrayUniformBufferPtr `yaml:"uniformBuffer"`
-	}{
-		Ptr: UniformBuffer.ArrayUniformBufferPtr{
-			ArrayUniformBuffer: &UniformBuffer.ArrayUniformBuffer{
-				UniformBuffer: &UniformBuffer.UniformBuffer{
-					Size: pointLight_ubo_size,
-					Type: ShadowMapping.PointLight_ubo_type,
-				},
-			},
-		},
+func (light *PointLight) GetBufferData() interface{} {
+	return std140PointLight{
+		position:             light.PointLight.Position,
+		linear:               light.PointLight.Linear,
+		quadratic:            MemoryLayout.Std140Float32{Float32: light.PointLight.Quadratic},
+		ambient:              MemoryLayout.Std140Vector3{Vector3: light.PointLight.Ambient},
+		diffuse:              MemoryLayout.Std140Vector3{Vector3: light.PointLight.Diffuse},
+		specular:             MemoryLayout.Std140Vector3{Vector3: light.PointLight.Specular},
+		viewProjectionMatrix: light.ShadowMap.Camera.(*shadowMap.Camera).ViewProjectionMatrices,
+		distance:             light.ShadowMap.Distance,
 	}
-	if err := value.Decode(&uboYamlConfig); err != nil {
-		return err
+}
+
+func (light *PointLight) UnmarshalYAML(value *yaml.Node) error {
+	if PointLightBuffer == (Buffer.UniformBuffer{}) {
+		PointLightBuffer = Buffer.NewUniformBuffer(&PointLightArray, PointLight_ubo_binding)
 	}
 
 	light.ShadowMap.Camera = &shadowMap.Camera{}
 	light.ShadowMap.TextureType = ShadowMapping.ShadowMapPointLight
 	light.ShadowMap.TextureConstructor = ShadowMapping.NewShadowCubeMapTexture
 	light.ShadowMap.FrameBuffer.Type = PointLight_fbo_type
+	light.ShadowMap.UpdateCameraCallback = light.UpdateCamera
 
-	index, err := uboYamlConfig.Ptr.AddElement(light)
-	if err != nil {
-		return err
-	}
-
-	light.ShadowMap.LightIndex = index
+	light.ShadowMap.LightIndex = PointLightArray.Add(light)
 
 	type yamlConfigType PointLight
 	yamlConfig := (*yamlConfigType)(light)
 
-	err = value.Decode(&yamlConfig)
-	if err != nil {
+	if err := value.Decode(&yamlConfig); err != nil {
 		return err
 	}
 
@@ -116,7 +99,7 @@ func (light *PointLight) UnmarshalYAML(value *yaml.Node) error {
 		Fovy:   90,
 		Aspect: float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Width) / float32(yamlConfig.ShadowMap.FrameBuffer.Viewport.Height),
 		Near:   0.1,
-		Far:    yamlConfig.ShadowMap.Distance.Get(),
+		Far:    yamlConfig.ShadowMap.Distance,
 	})
 
 	return nil

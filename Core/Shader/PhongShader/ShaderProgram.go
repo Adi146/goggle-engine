@@ -8,22 +8,12 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Model/Material"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	"github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-	"github.com/Adi146/goggle-engine/Utils/Error"
 )
 
 const (
 	shader_factory_name = "phongShader"
 
 	ua_modelMatrix = "u_modelMatrix"
-
-	ua_directionalLight = "directionalLight"
-	ua_pointLight       = "pointLight"
-	ua_spotLight        = "spotLight"
-
-	ua_directionalLightIsSet = "u_directionalLightIsSet"
-	ua_pointLightIsSet       = "u_pointLightIsSet"
-	ua_spotLightIsSet        = "u_spotLightIsSet"
 )
 
 func init() {
@@ -90,22 +80,6 @@ func (program *ShaderProgram) BindObject(i interface{}) error {
 		v.EnableTangentAttribute()
 		v.EnableBiTangentAttribute()
 		return nil
-	case UniformBuffer.IUniformBuffer:
-		var err Error.ErrorCollection
-		switch t := v.GetType(); t {
-		case ShadowMapping.DirectionalLight_ubo_type:
-			err.Push(program.BindUniform(v, ua_directionalLight))
-			err.Push(program.BindUniform(true, ua_directionalLightIsSet))
-		case ShadowMapping.PointLight_ubo_type:
-			err.Push(program.BindUniform(v, ua_pointLight))
-			err.Push(program.BindUniform(true, ua_pointLightIsSet))
-		case ShadowMapping.SpotLight_ubo_type:
-			err.Push(program.BindUniform(v, ua_spotLight))
-			err.Push(program.BindUniform(true, ua_spotLightIsSet))
-		default:
-			return fmt.Errorf("phong shader does not support uniform buffers of type %s", t)
-		}
-		return err.Err()
 	default:
 		uniformAddress, err := program.GetUniformAddress(v)
 		if err != nil {

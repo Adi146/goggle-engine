@@ -22,7 +22,7 @@ const (
 
 type VertexArray uint32
 
-func NewVertexArray(vbo Buffer.ArrayBuffer) VertexArray {
+func NewVertexArray(vbo Buffer.Buffer) VertexArray {
 	vertex := Vertex{}
 	identity := GeometryMath.Identity()
 

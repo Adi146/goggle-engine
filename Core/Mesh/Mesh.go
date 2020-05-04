@@ -14,7 +14,7 @@ import (
 type PrimitiveType uint32
 
 type Mesh struct {
-	VertexBuffer              Buffer.ArrayBuffer
+	VertexBuffer              Buffer.Buffer
 	VertexArray               VertexArray
 	IndexBuffer               *IndexBuffer
 	ModelMatrix               GeometryMath.Matrix4x4
@@ -26,7 +26,7 @@ type Mesh struct {
 }
 
 func NewMesh(vertices []Vertex, indices []uint32, boundingVolume func(vertices []GeometryMath.Vector3) BoundingVolume.IBoundingVolume) *Mesh {
-	vbo := Buffer.NewArrayBuffer(&vertices)
+	vbo := Buffer.NewStaticArrayBuffer(&vertices)
 
 	mesh := Mesh{
 		VertexBuffer:  vbo,
@@ -58,7 +58,7 @@ func (mesh *Mesh) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, sc
 	return err.Err()
 }
 
-func (mesh *Mesh) GetVertexBuffer() Buffer.ArrayBuffer {
+func (mesh *Mesh) GetVertexBuffer() Buffer.Buffer {
 	return mesh.VertexBuffer
 }
 

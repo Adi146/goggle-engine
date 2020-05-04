@@ -7,7 +7,7 @@ import (
 	"unsafe"
 )
 
-func NewInstancedVertexArray(vao VertexArray, mbo Buffer.ArrayBuffer) VertexArray {
+func NewInstancedVertexArray(vao VertexArray, mbo Buffer.Buffer) VertexArray {
 	matrix := GeometryMath.Matrix4x4{}
 
 	mbo.Bind()

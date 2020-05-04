@@ -11,6 +11,9 @@ type Camera struct {
 	up    GeometryMath.Vector3
 	right GeometryMath.Vector3
 
+	projectionMatrix GeometryMath.Matrix4x4
+	viewMatrix       GeometryMath.Matrix4x4
+
 	frustum PlaneFrustum
 }
 
@@ -37,11 +40,23 @@ func (camera *Camera) Update(position GeometryMath.Vector3, front GeometryMath.V
 	camera.up = up
 	camera.right = front.Cross(up)
 
+	camera.viewMatrix = GeometryMath.LookAt(position, position.Add(front), up)
+
 	camera.frustum.Update(camera)
 }
 
 func (camera *Camera) SetProjection(projection GeometryMath.IProjectionConfig) {
+	camera.projectionMatrix = projection.Decode()
+
 	camera.frustum.UpdateProjectionConfig(projection)
+}
+
+func (camera *Camera) GetProjectionMatrix() GeometryMath.Matrix4x4 {
+	return camera.projectionMatrix
+}
+
+func (camera *Camera) GetViewMatrix() GeometryMath.Matrix4x4 {
+	return camera.viewMatrix
 }
 
 func (camera *Camera) GetFrustum() IFrustum {

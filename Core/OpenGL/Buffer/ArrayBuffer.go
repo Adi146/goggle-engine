@@ -1,13 +1,11 @@
 package Buffer
 
-import "github.com/go-gl/gl/v4.3-core/gl"
+import "github.com/go-gl/gl/all-core/gl"
 
-type ArrayBuffer struct {
-	buffer
+func NewStaticArrayBuffer(data interface{}) Buffer {
+	return newStaticBuffer(gl.ARRAY_BUFFER, data)
 }
 
-func NewArrayBuffer(data interface{}) ArrayBuffer {
-	return ArrayBuffer{
-		buffer: newBuffer(gl.ARRAY_BUFFER, data),
-	}
+func NewDynamicArrayBuffer(data IDynamicBufferData) DynamicBuffer {
+	return newDynamicBuffer(gl.ARRAY_BUFFER, data)
 }

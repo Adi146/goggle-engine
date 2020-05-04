@@ -9,7 +9,7 @@ out VS_OUT {
     vec2 uv;
 } vs_out;
 
-layout (std140) uniform spotLight {
+layout (std140, binding = 3) uniform spotLight {
     int u_numSpotLights;
     struct {
         vec3 position;

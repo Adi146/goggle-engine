@@ -6,7 +6,7 @@ in GS_OUT {
     vec2 uv;
 } fs_in;
 
-layout (std140) uniform pointLight {
+layout (std140, binding = 2) uniform pointLight {
     int u_numPointLights;
     struct {
         vec3 position;

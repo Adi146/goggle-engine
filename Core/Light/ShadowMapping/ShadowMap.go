@@ -8,8 +8,6 @@ import (
 	"github.com/Adi146/goggle-engine/Core/Scene"
 	"github.com/Adi146/goggle-engine/Core/Shader"
 	core "github.com/Adi146/goggle-engine/Core/Texture"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer"
-	"github.com/Adi146/goggle-engine/Core/UniformBuffer/UniformBufferSection"
 	"github.com/Adi146/goggle-engine/Utils/Log"
 	"gopkg.in/yaml.v3"
 )
@@ -22,19 +20,11 @@ type ShadowMap struct {
 	FrameBuffer FrameBuffer.FrameBuffer
 	LightIndex  int
 
-	Distance           UniformBufferSection.Float
-	TransitionDistance UniformBufferSection.Float
+	Distance           float32
+	TransitionDistance float32
 
 	TextureConstructor func(width int32, height int32, textureType core.Type) (*core.Texture, error)
 	TextureType        core.Type
-}
-
-func (shadowMap *ShadowMap) ForceUpdate() {
-	if cameraUboSection, isUboSection := shadowMap.Camera.(UniformBuffer.IUniformBufferSection); isUboSection {
-		cameraUboSection.ForceUpdate()
-	}
-	shadowMap.Distance.ForceUpdate()
-	shadowMap.TransitionDistance.ForceUpdate()
 }
 
 func (shadowMap *ShadowMap) Draw(shader Shader.IShaderProgram, invoker Scene.IDrawable, scene Scene.IScene, camera Camera.ICamera) error {
@@ -71,11 +61,11 @@ func (shadowMap *ShadowMap) Draw(shader Shader.IShaderProgram, invoker Scene.IDr
 
 func (shadowMap *ShadowMap) UnmarshalYAML(value *yaml.Node) error {
 	yamlConfig := struct {
-		Shader             Shader.Ptr                  `yaml:"shader"`
-		FrameBuffer        *FrameBuffer.FrameBuffer    `yaml:"frameBuffer"`
-		Shaders            []Shader.Ptr                `yaml:"bindOnShaders"`
-		Distance           *UniformBufferSection.Float `yaml:"distance"`
-		TransitionDistance *UniformBufferSection.Float `yaml:"transitionDistance"`
+		Shader             Shader.Ptr               `yaml:"shader"`
+		FrameBuffer        *FrameBuffer.FrameBuffer `yaml:"frameBuffer"`
+		Shaders            []Shader.Ptr             `yaml:"bindOnShaders"`
+		Distance           *float32                 `yaml:"distance"`
+		TransitionDistance *float32                 `yaml:"transitionDistance"`
 	}{
 		Shader: Shader.Ptr{
 			IShaderProgram: shadowMap.Shader,

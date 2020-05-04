@@ -97,32 +97,32 @@ lights:
 	}
 
 	for i, light := range lightStruct.Lights {
-		if light.SpotLight.Direction.Get() != expectedResults[i].Direction {
-			t.Errorf("[light %d] direction value not matching (expecting %f, got %f)", i, expectedResults[i].Direction, light.SpotLight.Direction.Get())
+		if light.SpotLight.Direction != expectedResults[i].Direction {
+			t.Errorf("[light %d] direction value not matching (expecting %f, got %f)", i, expectedResults[i].Direction, light.SpotLight.Direction)
 		}
-		if light.SpotLight.Position.Get() != expectedResults[i].Position {
-			t.Errorf("[light %d] position value not matching (expecting %f, got %f)", i, expectedResults[i].Position, light.SpotLight.Position.Get())
+		if light.SpotLight.Position != expectedResults[i].Position {
+			t.Errorf("[light %d] position value not matching (expecting %f, got %f)", i, expectedResults[i].Position, light.SpotLight.Position)
 		}
-		if light.SpotLight.Ambient.Get() != expectedResults[i].Ambient {
-			t.Errorf("[light %d] ambient value not matching (expecting %f, got %f)", i, expectedResults[i].Ambient, light.SpotLight.Ambient.Get())
+		if light.SpotLight.Ambient != expectedResults[i].Ambient {
+			t.Errorf("[light %d] ambient value not matching (expecting %f, got %f)", i, expectedResults[i].Ambient, light.SpotLight.Ambient)
 		}
-		if light.SpotLight.Diffuse.Get() != expectedResults[i].Diffuse {
-			t.Errorf("[light %d] diffuse value not matching (expecting %f, got %f)", i, expectedResults[i].Diffuse, light.SpotLight.Diffuse.Get())
+		if light.SpotLight.Diffuse != expectedResults[i].Diffuse {
+			t.Errorf("[light %d] diffuse value not matching (expecting %f, got %f)", i, expectedResults[i].Diffuse, light.SpotLight.Diffuse)
 		}
-		if light.SpotLight.Specular.Get() != expectedResults[i].Specular {
-			t.Errorf("[light %d] specular value not matching (expecting %f, got %f)", i, expectedResults[i].Specular, light.SpotLight.Specular.Get())
+		if light.SpotLight.Specular != expectedResults[i].Specular {
+			t.Errorf("[light %d] specular value not matching (expecting %f, got %f)", i, expectedResults[i].Specular, light.SpotLight.Specular)
 		}
-		if light.SpotLight.Linear.Get() != expectedResults[i].Linear {
-			t.Errorf("[light %d] linear value not matching (expecting %f, got %f)", i, expectedResults[i].Linear, light.SpotLight.Linear.Get())
+		if light.SpotLight.Linear != expectedResults[i].Linear {
+			t.Errorf("[light %d] linear value not matching (expecting %f, got %f)", i, expectedResults[i].Linear, light.SpotLight.Linear)
 		}
-		if light.SpotLight.Quadratic.Get() != expectedResults[i].Quadratic {
-			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i, expectedResults[i].Quadratic, light.SpotLight.Quadratic.Get())
+		if light.SpotLight.Quadratic != expectedResults[i].Quadratic {
+			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i, expectedResults[i].Quadratic, light.SpotLight.Quadratic)
 		}
-		if !GeometryMath.Equals(light.SpotLight.InnerCone.Get(), expectedResults[i].InnerCone, 1e-5) {
-			t.Errorf("[light %d] innerCone value not matching (expecting %f, got %f)", i, expectedResults[i].InnerCone, light.SpotLight.InnerCone.Get())
+		if !GeometryMath.Equals(light.SpotLight.InnerCone, expectedResults[i].InnerCone, 1e-5) {
+			t.Errorf("[light %d] innerCone value not matching (expecting %f, got %f)", i, expectedResults[i].InnerCone, light.SpotLight.InnerCone)
 		}
-		if !GeometryMath.Equals(light.SpotLight.OuterCone.Get(), expectedResults[i].OuterCone, 1e-5) {
-			t.Errorf("[light %d] outerCone value not matching (expecting %f, got %f)", i, expectedResults[i].OuterCone, light.SpotLight.OuterCone.Get())
+		if !GeometryMath.Equals(light.SpotLight.OuterCone, expectedResults[i].OuterCone, 1e-5) {
+			t.Errorf("[light %d] outerCone value not matching (expecting %f, got %f)", i, expectedResults[i].OuterCone, light.SpotLight.OuterCone)
 		}
 	}
 }

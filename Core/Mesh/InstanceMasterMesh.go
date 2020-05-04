@@ -14,13 +14,13 @@ import (
 type InstanceMasterMesh struct {
 	Mesh
 	MasterMatrix GeometryMath.Matrix4x4
-	MatrixBuffer Buffer.ArrayBuffer
+	MatrixBuffer Buffer.Buffer
 	Instances    []*InstancedMesh
 }
 
 func NewInstanceMasterMesh(mesh *Mesh, matrices ...GeometryMath.Matrix4x4) *InstanceMasterMesh {
 	allMatrices := append([]GeometryMath.Matrix4x4{mesh.GetModelMatrix()}, matrices...)
-	mbo := Buffer.NewArrayBuffer(&allMatrices)
+	mbo := Buffer.NewStaticArrayBuffer(&allMatrices)
 	mesh.VertexArray = NewInstancedVertexArray(mesh.GetVertexArray(), mbo)
 
 	master := InstanceMasterMesh{

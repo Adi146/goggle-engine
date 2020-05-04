@@ -87,23 +87,23 @@ lights:
 	}
 
 	for i, light := range lightStruct.Lights {
-		if light.PointLight.Position.Get() != expectedResults[i].Position {
-			t.Errorf("[light %d] position value not matching (expecting %f, got %f)", i, expectedResults[i].Position, light.PointLight.Position.Get())
+		if light.PointLight.Position != expectedResults[i].Position {
+			t.Errorf("[light %d] position value not matching (expecting %f, got %f)", i, expectedResults[i].Position, light.PointLight.Position)
 		}
-		if light.PointLight.Ambient.Get() != expectedResults[i].Ambient {
-			t.Errorf("[light %d] ambient value not matching (expecting %f, got %f)", i, expectedResults[i].Ambient, light.PointLight.Ambient.Get())
+		if light.PointLight.Ambient != expectedResults[i].Ambient {
+			t.Errorf("[light %d] ambient value not matching (expecting %f, got %f)", i, expectedResults[i].Ambient, light.PointLight.Ambient)
 		}
-		if light.PointLight.Diffuse.Get() != expectedResults[i].Diffuse {
-			t.Errorf("[light %d] diffuse value not matching (expecting %f, got %f)", i, expectedResults[i].Diffuse, light.PointLight.Diffuse.Get())
+		if light.PointLight.Diffuse != expectedResults[i].Diffuse {
+			t.Errorf("[light %d] diffuse value not matching (expecting %f, got %f)", i, expectedResults[i].Diffuse, light.PointLight.Diffuse)
 		}
-		if light.PointLight.Specular.Get() != expectedResults[i].Specular {
-			t.Errorf("[light %d] specular value not matching (expecting %f, got %f)", i, expectedResults[i].Specular, light.PointLight.Specular.Get())
+		if light.PointLight.Specular != expectedResults[i].Specular {
+			t.Errorf("[light %d] specular value not matching (expecting %f, got %f)", i, expectedResults[i].Specular, light.PointLight.Specular)
 		}
-		if light.PointLight.Linear.Get() != expectedResults[i].Linear {
-			t.Errorf("[light %d] linear value not matching (expecting %f, got %f)", i, expectedResults[i].Linear, light.PointLight.Linear.Get())
+		if light.PointLight.Linear != expectedResults[i].Linear {
+			t.Errorf("[light %d] linear value not matching (expecting %f, got %f)", i, expectedResults[i].Linear, light.PointLight.Linear)
 		}
-		if light.PointLight.Quadratic.Get() != expectedResults[i].Quadratic {
-			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i, expectedResults[i].Quadratic, light.PointLight.Quadratic.Get())
+		if light.PointLight.Quadratic != expectedResults[i].Quadratic {
+			t.Errorf("[light %d] quadratic value not matching (expecting %f, got %f)", i, expectedResults[i].Quadratic, light.PointLight.Quadratic)
 		}
 	}
 }
